@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
+    <siteMapNode url="Default.aspx" title="Home"  description="News and Statistics">
+        <siteMapNode title="Inventory"  description="View, Add, Manage Inventory Attributes">
+            <siteMapNode url="~/pInv/invShowAll.aspx" title="Browse Current"  description="Show all parts currently listed in DB" />
+            <siteMapNode url="~/pInv/invAssignBins.aspx" title="File Existing Parts"  description="Assign a storage bin location for an existing part" />
+            <siteMapNode title="Add Warehouse"  description="Mui! desc2" />
+            <siteMapNode title="Add Bins" url="~/pInv/invCreateBins.aspx" description="Create possible bin locations. Assigning parts for storage in these locations is under Inventory." />
+        </siteMapNode>
+        <siteMapNode title="Parts"  description="Manage second sources for parts">
+            <siteMapNode url="~/pParts/partAddNew.aspx" title="Add New Part"  description="Add a new part" />
+            <siteMapNode title="Add Manufacturer" url="~/pParts/partAddMfr.aspx" description="Add a new Manufacturer. Usually not necessary since Digikey finds are added automatically." />
+            <siteMapNode title="Assign Equivalents"  description="Mui! desc2" />
+            <siteMapNode title="Assign Mating Parts"  description="Mui! desc2" />
+        </siteMapNode>
+        <siteMapNode title="Projects"  description="Manage Bill of Materials">
+            <siteMapNode title="Browse"  description="Mui! desc2" />
+            <siteMapNode url="~/pBOM/bomAddNew.aspx" title="Add BOM"  description="Import a new project/BOM into FriedParts" />
+            <siteMapNode url="~/pBOM/bomReport.aspx" title="View BOM"  description="View a FriedProject's Bill of Materials" />
+            <siteMapNode url="~/pBOM/bomViewProject.aspx" title="View Project"  description="View a FriedProject's Details and Downloadable Files" />
+        </siteMapNode>
+        <siteMapNode title="Libraries">
+            <siteMapNode url="~/pLib/libAddNew.aspx" title="Add/Upload"  description="Mui! desc2" />
+            <siteMapNode url="~/pLib/libBrowse.aspx" title="View/Download"  description="Mui! desc2" />
+        </siteMapNode>
+        <siteMapNode title="Administration"  description="Permanent utilities for managing the FriedParts universe">
+            <siteMapNode title="Communication">
+                <siteMapNode title="Post News"  description="Mui! desc2" url="~/pAdmin/newsAdd.aspx" />
+                <siteMapNode title="View Logs"  description="Mui! desc2" />
+            </siteMapNode>
+            <siteMapNode title="Database Utilities"  description="Database Administration Utilities">
+                <siteMapNode title="Data Integrity"  description="Populating the SQL relationships from old COMMON table" url="~/pAdmin/dbUtils.aspx" />
+                <siteMapNode title="Apache Log Parser"  description="Parses Apache Log Files" url="~/pAdmin/logApache.aspx" />
+            </siteMapNode>
+            <siteMapNode title="Web Services">
+                <siteMapNode title="FP Web Service"  url="~/pSys/sysService.aspx" description="Period Database Maintenance Service Routine" />
+                <siteMapNode title="Dropbox Service"  url="~/pAdmin/filesDropbox.aspx" description="Monitor Dropbox Activity" />
+            </siteMapNode>
+        </siteMapNode>
+        <siteMapNode title="Development"  description="For testing purposes only!">
+            <siteMapNode title="Bugs &amp; Docs (GitHub)"  description="Development documentation and bug tracking">
+                <siteMapNode url="https://github.com/kg4lod/FriedParts/issues" target ="_blank" title="Report bugs!" description="GitHub bug tracker" />
+                <siteMapNode url="https://github.com/kg4lod/FriedParts/wiki" target ="_blank" title="Documentation (wiki)" description="GitHub documentation wiki" />
+                <siteMapNode url="https://github.com/kg4lod/FriedParts" target="_blank" title="Source code" description="The FriedParts source code available for download" />
+            </siteMapNode>
+            <siteMapNode title="SQL Format"  description="Converts SQLServer Scripts to VB Strings" url="~/pDevel/dbSQL.aspx" />
+            <siteMapNode url="~/pDevel/devCrawler.aspx" title="Webcrawler Testing"  description="Crawls Digikey and Octopart. Mostly useful for diagnostics in the field." />
+            <siteMapNode url="~/pDevel/devClick.aspx" title="General Purpose Testing"  description="Essentially a temp form for debugging/development/testing." />
+            </siteMapNode>        
+    </siteMapNode>
+</siteMap>
+
+<!--
+HOW TO ADD IMAGES TO THE SITE NAV MENU
+
+Anyhow, just add a new tag to your sitemapnode
+
+<?xml version="1.0" encoding="utf-8" ?>
+<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
+  <siteMapNode url="~/default.aspx" myimage="~/images/link.png" roles="customeruserreport,customermanagerreport" title="Home" description="Customer home">
+</siteMap>
+
+on design select the aspxmenu and go to properties, under Data go to ImageUrlField and select or write the tag over there, in this case write myimage.
+
+or just add the ImageUrlField="myimage" property to the ASPxMenu in code view.
+-->

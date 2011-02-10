@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="rptBomBuildDatasource" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection ConnectionStringObject="Data Source=friedparts.nesl.ucla.edu;Initial Catalog=FriedParts;Persist Security Info=True;User ID=fp_system;Password=1" IsAppSettingsProperty="false" Modifier="Assembly" Name="Connection" ParameterPrefix="@" Provider="System.Data.SqlClient" />
+        </Connections>
+        <Tables>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="proj-BOM-ReportAdapter" GeneratorDataComponentClassName="proj_BOM_ReportAdapter" Name="proj-BOM-Report" UserDataComponentName="proj-BOM-ReportAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="Connection" DbObjectName="FriedParts.dbo.[proj-BOM-Report]" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="false" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="true">
+                    <CommandText>SELECT Item, Class, Qty, RefDes, [ID Number], [Part Number], Description, DoNotPopulate FROM [proj-BOM-Report]</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="Class" DataSetColumn="Class" />
+              <Mapping SourceColumn="Qty" DataSetColumn="Qty" />
+              <Mapping SourceColumn="RefDes" DataSetColumn="RefDes" />
+              <Mapping SourceColumn="ID Number" DataSetColumn="ID Number" />
+              <Mapping SourceColumn="Part Number" DataSetColumn="Part Number" />
+              <Mapping SourceColumn="Description" DataSetColumn="Description" />
+              <Mapping SourceColumn="DoNotPopulate" DataSetColumn="DoNotPopulate" />
+              <Mapping SourceColumn="Item" DataSetColumn="Item" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+        </Tables>
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="rptBomBuildDatasource" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="rptBomBuildDatasource" msprop:Generator_DataSetName="rptBomBuildDatasource">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="proj-BOM-Report" msprop:Generator_UserTableName="proj-BOM-Report" msprop:Generator_RowDeletedName="_proj_BOM_ReportRowDeleted" msprop:Generator_TableClassName="_proj_BOM_ReportDataTable" msprop:Generator_RowChangedName="_proj_BOM_ReportRowChanged" msprop:Generator_RowClassName="_proj_BOM_ReportRow" msprop:Generator_RowChangingName="_proj_BOM_ReportRowChanging" msprop:Generator_RowEvArgName="_proj_BOM_ReportRowChangeEvent" msprop:Generator_RowEvHandlerName="_proj_BOM_ReportRowChangeEventHandler" msprop:Generator_TablePropName="_proj_BOM_Report" msprop:Generator_TableVarName="_tableproj_BOM_Report" msprop:Generator_RowDeletingName="_proj_BOM_ReportRowDeleting">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Class" msprop:Generator_UserColumnName="Class" msprop:Generator_ColumnPropNameInRow="_Class" msprop:Generator_ColumnVarNameInTable="columnClass" msprop:Generator_ColumnPropNameInTable="ClassColumn">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Qty" msprop:Generator_UserColumnName="Qty" msprop:Generator_ColumnPropNameInRow="Qty" msprop:Generator_ColumnVarNameInTable="columnQty" msprop:Generator_ColumnPropNameInTable="QtyColumn" type="xs:int" />
+              <xs:element name="RefDes" msprop:Generator_UserColumnName="RefDes" msprop:Generator_ColumnPropNameInRow="RefDes" msprop:Generator_ColumnVarNameInTable="columnRefDes" msprop:Generator_ColumnPropNameInTable="RefDesColumn">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2147483647" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="ID_x0020_Number" msprop:Generator_UserColumnName="ID Number" msprop:Generator_ColumnPropNameInRow="ID_Number" msprop:Generator_ColumnVarNameInTable="columnID_Number" msprop:Generator_ColumnPropNameInTable="ID_NumberColumn" type="xs:int" />
+              <xs:element name="Part_x0020_Number" msprop:Generator_UserColumnName="Part Number" msprop:Generator_ColumnPropNameInRow="Part_Number" msprop:Generator_ColumnVarNameInTable="columnPart_Number" msprop:Generator_ColumnPropNameInTable="Part_NumberColumn">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="512" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Description" msprop:Generator_UserColumnName="Description" msprop:Generator_ColumnPropNameInRow="Description" msprop:Generator_ColumnVarNameInTable="columnDescription" msprop:Generator_ColumnPropNameInTable="DescriptionColumn">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2147483647" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="DoNotPopulate" msprop:Generator_UserColumnName="DoNotPopulate" msprop:Generator_ColumnPropNameInRow="DoNotPopulate" msprop:Generator_ColumnVarNameInTable="columnDoNotPopulate" msprop:Generator_ColumnPropNameInTable="DoNotPopulateColumn" type="xs:boolean" />
+              <xs:element name="Item" msprop:Generator_UserColumnName="Item" msprop:Generator_ColumnPropNameInRow="Item" msprop:Generator_ColumnVarNameInTable="columnItem" msprop:Generator_ColumnPropNameInTable="ItemColumn" type="xs:int" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

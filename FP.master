@@ -1,0 +1,151 @@
+<%@ Master Language="VB" CodeFile="FP.master.vb" Inherits="FP" %>
+<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rp" %>
+
+<%@ Register Assembly="DevExpress.Web.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxSiteMapControl" TagPrefix="dxsm" %>
+<%@ Register Assembly="DevExpress.Web.ASPxEditors.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxEditors" TagPrefix="dxe" %>
+<%@ Register Assembly="DevExpress.Web.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxRoundPanel" TagPrefix="dxrp" %>
+<%@ Register Assembly="DevExpress.Web.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPopupControl" TagPrefix="dxpc" %>
+<%@ Register assembly="DevExpress.Web.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" namespace="DevExpress.Web.ASPxTimer" tagprefix="dxt" %>
+<%@ Register Assembly="DevExpress.Web.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPanel" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxMenu" TagPrefix="dxm" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+
+<head>
+    <title runat="server">FriedParts! 3.2.8 Alpha</title>
+    <link rel="StyleSheet" href="http://friedparts.nesl.ucla.edu/FriedParts/FP_Code/fpStyle.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="http://friedparts.nesl.ucla.edu/FriedParts/FP_Code/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="http://friedparts.nesl.ucla.edu/FriedParts/FP.master.js"></script>
+    <asp:ContentPlaceHolder ID="HeadContentPlaceHolder" runat="server"></asp:ContentPlaceHolder>
+</head>
+
+<body style="background-color: #E9E9E9;">
+    <form id="form1" runat="server" style="background-image: url(http://friedparts.nesl.ucla.edu/friedparts/Images/Background/pcb-back5.jpg); background-repeat: no-repeat; background-attachment: scroll; position: absolute; z-index: -99; width: 100%; height: 100%; top: 0px; left:0; right:0">
+
+    <!-- DROPBOX INSTRUCTION -->        
+    <div id="DropBoxMessage" class="fpMsgbox" runat="server" visible="false">
+        <div style="position: absolute; border: solid 1px black; background-color:White; text-align:center; padding:25px 10px 10px 10px; width:300px; height:300px; left:50%; top:50%; margin:-150px 0 0 -150px">
+            <div style="float:left; text-align:center; width:100%; margin-left:20px;">
+                <div style="float:left;"><img src="/FriedParts/Images/Banner/Banner9.gif" width="100px" alt="FriedParts Logo" /></div>
+                <div style="float:left; height:20px; margin-left:15px; margin-right:15px;"><img src="/FriedParts/Images/User/Sync.gif" height="32px" alt="now uses" /></div>
+                <div style="float:left;"><img src="/FriedParts/Images/User/Dropbox.png" width="100px" alt="Dropbox Logo" /></div>
+            </div>
+            <div style="float:left; width:100%; text-align:center; margin-top:20px; font-size:larger;">FRIEDPARTS now uses DROPBOX <br /> for library and project management!</div>
+            <div style="float:left; width:100%; font-weight:bolder; margin-left:auto; margin-right:auto; margin-top:20px;">You have not linked (or revoked access to)<br /> your Dropbox account!</div>
+            <div style="float:left; margin-top:10px; text-align:left; margin-left:30px; margin-right:auto; width:250px;">
+                <ul style="margin:0px; padding:5px 25px 25px 25px">
+                    <li><a href="http://friedparts.nesl.ucla.edu/friedparts/pUser/userDropboxLogin.aspx">Click here</a>...</li>
+                    <li>...or the 'Link Dropbox Account' link in the login box.</li>
+                    <li>If you do not have a Dropbox account there is a link to sign up for free...</li>
+                    <li>...or <a href="http://db.tt/FUCoETZ">click here</a> to get a free Dropbox account!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <div id="Header" class="fpClass">
+      <a href="http://friedparts.nesl.ucla.edu/friedparts/Default.aspx"><img src="http://friedparts.nesl.ucla.edu/friedparts/Images/Banner/Banner9.gif" alt="FriedParts! -- Powered By: Octopart, UCLA, NESL, Atla Labs" height="50px" /></a><br />
+      <div style="color:black">Created by: Jonathan Friedman and Newton Truong
+      &nbsp &nbsp &nbsp &nbsp &nbsp License: TBD (GNU Lesser GPL may apply, contact creaters for details)
+      </div>
+    </div>
+    
+    <!-- LOGIN/USER STATUS -->
+    <div id="UserStatus" style="position:fixed; top:0px; right:0px;">        
+        <dxrp:ASPxRoundPanel ID="xrpUserNotLoggedIn" runat="server" Width="150px" HeaderText="Sign in with...">
+            <PanelCollection>
+                <dx:PanelContent ID="PanelContent1" runat="server">
+                    <div style="height:35px; vertical-align:middle; position:relative;">
+                        <asp:ImageButton style="position: absolute; top:0px; left:15px;" ID="LoginWithGoogle" runat="server"  ImageUrl="Images/User/Google.png" Width="30px" Height="30px" />
+                        <div style="position: absolute; top:10px; left:55px; color:Gray;">OR</div>
+                        <a href="" style="position: absolute; top:0px; left:80px;"><dxe:ASPxImage ID="ASPxImage2" runat="server" ImageUrl="Images/User/OpenID.png" Width="33px" Height="30px"></dxe:ASPxImage></a>
+                    </div>
+                </dx:PanelContent>
+            </PanelCollection>
+        </dxrp:ASPxRoundPanel>
+        <dxrp:ASPxRoundPanel ID="xrpUserLoggedIn" runat="server" Width="175px" HeaderText="Welcome!">
+            <PanelCollection>
+                <dx:PanelContent ID="xpnlUserLoggedIn">
+                    <!-- Logged In Status Box Content Area -->
+                    <div style="position:relative">
+                        <table>
+                        <tr>
+                            <td>
+                                <span runat="server" id="imgYesDropbox" visible="false"><a href="http://dropbox.com"><img src="/FriedParts/Images/User/Dropbox_25.gif" alt="Dropbox Logo"/></a></span>
+                                <span runat="server" id="imgNoDropbox" visible="false"><a href="/FriedParts/pUser/userDropboxLogin.aspx"><img src="/FriedParts/Images/User/No_Dropbox_25.gif" alt="Crossed-out Dropbox Logo"/></a></span>
+                            </td>
+                            <td>
+                                <asp:Label ID="userLoginStatus" runat="server" Text="Devel Only At Present" Visible="true"></asp:Label><br />                               
+                                <asp:LinkButton ID="userLoginGoodbye" runat="server" style="font-size:x-small;">LOGOUT</asp:LinkButton>
+                                <div runat="server" id="divLinkDropboxAccount" style="margin-top:4px; background-color:Yellow"><a href="/FriedParts/pUser/userDropboxLogin.aspx">Link your Dropbox!</a></div>
+                            </td>
+                        </tr>
+                        </table>
+                    </div>
+                </dx:PanelContent>
+            </PanelCollection>
+        </dxrp:ASPxRoundPanel>
+    </div>  
+
+    <!-- CONTENT -->
+    <div id="RightColumn" style="position:relative;">
+
+        <!-- Global Search -->
+        <div id="GlobalSearch" class="fpClass">
+            <div style="position:relative">
+                <img alt="" style="position:absolute; top:0px; left:5px;" src="/FriedParts/images/Master/Search.png" />                    
+                <asp:TextBox style="position:absolute; top:0px; left:40px; font-family:Courier; font-size:14pt; font-weight:bold;" ID="SearchBox" runat="server" BackColor="Transparent" 
+                    BorderColor="Black" BorderStyle="Double" BorderWidth="1px" ForeColor="Black" 
+                    Width="505px" AutoPostBack="true"></asp:TextBox>
+            </div>
+        </div>
+
+        <!-- Top Menu -->
+        <div id="TopMenu" style="margin: 0px 10px 0px 10px">
+            <dxm:aspxmenu runat="server" DataSourceID="SiteMapDataSource1" 
+                AutoSeparators="RootOnly" CssFilePath="~/App_Themes/Glass/{0}/styles.css" 
+                CssPostfix="Glass" ItemSpacing="0px" SeparatorColor="#A5A6A8" 
+                SeparatorHeight="100%" SeparatorWidth="1px" 
+                SpriteCssFilePath="~/App_Themes/Glass/{0}/sprite.css">
+                <rootitemsubmenuoffset firstitemx="-1" firstitemy="-2" lastitemx="-1" 
+                    lastitemy="-2" x="-1" y="-2" />
+                <ItemStyle DropDownButtonSpacing="12px" ImageSpacing="5px" 
+                    PopOutImageSpacing="7px" VerticalAlign="Middle" Font-Bold="True" />
+                <submenustyle backcolor="#EDF3F4" gutterwidth="0px" separatorcolor="#7EACB1">
+                </submenustyle>
+                <submenuitemstyle imagespacing="7px">
+                </submenuitemstyle>
+                <border bordercolor="#A5A6A8" borderstyle="Solid" borderwidth="1px"></border>
+                <loadingpanelimage url="~/App_Themes/Glass/Web/Loading.gif">
+                </loadingpanelimage>
+            </dxm:aspxmenu>
+            <asp:SiteMapDataSource ID="SiteMapDataSource1" runat="server" 
+                ShowStartingNode="False" />
+        </div><!-- Top Menu -->
+
+        <!-- Main Content Area -->
+        <div id="MainContent Area">
+            <div class="fpTitleBox">
+                <asp:SiteMapPath ID="SiteMapPath1" runat="server" Font-Names="Verdana" Font-Size="0.8em" PathSeparator=" : ">
+                    <PathSeparatorStyle Font-Bold="True" ForeColor="#1C5E55" />
+                    <CurrentNodeStyle ForeColor="#333333" />
+                    <NodeStyle Font-Bold="True" ForeColor="#666666" />
+                    <RootNodeStyle Font-Bold="True" ForeColor="#1C5E55" />
+                </asp:SiteMapPath>
+            </div>
+            <div id="MainContentBox" class="fpBox">
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                </asp:ContentPlaceHolder>
+            </div>
+        </div> <!-- [END] (Right Column) Content Pane-->
+    </div> <!-- [END] CONTENT CONTAINER (holds the two columns with absolute width and position to prevent folding of the page and force scroll bars if browser window is too small -->
+    
+    <!--#include file="~/pSys/MsgBox.include"-->
+    
+    </form> <!-- [END] Background Div -->
+    
+</body>
+</html>

@@ -1,0 +1,269 @@
+﻿.dxgvControl_Glass,
+.dxgvDisabled_Glass
+{
+	border: solid 1px #7EACB1;
+	font: 11px Tahoma;
+	background-color:White;
+	color:Black;
+	cursor:default;
+}
+.dxgvDisabled_Glass 
+{
+	color:Gray;
+}
+.dxgvControl_Glass a 
+{
+	color:#5555FF;
+}
+.dxgvDisabled_Glass a
+{
+	color:Gray;
+}
+.dxgvLoadingPanel_Glass
+{
+	border:solid 1px #7EACB1;
+	background-color: #D4E3E5;
+	font: 8pt Tahoma;
+	color: #303030;
+}
+.dxgvLoadingPanel_Glass td
+{
+	white-space: nowrap;
+	text-align: center;
+	padding: 12px 12px 12px 12px;
+}
+.dxgvLoadingPanelStatusBar_Glass
+{
+	background-color: Transparent;
+	font: 8pt Tahoma;
+}
+.dxgvLoadingPanelStatusBar_Glass td
+{
+	white-space: nowrap;
+	text-align: center;
+	padding: 0px 2px 0px 2px;
+}
+.dxgvTable_Glass
+{
+	background-color:Transparent;
+	border:0;
+	border-collapse: separate !important;
+	overflow:hidden;
+	font: 11px Tahoma;
+	color: Black;
+}
+.dxgvInlineEditRow_Glass,
+.dxgvDataRow_Glass
+{
+}
+.dxgvInlineEditRow_Glass td.dxgv
+{
+	border-bottom: solid 1px #C2D4DA;
+	border-right: 1px solid #C2D4DA;
+}
+.dxgvDataRowAlt_Glass
+{
+	background-color:#F3F8F7;
+}
+.dxgvFilterRow_Glass 
+{
+	background-color: #D4E3E5;
+}
+.dxgvEditFormDisplayRow_Glass 
+{
+	background-color: #EDF3F4;
+}
+
+.dxgvEditForm_Glass 
+{
+	background-color: #EDF3F4;
+}
+.dxgvEditForm_Glass  td.dxgv
+{
+	border-bottom: solid 1px #C2D4DA;
+	padding: 0px 0px 2px 0px;
+}
+.dxgvSelectedRow_Glass
+{
+	background-color:#9ECDD5;
+}
+.dxgvFocusedRow_Glass
+{
+	background-color: #D8EBEC;
+}
+.dxgvPreviewRow_Glass
+{
+	background-color:#ECF2F3;
+}
+.dxgvDetailRow_Glass td.dxgv,
+.dxgvPreviewRow_Glass td.dxgv,
+.dxgvEmptyDataRow_Glass td.dxgv
+{
+	padding: 2px 2px 4px 4px;
+	border-bottom: solid 1px #C2D4DA;
+	border-top: 0;
+	border-left: 0;
+	border-right: 0;
+}
+.dxgvEmptyDataRow_Glass td.dxgv
+{
+	color:Gray;
+	text-align:center;
+}
+
+.dxgvEditFormDisplayRow_Glass td.dxgv,
+.dxgvDataRow_Glass td.dxgv,
+.dxgvDataRowAlt_Glass td.dxgv,
+.dxgvSelectedRow_Glass td.dxgv,
+.dxgvFocusedRow_Glass td.dxgv
+{
+	overflow:hidden;
+	border-bottom: solid 1px #C2D4DA;
+	border-right: solid 1px #C2D4DA;
+	border-top: 0;
+	border-left: 0;
+	padding: 2px 2px 4px 4px;
+}
+
+.dxgvEditingErrorRow_Glass td.dxgv
+{
+	color: Red;
+	background-color: #ffc8c8;
+	white-space: pre-wrap;
+	border-bottom: solid 1px #C2D4DA;
+	border-right: 0;
+	border-top: 0;
+	border-left: 0;
+	padding: 6px 10px 6px 10px;
+}
+.dxgvFilterRow_Glass td.dxgv
+{
+	border-bottom: solid 1px #C2D4DA;
+	border-right: 1px solid #C2D4DA;
+	border-top: 0;
+	border-left: 0;
+	padding: 2px 2px 2px 2px;
+}
+.dxgvGroupRow_Glass
+{
+	background-color: #D5DFE6;
+}
+.dxgvFocusedGroupRow_Glass
+{
+	background-color: #BBCDD2;
+}
+.dxgvGroupRow_Glass td.dxgv,
+.dxgvFocusedGroupRow_Glass td.dxgv
+{
+	border: none 0;
+	vertical-align:middle;
+	white-space:nowrap;
+	border-top: solid 1px #FFFFFF;
+	border-bottom: solid 1px #C2D4DA;
+	padding: 2px 4px 2px 4px;
+}
+.dxgvHeaderPanel_Glass {
+	background-color: #D4E3E5;
+	padding: 8px 4px 8px 4px;
+	border-bottom: solid 1px #C2D4DA;
+}
+.dxgvHeader_Glass {
+	cursor:pointer;
+	white-space:nowrap;
+	padding: 4px 4px 5px 4px;
+	border: solid 1px #7EACB1;
+	background-image: url('gvHeaderBackground.gif');
+	background-position:top;
+	background-repeat:repeat-x;
+	background-color:#C0DDE0;
+	overflow:hidden;
+	-moz-user-select: none;
+}
+.dxgvHeader_Glass, .dxgvHeader_Glass table {
+	font: 11px Tahoma;
+	color:Black;
+}
+.dxgvHeader_Glass td{
+	white-space:nowrap;
+}
+.dxgvCustomization_Glass 
+{
+	width:100%;
+	padding:0 0 0 0;
+	margin:0 0 0 0;
+	overflow:auto;
+}
+.dxgvGroupPanel_Glass
+{
+	color:Gray;
+	background-image:url('gvGroupPanelBackground.gif');
+	background-position:top;
+	background-repeat:repeat-x;
+	background-color:#DAE0DD;
+	white-space:nowrap;
+	border-bottom: solid 1px #7EACB1;
+	padding: 7px 4px 8px 6px;
+}
+.dxgvFooter_Glass
+{
+	background-color: #DAEDF0;
+	white-space:nowrap;
+}
+.dxgvFooter_Glass td.dxgv
+{
+	padding: 4px;
+	border-bottom: solid 1px #7EACB1;
+	border-right: solid 1px #C2D4DA;
+}
+.dxgvTitlePanel_Glass
+{
+	font-weight:bold;
+	padding:3px;
+	text-align:center;	
+	border-bottom: solid 1px #7EACB1;
+}
+.dxgvLoadingDiv_Glass
+{
+	background-color:Gray;	
+}
+.dxgvStatusBar_Glass 
+{
+	border-top: solid 1px #7EACB1;
+}
+.dxgvStatusBar_Glass tr
+{
+	height: 20px;
+}
+.dxgvCommandColumn_Glass
+{
+	padding: 2px 2px 2px 2px;
+}
+.dxgvCommandColumn_Glass a
+{
+	margin: 0px 3px 0px 0px;
+}
+.dxgvCommandColumnItem_Glass
+{
+	padding: 2px 2px 2px 2px;
+}
+.dxgvEditFormTable_Glass
+{
+	padding: 2px 6px 6px 4px;
+	font: 11px Tahoma;
+	color:Black;
+}
+.dxgvEditFormCaption_Glass
+{
+	font: 11px Tahoma;
+	padding: 4px 4px 4px 10px; 
+}
+.dxgvInlineEditCell_Glass
+{
+	padding: 1px 1px 1px 1px; 
+}
+
+.dxgvEditFormCell_Glass
+{
+	padding: 4px 4px 4px 4px; 
+	border: 0;
+}

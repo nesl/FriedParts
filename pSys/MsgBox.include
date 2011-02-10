@@ -1,0 +1,35 @@
+﻿<!--
+    Replicates VB6 MsgBox functionality 
+        Namely: Server-initiated, Server-content populated, Focused Info Box
+        Use a pound-include to insert this file into an aspx page just like any other control 
+    xMsgBox.
+    
+    1. Make sure popup control is registered on the page (place at top):
+        --the register directive-- removed because was causing a compile error if listed here in the comment
+    2. Include the popup control (place inside an html comment):
+        #include file="inc_footer.aspx"
+-->
+<dxpc:ASPxPopupControl ID="xMsgBox" runat="server" ClientInstanceName="xMsgBox" 
+                       Modal="True" CloseAction="CloseButton" Width="207px" 
+                       BackColor="#FFFF00"
+                       AllowDragging="True" PopupHorizontalAlign="WindowCenter" 
+                       PopupVerticalAlign="WindowCenter"
+                       HeaderText="Error!">
+  <ContentCollection>
+    <dxpc:PopupControlContentControl runat="server">
+      <ContentHTML>
+        <div id="Outer_Div" style="position:relative; width:280px;">
+          <div id="Image_Div" style="float:left; width:50px">
+            <asp:Image ID="errImage" runat="server" AlternateText="Warning!" ImageUrl="http://friedparts.nesl.ucla.edu/FriedParts/images/System/warning.gif" />
+            <asp:Image ID="okImage" runat="server" AlternateText="Information" ImageUrl="http://friedparts.nesl.ucla.edu/FriedParts/images/System/check.gif" />
+          </div>
+          <div id="Content_Div" style="float:right; width:200px; text-align:center; padding:15px;">
+            <asp:Label ID="xMessage" runat="server" Text="Label"></asp:Label>        
+          </div>
+      </ContentHTML>
+    </dxpc:PopupControlContentControl>
+  </ContentCollection>
+</dxpc:ASPxPopupControl>    
+    
+    
+    

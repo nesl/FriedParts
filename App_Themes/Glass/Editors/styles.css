@@ -1,0 +1,285 @@
+﻿.dxDisabled_Glass
+{
+	color: #808080;
+}
+.dxeBase_Glass
+{
+    font-family: Tahoma;
+    font-size: 8pt;    
+}
+/* -- ErrorFrame -- */
+.dxeErrorCell_Glass, .dxeErrorCell_Glass td
+{
+    font-family: Tahoma;
+	font-size: 8pt;
+	color: red;
+}
+.dxeErrorCell_Glass
+{
+	color: #a91123;
+	padding-left: 4px;	
+}
+.dxeErrorFrame_Glass
+{
+}
+.dxeEditArea_Glass
+{
+	font-family: Tahoma;
+	font-size: 8pt;
+	border: 1px solid #A0A0A0;
+}
+
+.dxeButtonEdit_Glass 
+{
+	background-color: white;
+	width: 170px;
+}
+.dxeButtonEdit_Glass .dxeEditArea_Glass, .dxeButtonEdit_Glass td.dxic
+{
+	width: 100%;
+}
+
+.dxeButtonEditButton_Glass, .dxeCalendarButton_Glass
+{	
+	background-color: #f0f0f0;	
+	vertical-align: middle;
+} 
+.dxeButtonEditButton_Glass, .dxeCalendarButton_Glass, 
+.dxeButtonEditButton_Glass td.dx, .dxeCalendarButton_Glass td.dx
+{	
+    font-family: Tahoma;
+    font-size: 8pt;  
+	text-align: center;
+} 
+.dxeButtonEditButton_Glass
+{
+	background-image: url('edtButtonEditButtonBack.gif');	
+    background-repeat:repeat-x;
+    background-position:top;
+	border: solid 1px #7895A2;    
+	background-color: #45829F;	
+	padding: 4px 1px;
+}
+.dxeButtonEditButton_Glass table.dxbebt 
+{
+	width: 12px;
+}
+
+.dxeCalendarButton_Glass
+{
+	background-image: url('edtCalendarButtonBack.gif');	
+    background-repeat:repeat-x;
+    background-position:top;		    
+	border: solid 1px #B2BCBE;
+	background-color: #DADFE0;
+	padding: 5px 10px;	
+}
+.dxeCalendarButton_Glass td.dx
+{
+	text-align: center;
+	white-space: nowrap;
+}
+
+/* -- Hover -- */
+.dxeButtonHover_Glass         /* inherits dxeButton */
+{
+	background-color: #E6E3D6;
+}
+.dxeCalendarButtonHover_Glass
+{
+	background-image: url('edtCalendarButtonHoverBack.gif');	
+    background-repeat:repeat-x;
+    background-position:top;
+    border: Solid 1px #B2BCBE; 
+  	background-color: #f2f7f8;   
+}
+.dxeButtonEditButtonHover_Glass
+{
+	background-image: url('edtDropDownButtonHoverBack.gif');	
+    background-repeat:repeat-x;
+    background-position:top;	    
+    border: Solid 1px #7596A5;    
+	background-color: #35acd2;    
+}
+/* -- Pressed -- */
+.dxeButtonPressed_Glass       /* inherits dxeButton */
+{    
+	background-color: #D4D1C3;
+}
+.dxeCalendarButtonPressed_Glass
+{
+	background-image: url('edtCalendarButtonPressedBack.gif');	
+    background-repeat:repeat-x;
+    background-position:top;
+    border: Solid 1px #9aa2a4;
+  	background-color: #bcc0c1;
+}
+.dxeButtonEditButtonPressed_Glass
+{
+	background-image: url('edtDropDownButtonPressedBack.gif');	
+    background-repeat:repeat-x;
+    background-position:top;
+    border: Solid 1px #5d737d;    
+	background-color: #35657b;        
+}
+
+.dxeButtonEdit_Glass
+{
+    border: solid 1px #7EACB1;
+}
+.dxeButtonEdit_Glass td.dxic
+{
+	padding: 0px 2px 0px 1px;
+}
+.dxeTextBox_Glass, .dxeMemo_Glass
+{
+	background-color: white;
+    border: Solid 1px #7eacb1;
+}
+.dxeTextBox_Glass td.dxic
+{
+	padding: 1px 2px;
+}
+.dxeTextBox_Glass td.dxic
+{
+	width: 100%;
+}
+.dxeRadioButtonList_Glass, .dxeRadioButtonList_Glass table {
+    font-family: Tahoma;
+    font-size: 8pt;    
+}
+.dxeRadioButtonList_Glass {
+    border: Solid 1px #7EACB1;
+}
+.dxeRadioButtonList_Glass td.dxe {
+    padding: 6px 11px;
+}
+
+/* -- Memo -- */
+.dxeMemo_Glass
+{
+    padding-left: 3px;
+}
+.dxeMemoEditArea_Glass
+{
+	font-family: Tahoma;
+	font-size: 8pt;
+}
+.dxeMemo_Glass td
+{
+	width: 100%;
+}
+
+/* -- Hyperlink -- */
+.dxeHyperlink_Glass
+{
+    font-family: Tahoma;
+    font-size: 8pt;
+    color: #2a769d;    
+}
+
+/* -- ListBox -- */
+.dxeListBox_Glass
+{
+    border: solid 1px #7EACB1;
+    width: 70px;
+}
+
+.dxeListBox_Glass div.dxlbd 
+{
+	background-color: white;
+    font-family: Tahoma;
+    font-size: 8pt;
+    height: 70px;
+}
+
+.dxeListBoxItem_Glass
+{    
+    border: solid 1px white;
+    font-family: Tahoma;
+    font-size: 8pt;        
+    padding: 2px 2px 2px 3px;
+    white-space: nowrap;
+    text-align: left;
+}
+.dxeListBoxItemHover_Glass        /* inherits dxeListBoxItem */
+{
+    background-color: #d9eced;
+}
+.dxeListBoxItemSelected_Glass     /* inherits dxeListBoxItem */
+{    
+    background-color: #9eced6;
+}
+
+/* -- Calendar -- */
+.dxeCalendar_Glass
+{
+    border: solid 1px #7eacb1;
+	background-color: #e4edef;    
+}
+.dxeCalendar_Glass td.dxMonthGrid, .dxeCalendar_Glass td.dxMonthGridWithWeekNumbers 
+{
+    padding: 0px;
+}
+.dxeCalendarDayHeader_Glass
+{
+    font-family: Tahoma;
+    font-size: 8pt;
+    padding: 4px 4px 5px 4px;
+    color: Black;
+}
+.dxeCalendarWeekNumber_Glass
+{    
+    font-family: Tahoma;
+    font-size: 7pt;    
+    text-align: right;
+    padding: 4px;
+    padding-bottom: 2px;
+    padding-right: 6px;    
+    padding-left: 6px;     
+    color: #a0a0ff;
+    border-right: Solid 1px #c2d4da;
+	background-color: White;
+}
+.dxeCalendarDay_Glass
+{    
+    font-family: Tahoma;
+    font-size: 8pt;
+    padding: 4px;
+    color:Black;
+	background-color: White;
+}
+.dxeCalendarWeekend_Glass       /* inherits dxeCalendarDay */
+{
+    color: #fe3c00;
+}
+.dxeCalendarOtherMonth_Glass     /* inherits dxeCalendarDay */
+{
+    color: #acacac;
+}
+.dxeCalendarSelected_Glass       /* inherits dxeCalendarDay */
+{
+    background-color: #9eced6;
+    color:inherit;
+}
+.dxeCalendarHeader_Glass
+{
+    font-family: Tahoma;
+    font-size: 8pt;        
+    background-color: #bcdbeb;
+    border-bottom: solid 1px #7eacb1;
+    text-align: center;
+    padding: 1px;
+}
+.dxeCalendarHeader_Glass td.dxe
+{
+    font-family: Tahoma;
+    font-size: 8pt;
+    text-align: center;
+}
+.dxeCalendarFooter_Glass 
+{
+    background-color: White;
+    padding: 3px 0px;    
+    border-top: solid 1px #7eacb1;
+}

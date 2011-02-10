@@ -1,0 +1,134 @@
+﻿.fpClass {
+    font-family: Tahoma; 
+    color: #444; 
+    font-size: 8pt; 
+    font-weight: bold;
+}
+li {
+    padding:3px;
+}
+div {
+    font-family: Tahoma; 
+    color: #444; 
+    font-size: 8pt; 
+    font-weight: bold; 
+}
+div.fpMsgbox{
+    position:absolute; 
+    width:100%; 
+    height:100%; 
+    background-image:url('http://friedparts.nesl.ucla.edu/friedparts/Images/Master/shadow3.png'); 
+    background-repeat:repeat; 
+    z-index:999;
+}
+div.fpClass { 
+    margin: 10px 10px 10px 10px; 
+    padding: 10px; 
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    background-image: url(http://friedparts.nesl.ucla.edu/friedparts/Images/Master/shadow6.png);
+    background-attachment: scroll;
+    background-repeat: repeat;
+}
+div.fpClass#GlobalSearch 
+{
+	border-style: none;
+	background-image: none;
+	height: 30px;
+	padding: 0px;
+}
+div.fpClass#Header {
+	margin: 35px 10px 10px 10px;
+	padding: 2px 10px 4px 10px;
+}
+div.fpClass#TopMenu {
+	padding: 0px 10px 0px 10px;
+	background-image: none;
+	background-color: White;
+}
+div.fpBox {
+	margin-left:10px;
+	margin-right:10px;
+	padding:10px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: Gray;
+	background-color: #EEEEEE;
+}
+div.fpTitleBox {
+	margin-left:10px;
+	margin-right:10px;
+	padding:10px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: Black;
+	background-image: url(http://friedparts.nesl.ucla.edu/friedparts/Images/Master/shadow6.png);
+    background-attachment: scroll;
+    background-repeat: repeat;
+}
+div.fpClass p {
+	/*opacity:1;*/
+}
+div.fpHeader { 
+    margin: 10px 10px 20px 10px; 
+    padding: 10px; 
+    border: solid 4px white;
+    background-image: url(http://friedparts.nesl.ucla.edu/friedparts/Images/Master/shadow3.png); 
+    background-attachment: scroll;
+    background-repeat: repeat
+}
+div.fpFocus { 
+    margin: 5px 5px 10px 5px; 
+    padding: 8px; 
+    border: solid 1px red;
+}
+div.fpNewsIcon {
+	font-size: 6pt;
+	font-weight: bold;
+	font-family: Tahoma, Arial;
+	color: Black;
+}
+td {
+    text-align:justify;
+}
+td.fpTableLabel {
+	text-align: right;
+	padding-right: 3px;
+}
+td.fpTableLabelMultiline {
+	text-align: right;
+	vertical-align: text-top;
+	padding-right: 3px;
+}
+td.fpTableComment {
+    text-align: left;
+    font-size: 7pt;
+}
+td.fpInstTableLabel {
+    text-align: right;
+	padding-right: 3px;
+	width: 50px;
+}
+tr.fpInstTableLabel {
+    background-color: rgb(255,255,150);
+}
+td.fpInstTableContent {
+    padding-top: 5px;
+    padding-bottom: 20px;
+}
+img.fp {
+    border: solid 1px grey;
+}
+.fpHighlightBox 
+{
+	background-color:#4A86A5; 
+	color:Yellow; 
+	padding:4px;
+}
+.fpErrorBox 
+{
+	background-color:Yellow; 
+	color:Black; 
+	padding:4px;
+}

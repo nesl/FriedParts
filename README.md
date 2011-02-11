@@ -16,6 +16,11 @@ In this work we introduce an entirely new approach to bridging the tool-chain di
 
 FriedParts was principally developed by *Jonathan Friedman* of the *Networked and Embedded Systems Lab* (NESL) of the *University of California, Los Angeles* (UCLA). 
 
+Project Manager
+---------------
+Jonathan Friedman, MSEE PhDc
+jf@ee.ucla.edu
+
 Resources
 ---------
 * [The "live" site running this code](http://friedparts.nesl.ucla.edu)
@@ -34,7 +39,7 @@ Significant contributions have also been made by:
 
 Licensing and Terms of Use
 ==========================
-This project and all of its components assets (images, code, files, libraries, and components) are released under the following license terms and conditions.
+This project and all of its components and assets (images, code, files, libraries, and components) are released under the following license terms and conditions.
 
 Copyright
 ---------

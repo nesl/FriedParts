@@ -29,5 +29,6 @@ Partial Class pDevel_devClick
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim dt As DataTable = New fpProj.fpBOM(8).GetDataSource
         xGrid.DataSource = dt
+        Request.
     End Sub
 End Class

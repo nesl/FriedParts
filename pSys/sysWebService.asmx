@@ -1,4 +1,4 @@
-﻿<%@ WebService Class="sysWebService" %>
+﻿<%@ WebService Language="VB" Class="sysWebService" %>
 Imports System.Web
 Imports System.Web.Services
 Imports System.Web.Services.Protocols
@@ -31,7 +31,7 @@ Public Class sysWebService
     Private UpdatingPartID As Int16 = UNINITIALIZED
     Private UpdatingStatus As scanStatus = scanStatus.scanIDLE
 
-    <WebMethod()> Public Function HelloWorld() As String
+    <WebMethod()> Public Function Update() As String
         Return "Hello World"
     End Function
 

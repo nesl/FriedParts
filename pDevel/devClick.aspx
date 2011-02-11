@@ -57,6 +57,15 @@
         </tr>
     </table>    
     <hr />
+        <form action='http://friedparts.nesl.ucla.edu/FriedParts/psys/sysWebService.asmx/HelloWorld' method="post">                      
+            <table cellspacing="0" cellpadding="4" frame="box" rules="none" style="border-collapse: collapse;">
+                <tr>
+                    <td></td>
+                    <td align="right"> <input type="submit" value="Invoke" class="button" /></td>
+                </tr>
+            </table>
+        </form>
+    <hr />
     <dx:ASPxGridView ID="xGrid" runat="server">
     </dx:ASPxGridView>
 </asp:Content>

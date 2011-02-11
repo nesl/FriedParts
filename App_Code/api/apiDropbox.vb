@@ -350,10 +350,6 @@ Public Module apiDropbox
     '== PRIVATE FUNCTIONS
     '=======================================================
 
-    'For use with "Production" status Dropbox App
-    Private Function getDropboxClient() As DropNet.DropNetClient
-        Return New DropNet.DropNetClient(sysSecret.apiDropboxAppKey(False), sysSecret.apiDropboxAppKey(True))
-    End Function
     'For use now with our workaround
     Private Function getDropboxClient(ByRef UserTokens As DropboxUserCredentials) As DropNet.DropNetClient
         Return New DropNet.DropNetClient(UserTokens.getAppKey, UserTokens.getAppSecret, UserTokens.getUserKey, UserTokens.getUserSecret)

@@ -179,7 +179,7 @@ Public Module apiOctoparts
         Public Sub New(ByVal PartToSearch As String)
             'Format the query
             Dim URL As String = OCTOPART_URL_PREFIX & _
-                                HttpContext.Current.Server.UrlEncode(PartToSearch) _
+                                System.Web.HttpUtility.UrlEncode(PartToSearch) _
                                 'Append the user's search request to the end of the string
             'Get the source
             Dim myWebClient As New WebClient()
@@ -391,7 +391,7 @@ Public Module apiOctoparts
             'Chop the source string down to begin with the desired part
             'Along the way, fetchSmart collects the descriptions because descriptions is lost during the chopping processes
             'The last "descriptions" that function fetchSmart processes will belong to the description of our desired part
-            Do Until k = ENDOFSOURCE
+            Do Until k.CompareTo(ENDOFSOURCE) = 0
                 'FetchSmart will wittle the "source" text down and organize the data it consumes
                 k = fetchSmart(source, "object")
                 Select Case k

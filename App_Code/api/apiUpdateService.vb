@@ -16,7 +16,7 @@ Public Module apiUpdateService
         msgSTOP = 3
     End Enum
 
-    Private Enum scanStatus As Byte
+    Public Enum scanStatus As Byte
         scanREADSTATUS = 0
         scanIDLE = 1
         scanWAITFORDK = 2
@@ -83,30 +83,60 @@ Public Module apiUpdateService
     ''' back to the API with a string message -- this, in turn, gets logged into the Windows event
     ''' log/viewer.
     ''' </summary>
+    ''' <param name="Now">Set Now to True to disable the prescaler. This causes the dispatcher to dispatch worker threads on this execution
+    ''' instead of waiting for the prescaler timer to countdown. This is extremely useful for debugging or when you need to force the 
+    ''' workers to run when performing manual update management. The normal condition (and default value) is False. Now may be omitted -- 
+    ''' it's optional -- and the normal case will be assumed.</param>
+    ''' <param name="NoThreads">Run everything in this thread -- do not spawn worker processes. To facilitate debugging! Do not do this at runtime!</param>
     ''' <returns>A message to be logged by the calling WinService into the Windows Event Log on the server.</returns>
     ''' <remarks>This is the main entry point for the FriedParts-Update-Service</remarks>
-    Public Function fpusDispatch() As String
+    Public Function fpusDispatch(Optional ByRef Now As Boolean = False, Optional ByRef NoThreads As Boolean = False) As String
         'Check for exclusion
         If fpusStatus <> scanStatus.scanIDLE Then
             Return "Scanner is busy... try again later!"
         End If
 
         'Throttle this during development
-        Const Prescaler As Byte = 6 'xxx
-        Static Dim TimerPrescaler As Byte = 0
-        TimerPrescaler = TimerPrescaler + 1
-        If TimerPrescaler = Prescaler Then
-            'Update a part
-            Dim threadPartWorker As New Thread(AddressOf fpusDispatchPart)
-            'Update a Dropbox
-            Dim threadDropboxWorker As New Thread(AddressOf fpusDispatchDropbox)
-            'Reset Prescaler
-            TimerPrescaler = 0
+        If Now Then
+            'Debug case -- caller has requested immediate dispatch
+            If NoThreads Then
+                'RUN IN THIS THREAD TO FACILITATE DEBUGGING!
+                'Executes sequentially in this thread...
+                fpusDispatchDropbox()
+                'fpusDispatchPart() 'xxx Seems to be a problem in the apiOctopart
+            Else
+                fpusExecuteDispatch()
+            End If
+        Else
+            'Normal case -- we prescale (slow) the execution rate of the dispatches
+            Const Prescaler As Byte = 6 'xxx
+            Static Dim TimerPrescaler As Byte = 0
+            TimerPrescaler = TimerPrescaler + 1
+            If TimerPrescaler = Prescaler Then
+                fpusExecuteDispatch()
+                'Reset Prescaler
+                TimerPrescaler = 0
+            End If
         End If
-
         'Report result
         Return "Status: [Dropbox Worker] " & fpusStatusToString(fpusStatusDropbox) & "; [Parts Worker] " & fpusStatusToString(fpusStatusPart)
     End Function
+
+    ''' <summary>
+    ''' Performs the actual dispatching
+    ''' </summary>
+    ''' <remarks>Called exclusively by fpusDispatch() -- separates out the execution functions because they can be called under
+    ''' several different conditions including with a prescaling timer (normal) and without (debug)</remarks>
+    Private Sub fpusExecuteDispatch()
+        'Update a part
+        Dim threadPartWorker As New Thread(AddressOf fpusDispatchPart)
+        threadPartWorker.Name = "FPUS Parts"
+        'threadPartWorker.Start() 'xxx Seems to be a problem in the apiOctopart
+        'Update a Dropbox
+        Dim threadDropboxWorker As New Thread(AddressOf fpusDispatchDropbox)
+        threadDropboxWorker.Name = "FPUS Dropbox"
+        threadDropboxWorker.Start()
+    End Sub
 
     ''' <summary>
     ''' Worker thread for the syncing of Dropbox accounts with the FriedParts server. This 
@@ -188,7 +218,7 @@ Public Module apiUpdateService
     ''' <param name="UserID">The FriedParts UserID of the user whose Dropbox encountered the error</param>
     ''' <param name="ErrorMessage">The text of the error message</param>
     ''' <remarks></remarks>
-    Public Sub fpusLogDropboxError(ByRef UserID As Int32, ByRef ErrorMessage As String, Optional ByRef MsgType As logMsgTypes = logMsgTypes.msgERROR)
+    Private Sub fpusLogDropboxError(ByRef UserID As Int32, ByRef ErrorMessage As String, Optional ByRef MsgType As logMsgTypes = logMsgTypes.msgERROR)
         Dim sqlTxt As String = _
             "INSERT INTO [FriedParts].[dbo].[update-Log]" & _
             "           ([Date]" & _
@@ -196,10 +226,10 @@ Public Module apiUpdateService
             "           ,[MsgType]" & _
             "           ,[Msg])" & _
             "     VALUES (" & _
-            "           '" & sysText.txtSqlDate(Now) & "'," & _
+            "            " & sysText.txtSqlDate(Now) & "," & _
             "           '" & UserID & "'," & _
             "           '" & logMsgTypes.msgERROR & "'," & _
-            "           '" & ErrorMessage & "'," & _
+            "           '" & txtDefangSQL(ErrorMessage) & "'" & _
             "           )"
         dbAcc.SQLexe(sqlTxt)
     End Sub
@@ -210,7 +240,7 @@ Public Module apiUpdateService
     ''' <param name="PartID">The FriedParts PartID of the part, which encountered the error</param>
     ''' <param name="ErrorMessage">The text of the error message</param>
     ''' <remarks></remarks>
-    Public Sub fpusLogPartError(ByRef PartID As Int32, ByRef ErrorMessage As String, Optional ByRef MsgType As logMsgTypes = logMsgTypes.msgERROR)
+    Private Sub fpusLogPartError(ByRef PartID As Int32, ByRef ErrorMessage As String, Optional ByRef MsgType As logMsgTypes = logMsgTypes.msgERROR)
         Dim sqlTxt As String = _
             "INSERT INTO [FriedParts].[dbo].[update-Log]" & _
             "           ([Date]" & _
@@ -218,10 +248,10 @@ Public Module apiUpdateService
             "           ,[MsgType]" & _
             "           ,[Msg])" & _
             "     VALUES (" & _
-            "           '" & sysText.txtSqlDate(Now) & "'," & _
+            "            " & sysText.txtSqlDate(Now) & "," & _
             "           '" & PartID & "'," & _
             "           '" & logMsgTypes.msgERROR & "'," & _
-            "           '" & ErrorMessage & "'," & _
+            "           '" & txtDefangSQL(ErrorMessage) & "'" & _
             "           )"
         dbAcc.SQLexe(sqlTxt)
     End Sub
@@ -241,7 +271,7 @@ Public Module apiUpdateService
             "           ,[Status]" & _
             "           ,[UserID])" & _
             "     VALUES (" & _
-            "           '" & txtSqlDate(Now) & "'," & _
+            "            " & txtSqlDate(Now) & "," & _
             "            " & newStatus & "," & _
             "            " & UserID & "" & _
             "           )"
@@ -263,7 +293,7 @@ Public Module apiUpdateService
             "           ,[Status]" & _
             "           ,[PartID])" & _
             "     VALUES (" & _
-            "           '" & txtSqlDate(Now) & "'," & _
+            "            " & txtSqlDate(Now) & "," & _
             "            " & newStatus & "," & _
             "            " & PartID & "" & _
             "           )"
@@ -292,7 +322,7 @@ Public Module apiUpdateService
         Dim sqlTxt As String = _
             "  SELECT [UserID]" & _
             "    FROM [FriedParts].[dbo].[update-Status] " & _
-            "   WHERE [UserID] IS NOT NULL " & _
+            "   WHERE [UserID] IS NOT NULL AND [UserID] > 0" & _
             "ORDER BY [Date] DESC"
         Dim dt As New DataTable
         SelectRows(dt, sqlTxt)
@@ -306,6 +336,7 @@ Public Module apiUpdateService
         End If
 
         '...now go find who to update next! (next highest UserID)
+        dt = New DataTable 'Reset
         sqlTxt = _
             "  SELECT [UserID]" & _
             "    FROM [FriedParts].[dbo].[user-Accounts] " & _
@@ -385,7 +416,7 @@ Public Module apiUpdateService
     ''' worker threads if the need arises.
     ''' </summary>
     ''' <remarks>Does not handle MUTEX. Manage this above this class.</remarks>
-    Public Class partUpdateWorker
+    Private Class partUpdateWorker
         ''' <summary>
         ''' The internal variable holding the PartID that his object is working on
         ''' </summary>
@@ -472,7 +503,7 @@ Public Module apiUpdateService
             dbAcc.SQLexe(sqlText)
         End Sub
 
-        
+
         ''' <summary>
         ''' Constructor. Assumes PartID is valid or will throw an ObjectNotFoundException.
         ''' </summary>

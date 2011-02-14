@@ -627,7 +627,7 @@
                                         <Image Url="../Images/Parts/submit_button_overlay.gif"></Image>
                                         <HoverStyle>
                                             <BackgroundImage HorizontalPosition="center" 
-                                                ImageUrl="./Images/Parts/submit_button_pressed.gif" Repeat="NoRepeat" 
+                                                ImageUrl="../Images/Parts/submit_button_pressed.gif" Repeat="NoRepeat" 
                                                 VerticalPosition="center" />
                                         </HoverStyle>
                                         <BackgroundImage HorizontalPosition="center" 

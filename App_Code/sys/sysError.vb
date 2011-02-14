@@ -37,6 +37,7 @@ Public Module sysError
         PARTADD_NODATASHEET = -53
         PARTADD_ALREADYEXISTS = -54
         USER_LOGINREQUIRED = -60
+        USER_NOTLOGGEDIN = -61
         MISC_ERROR = -99
     End Enum
 

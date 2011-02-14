@@ -4,7 +4,12 @@ Partial Class pDevel_devClick
     Inherits System.Web.UI.Page
 
     Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
-        devTestsysTextModule()
+        'devTestsysTextModule()
+        devTestUpdateService()
+    End Sub
+
+    Private Sub devTestUpdateService()
+        Label2b.Text = apiUpdateService.fpusDispatch(True, True)
     End Sub
 
     Private Sub devTestsysTextModule()
@@ -29,6 +34,5 @@ Partial Class pDevel_devClick
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim dt As DataTable = New fpProj.fpBOM(8).GetDataSource
         xGrid.DataSource = dt
-        Request.
     End Sub
 End Class

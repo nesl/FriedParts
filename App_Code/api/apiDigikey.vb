@@ -210,7 +210,7 @@ Public Class apiDigikey
     '========================================================================================
     Public Sub New(ByVal DigikeyPartNumber As String, Optional ByVal TimeoutSeconds As Integer = 10)
         'Constructor!
-        MyBase.New(dkUrlPrefix & System.Web.HttpContext.Current.Server.UrlEncode(DigikeyPartNumber), TimeoutSeconds)
+        MyBase.New(dkUrlPrefix & System.Web.HttpUtility.UrlEncode(DigikeyPartNumber), TimeoutSeconds)
 
         'Part Ready?
         Dim dt As DataTable

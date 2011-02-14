@@ -52,7 +52,8 @@ Public Module sysText
         End Property
 
         'Set IsFile to DropNet.Models.MetaData.Is_Dir() -- true if the path contains a file, false if not
-        Public Sub New(ByRef PathAndFilename As String, Optional ByRef IsFile As Boolean = True)
+        Public Sub New(ByRef PathAndFilename As String, Optional ByRef IsDir As Boolean = False)
+            Dim IsFile As Boolean = Not IsDir
             PaF = PathAndFilename.Replace("\", "/")
 
             'Deal with empty string
@@ -251,7 +252,7 @@ Public Module sysText
 
     'Encodes the specified text in a manner safe for passing as a string field for storage in a SQL database
     Public Function txtSqlEncode(ByVal txtIn As String) As String
-        Dim strI As String = HttpContext.Current.Server.UrlEncode(txtIn)
+        Dim strI As String = System.Web.HttpUtility.UrlEncode(txtIn)
         Return strI.Replace("'", "''") 'escape the apostrophe since URL-encoding doesn't
     End Function
     'Overloads: Converts Microsoft Boolean to a SQL Boolean (decode is not needed because VB.NET does it automatically)
@@ -268,7 +269,7 @@ Public Module sysText
         Dim strI As String = txtIn
         'The following line might be necessary, but I don't think so -- needs testing!
         'strI = txtIn.Replace("''", "'") 'reverse the apostrophe encoding
-        Return HttpContext.Current.Server.UrlDecode(strI)
+        Return System.Web.HttpUtility.UrlDecode(strI)
     End Function
 
     Public Function txtRemoveNonPrintable(ByVal txtIn As String) As String

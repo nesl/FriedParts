@@ -244,4 +244,27 @@ Public Module sysUser
     Public Function suGetUserFirstName(ByVal UserID As Int16) As String
         Return sysText.txtGetWord(suGetUsername(UserID), 1)
     End Function
+
+    ''' <summary>
+    ''' Returns the UserID of the currently logged in user SAFELY! This is important since the user
+    ''' may not be logged in, or the function may be called by a server-side process during an
+    ''' FriedParts-Update-Service worker thread.
+    ''' </summary>
+    ''' <returns>The UserID of the currently logged in user; Returns sysErrors.USER_NOTLOGGEDIN otherwise</returns>
+    ''' <remarks></remarks>
+    Public Function suGetUserID() As Int32
+        Try
+            If IsNumeric(HttpContext.Current.Session("user.UserID")) Then
+                'Valid user login
+                Return HttpContext.Current.Session("user.UserID")
+            Else
+                'Value defined (not server process), but user not logged in
+                Return sysErrors.USER_NOTLOGGEDIN
+            End If
+        Catch ex As Exception
+            'Probably a NULL_REFERENCE_EXCEPTION because we're running as a server process
+            Return sysErrors.USER_NOTLOGGEDIN
+        End Try
+
+    End Function
 End Module

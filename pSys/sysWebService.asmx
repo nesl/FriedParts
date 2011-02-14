@@ -12,10 +12,8 @@ Imports System.Data
 Public Class sysWebService
     Inherits System.Web.Services.WebService
     
-    
-
     <WebMethod()> Public Function Update() As String
-        Return "Hello World..." 'fpusDispatch()
+        Return fpusDispatch(False, False)
     End Function   
     
 End Class

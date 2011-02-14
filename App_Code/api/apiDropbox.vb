@@ -539,7 +539,7 @@ Public Module apiDropbox
                 Return True
             Catch ex As Exception
                 logDropbox(GetUserID, apiDropbox.DropboxStates.DownloadFailed, PaF.GetFilename, PaF.GetPath, "Exception: " & ex.Message)
-                Throw New Exception("Download Failed!") 'xxx handle more smoothly in the future?
+                'Throw New Exception("Download Failed!") 'xxx handle more smoothly in the future?
                 Return False
             End Try
         End Function
@@ -565,9 +565,10 @@ Public Module apiDropbox
                             If ServerFile.IamTheOwner Then 'Am I the Owner?
                                 'I am the Owner -- so update the Server's copy
                                 'Download file from user's dropbox
-                                downloadFile(UserDbxFile.Path, theServerPath & theFilename) 'also handles all of the logging
-                                'Update the meta-data in the database
-                                ServerFile.DropboxTimeStamp = UserDbxFile.ModifiedDate
+                                If downloadFile(UserDbxFile.Path, theServerPath & theFilename) Then 'also handles all of the logging
+                                    'Update the meta-data in the database (if the download succeeded)
+                                    ServerFile.DropboxTimeStamp = UserDbxFile.ModifiedDate
+                                End If
                             Else
                                 'I am not the Owner -- so reset the local copy
                                 thePaF = New txtPathAndFilename(UserDbxFile.Path, UserDbxFile.Is_Dir)
@@ -595,7 +596,8 @@ Public Module apiDropbox
                     End Try
                 Else
                     'File doesn't exist -- upload it!
-                    uploadFile(New FileInfo(theServerPath & theFilename), New txtPathAndFilename(UserDbxFile.Path, UserDbxFile.Is_Dir).GetPath)
+                    thePaF = New txtPathAndFilename(UserDbxFile.Path, UserDbxFile.Is_Dir)
+                    uploadFile(New FileInfo(theServerPath & theFilename), thePaF.GetPath)
                 End If
             Else
                 'Entry is a sub-directory, not a file -- so do nothing (e.g. -- skip!)
@@ -654,9 +656,12 @@ Public Module apiDropbox
                                 If fplibValidExtension(userFile.Extension, userFile.Path) Then
                                     'Is a valid library type so lets add it!
                                     Dim uFile As New txtPathAndFilename(userFile.Path)
-                                    downloadFile(userFile.Path, dropboxROOT() & uFile.GetPathSubDirsOnly.Substring(1).Replace("/", "\") & uFile.GetFilename)
-                                    Dim newFile As New DropboxFile(dbxUserID, New txtPathAndFilename(userFile.Path).GetPath, userFile.Name, userFile.ModifiedDate) 'Save metadata
-                                    fpLibCreateCadAltiumLibTable() 'Update server's Altium Library knowledge
+                                    Dim downloadSuccess As Boolean = downloadFile(userFile.Path, dropboxROOT() & uFile.GetPathSubDirsOnly.Substring(1).Replace("/", "\") & uFile.GetFilename)
+                                    If downloadSuccess Then
+                                        'Download succeeded
+                                        Dim newFile As New DropboxFile(dbxUserID, New txtPathAndFilename(userFile.Path).GetPath, userFile.Name, userFile.ModifiedDate) 'Save metadata
+                                        fpLibCreateCadAltiumLibTable() 'Update server's Altium Library knowledge
+                                    End If
                                 End If
                             End Try
                         Next

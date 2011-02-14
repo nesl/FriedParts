@@ -4,8 +4,14 @@ Partial Class pDevel_devClick
     Inherits System.Web.UI.Page
 
     Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
-        'devTestsysTextModule()
         devTestUpdateService()
+        'Dim blah As New txtPathAndFilename("/This/is/a/test.doc", False)
+        'Label2.Text = blah.GetPath
+        'Label2b.Text = blah.GetFilename
+
+        'OLD TEST CODE
+        '=============
+        'devTestsysTextModule()
     End Sub
 
     Private Sub devTestUpdateService()

@@ -273,7 +273,7 @@ Public Module sysText
 
     Public Function txtRemoveNonPrintable(ByVal txtIn As String) As String
         Dim i As Int32 = 0
-        Dim txtOut As String
+        Dim txtOut As String = ""
         If txtIn.Length < 1 Then
             Return ""
         End If

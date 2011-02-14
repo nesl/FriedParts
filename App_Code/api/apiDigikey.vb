@@ -241,7 +241,7 @@ Public Class apiDigikey
             "  FROM [FriedParts].[dbo].[view-distParts]" & _
             " WHERE [PartID] = " & fpPartID & "" & _
             " AND [DistID] = " & dkID(0)
-        Dim dt As DataTable
+        Dim dt As New DataTable
         dt = dbAcc.SelectRows(dt, sqlTxt)
         If dt.Rows.Count = 0 Then
             Return sysErrors.ERR_NOTFOUND

@@ -39,7 +39,7 @@ Public Module fpInv
         'VAR
         Dim MultipleSlots As Boolean = False
         Dim i As Byte
-        Dim BinName As String
+        Dim BinName As String = ""
         Dim RetVal As New fpInvBinError
 
         'MANAGE MULTIPLE SLOT ADDING

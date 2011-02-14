@@ -74,7 +74,7 @@ Public Module apiBomAltium
             End Get
         End Property
         Private pDesc As String
-        Public ReadOnly Property ToString() As String
+        Public Shadows ReadOnly Property ToString() As String
             Get
                 Return pDesc
             End Get
@@ -132,7 +132,13 @@ Public Module apiBomAltium
                 gdt = GroupedDataSource
             End If
         End Sub
-        'Returns true if the specified PartID is used in this BOM
+
+        ''' <summary>
+        ''' Returns true if the specified PartID is used in this BOM
+        ''' </summary>
+        ''' <param name="PartID">The PartID to search for</param>
+        ''' <returns>True if the specified PartID is contained in the BOM represented by this baBomAnalysis class</returns>
+        ''' <remarks></remarks>
         Public Function Contains(ByVal PartID As Integer) As Boolean
             If gdt IsNot Nothing Then
                 For Each dr As DataRow In gdt.Rows
@@ -145,7 +151,8 @@ Public Module apiBomAltium
                 Return False
             Else
                 'No BOM imported yet...
-                Err.Raise(-34234, , "Attempted to search for a part in an imported BOM, but no BOM has been imported yet!")
+                Throw New Exception("Attempted to search for a part in an imported BOM, but no BOM has been imported yet!")
+                Return False
             End If
         End Function
 

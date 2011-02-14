@@ -15,7 +15,7 @@ Public Class sysWebService
     
 
     <WebMethod()> Public Function Update() As String
-        Return "Hello World..."
+        Return "Hello World..." 'fpusDispatch()
     End Function   
     
 End Class

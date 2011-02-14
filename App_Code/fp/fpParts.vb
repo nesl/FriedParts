@@ -3,7 +3,34 @@ Imports Microsoft.VisualBasic
 Imports System.Data
 
 Public Module fpParts
-    'Returns the SQL command string to execute the part add
+
+    ''' <summary>
+    ''' Returns the SQL command string to execute the part add
+    ''' </summary>
+    ''' <param name="MEmfrID">The FriedParts Manufacturer ID</param>
+    ''' <param name="mfrPartNum">The Manufacturer's Part Number</param>
+    ''' <param name="TypeID">The FriedParts ID for this Part Type (e.g. Capacitors --> Ceramic)</param>
+    ''' <param name="PkgTypeID">This feature isn't implemented yet...</param>
+    ''' <param name="Desc">Summary (short) description</param>
+    ''' <param name="Extra_Desc">Extended (long) description</param>
+    ''' <param name="Value">The part's value</param>
+    ''' <param name="Value_Units"></param>
+    ''' <param name="Value_Tolerance"></param>
+    ''' <param name="URL_Image"></param>
+    ''' <param name="URL_Datasheet"></param>
+    ''' <param name="DistID"></param>
+    ''' <param name="DistPartNum"></param>
+    ''' <param name="CaddLibRef"></param>
+    ''' <param name="CaddLibPath"></param>
+    ''' <param name="CaddFootRef"></param>
+    ''' <param name="CaddFootPath"></param>
+    ''' <param name="Verified"></param>
+    ''' <param name="Obsolete"></param>
+    ''' <param name="RoHS"></param>
+    ''' <param name="Temp_Max"></param>
+    ''' <param name="Temp_Min"></param>
+    ''' <returns>A SQL query which may be executed on a the database to effect the addition of the specified part</returns>
+    ''' <remarks></remarks>
     Public Function partAddSql(ByVal MEmfrID As Int32, ByVal mfrPartNum As String, ByVal TypeID As Int16, ByVal PkgTypeID As Int16, _
                             ByVal Desc As String, ByVal Extra_Desc As String, _
                             ByVal Value As String, ByVal Value_Units As String, ByVal Value_Tolerance As String, _
@@ -69,7 +96,33 @@ Public Module fpParts
         Return SqlPartAdd
     End Function
 
-    'Adds new part and returns its PartID
+    ''' <summary>
+    ''' Adds new part and returns its PartID. This is the main entry point for adding a new part!
+    ''' </summary>
+    ''' <param name="MEmfrID"></param>
+    ''' <param name="mfrPartNum"></param>
+    ''' <param name="TypeID"></param>
+    ''' <param name="PkgTypeID"></param>
+    ''' <param name="Desc"></param>
+    ''' <param name="Extra_Desc"></param>
+    ''' <param name="Value"></param>
+    ''' <param name="Value_Units"></param>
+    ''' <param name="Value_Tolerance"></param>
+    ''' <param name="URL_Image"></param>
+    ''' <param name="URL_Datasheet"></param>
+    ''' <param name="DistID"></param>
+    ''' <param name="DistPartNum"></param>
+    ''' <param name="CaddLibRef"></param>
+    ''' <param name="CaddLibPath"></param>
+    ''' <param name="CaddFootRef"></param>
+    ''' <param name="CaddFootPath"></param>
+    ''' <param name="Verified"></param>
+    ''' <param name="Obsolete"></param>
+    ''' <param name="RoHS"></param>
+    ''' <param name="Temp_Max"></param>
+    ''' <param name="Temp_Min"></param>
+    ''' <returns>The PartID of the newly added part.</returns>
+    ''' <remarks></remarks>
     Public Function partAdd(ByVal MEmfrID As Int32, ByVal mfrPartNum As String, ByVal TypeID As Int16, ByVal PkgTypeID As Int16, _
                             ByVal Desc As String, ByVal Extra_Desc As String, _
                             ByVal Value As String, ByVal Value_Units As String, ByVal Value_Tolerance As String, _
@@ -104,11 +157,23 @@ Public Module fpParts
         Return newPartID
     End Function
 
-    'PartID's should be unique and the combination of Manfacturer and Mfr Part Number is also unique
-    'If exists returns its PartID's, Else returns sysErrors.ERR_NOTFOUND
-    'If multiple manufacturers match then it will error out with sysErrors.ERR_NOTUNIQUE
-    'If EXACT = TRUE then only an exact match of the Manufacturer Name will match, otherwise *MfrName* is matched
-    '   However, be warned, if an inexact search returns multiple hits an error will result (sysErrors.ERR_NOTUNIQUE)
+    ''' <summary>
+    ''' Use this function to return the FriedParts unique ID for a part (PartID) when you know 
+    ''' only its Manufacturer's Name and Part Number.
+    ''' </summary>
+    ''' <param name="MfrName"></param>
+    ''' <param name="MfrPartNum"></param>
+    ''' <param name="Exact">If EXACT = TRUE then only an exact match of the Manufacturer Name will 
+    ''' match, otherwise *MfrName* is matched.
+    ''' However, be warned, if an inexact search returns multiple hits an error will result 
+    ''' (sysErrors.ERR_NOTUNIQUE)
+    '''</param>
+    ''' <returns>If the part exists this function returns the PartID(s), otherwise it returns 
+    ''' sysErrors.ERR_NOTFOUND. If multiple manufacturers match then it will error out with 
+    ''' sysErrors.ERR_NOTUNIQUE
+    ''' </returns>
+    ''' <remarks>PartID's should be unique and the combination of Manfacturer and Mfr Part 
+    ''' Number is also unique</remarks>
     Public Function partExistsID(ByVal MfrName As String, ByVal MfrPartNum As String, Optional ByVal Exact As Boolean = False) As Int32
         'Look up MfrName (to find ID)
         Dim mfrID As Int32()
@@ -152,7 +217,13 @@ Public Module fpParts
         End Select
     End Function
 
-    'Returns true if the specified PartID exists in the FriedParts database
+    ''' <summary>
+    ''' True/False determination as to whether the specified PartID exists in the 
+    ''' FriedParts' database
+    ''' </summary>
+    ''' <param name="PartID"></param>
+    ''' <returns>Returns true if the specified PartID exists in the FriedParts database</returns>
+    ''' <remarks></remarks>
     Public Function partExistsID(ByVal PartID As Int32) As Boolean
         Dim dt As New DataTable
         dt = dbAcc.SelectRows(dt, _
@@ -179,9 +250,20 @@ Public Module fpParts
         Return dt.Rows(0).Field(Of String)("mfrName") & " " & dt.Rows(0).Field(Of String)("mfrPartNum")
     End Function
 
-    '==========================================================================
-    '== USE THIS CLASS TO RETRIEVE DATA ABOUT A SPECIFIC PART EASILY
-    '==========================================================================
+
+
+    '==========================================================================================
+    '==========================================================================================
+    '==========================================================================================
+
+
+
+    ''' <summary>
+    ''' USE THIS CLASS TO RETRIEVE DATA ABOUT A SPECIFIC PART EASILY.
+    ''' This class is used to access and modify a FriedPart, but not to create a new part. 
+    ''' To do that use the partAdd() function.
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Class fpPart
         Private dt As DataTable
         Private pID As Integer
@@ -246,7 +328,7 @@ Public Module fpParts
             dt = New DataTable
             SelectRows(dt, sqlTxt)
             If dt.Rows.Count = 0 Then
-                Err.Raise(-911212, , "You cannot instantiate an fpPart Object with an invalid PartID! You entered: " & PartID)
+                Throw New ObjectNotFoundException("You cannot instantiate an fpPart Object with an invalid PartID! You entered: " & PartID)
             End If
             'Return dt.Rows(0).Field(Of String)("mfrName") & " " & dt.Rows(0).Field(Of String)("mfrPartNum")
         End Sub

@@ -115,42 +115,42 @@ Public Module apiOctoparts
             End Get
         End Property
 
-        Public lspecsMeta As New Collection      'Specification metadata (list specs data available)
+        Protected lspecsMeta As New Collection      'Specification metadata (list specs data available)
         Public ReadOnly Property SpecsMeta() As Collection
             Get
                 Return lspecsMeta
             End Get
         End Property
 
-        Public ldatasheets As New Collection     'Datasheet url links
+        Protected ldatasheets As New Collection     'Datasheet url links
         Public ReadOnly Property Datasheets() As Collection
             Get
                 Return ldatasheets
             End Get
         End Property
 
-        Public lmfr_List As New Collection         'Distributor data (key = mfr_ListMeta)
+        Protected lmfr_List As New Collection         'Distributor data (key = mfr_ListMeta)
         Public ReadOnly Property Mfr_List() As Collection
             Get
                 Return lmfr_List
             End Get
         End Property
 
-        Public lmfr_ListMeta As New Collection     'Distributor metadata (list distributors)
-        Public ReadOnly Property mfr_ListMeta()
+        Protected lmfr_ListMeta As New Collection     'Distributor metadata (list distributors)
+        Public ReadOnly Property mfr_ListMeta() As Collection
             Get
                 Return lmfr_ListMeta
             End Get
         End Property
 
-        Public limages As New Collection         'Image links
+        Protected limages As New Collection         'Image links
         Public ReadOnly Property Images() As Collection
             Get
                 Return limages
             End Get
         End Property
 
-        Public ldetail_Url As String             'Octopart URL
+        Protected ldetail_Url As String             'Octopart URL
         Public ReadOnly Property Detail_URL() As String
             Get
                 Return ldetail_Url
@@ -644,7 +644,6 @@ Public Module apiOctoparts
 
                                 'check for valid image extension (jpg, jpeg, gif, bmp, png)
                                 'if valid then save http string into OP image collections
-                                Dim properImgExt As Integer
                                 If singleImgURL.IndexOf(".jpg") > 0 Then
                                     limages.Add(singleImgURL)
                                 ElseIf singleImgURL.IndexOf(".jpeg") > 0 Then

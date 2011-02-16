@@ -25,12 +25,12 @@
                                 <td><asp:TextBox ID="txtPassword" runat="server" Width="160px" TextMode="Password"></asp:TextBox></td>
                                 <td class="fpTableComment">This information is used only once and never stored by FriedParts</td>
                             </tr>
-                            <tr>
+                            <tr id="dev1" runat="server">
                                 <td class="fpTableLabel">App Key:</td>
                                 <td><asp:TextBox ID="txtAppKey" runat="server" Width="160px"></asp:TextBox></td>
                                 <td class="fpTableComment">This information is NOT OPTIONAL. See below.</td>
                             </tr>
-                            <tr>
+                            <tr id="dev2" runat="server">
                                 <td class="fpTableLabel">App Secret:</td>
                                 <td><asp:TextBox ID="txtAppSecret" runat="server" Width="160px"></asp:TextBox></td>
                             </tr>
@@ -68,7 +68,7 @@
         </div>
 
         <!-- Setup Instructions -->
-        <div style="float:left; width:750px;">
+        <div id="dev3" runat="server" style="float:left; width:750px;">
             <dxrp:ASPxRoundPanel ID="ASPxRoundPanel3" runat="server" HeaderText="How do I get an App Key/Secret?" BackColor="LightYellow">
                 <PanelCollection>
                     <dx:PanelContent>

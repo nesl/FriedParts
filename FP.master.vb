@@ -88,7 +88,7 @@ Partial Class FP
                     imgYesDropbox.Visible = True
                     divLinkDropboxAccount.Visible = False
                 Else
-                    Err.Raise(-3215, , "user.Status (" & userStatus & ") in invalid state!")
+                    Throw New Exception("user.Status (" & userStatus & ") in invalid state!")
                 End If
             End If
         Else

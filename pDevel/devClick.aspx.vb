@@ -15,7 +15,12 @@ Partial Class pDevel_devClick
     End Sub
 
     Private Sub devTestUpdateService()
-        Label2b.Text = apiUpdateService.fpusDispatch(True, True)
+        fpusOptionDisablePrescaler = True
+        fpusOptionDisableThreading = True
+        Dim blah As New Threading.Thread(AddressOf apiUpdateService.fpusDispatch)
+        blah.Name = "FriedParts Dispatcher"
+        blah.Start()
+        'Label2b.Text = apiUpdateService.fpusDispatch(True, True)
     End Sub
 
     Private Sub devTestsysTextModule()

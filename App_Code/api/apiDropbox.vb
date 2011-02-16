@@ -4,6 +4,12 @@ Imports System.IO
 
 Public Module apiDropbox
 
+    ''' <summary>
+    ''' Controls whether this deployment of FriedParts is in production status at Dropbox.
+    ''' </summary>
+    ''' <remarks>Controls whether two (TRUE) or four (FALSE) keys are used to login each user and whether the additional signup fields and instructions are displayed on the webpage.</remarks>
+    Public Const DropboxInProductionStatus As Boolean = True
+
     '== PUBLIC DATA STRUCTURES
     '=======================================================
 

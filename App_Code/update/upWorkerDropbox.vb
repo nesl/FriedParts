@@ -1,5 +1,6 @@
 ﻿Imports Microsoft.VisualBasic
 Imports System.Data
+Imports UpdateService.upService
 
 Namespace UpdateService
 
@@ -46,6 +47,30 @@ Namespace UpdateService
         ''' </summary>
         ''' <remarks></remarks>
         Private Shared fpusStatusDropbox As New upMutexDropbox
+
+        ''' <summary>
+        ''' Retrieves the current operational status of this worker thread 
+        ''' (IDLE, RUNNING, SYNCING, WAITING, etc). 
+        ''' </summary>
+        ''' <returns>The current scanStatus value</returns>
+        ''' <remarks>The conditions come from upService.scanStatus </remarks>
+        Public ReadOnly Property GetStatus As scanStatus
+            Get
+                Return fpusStatusDropbox.Status
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Retrieves the FriedParts UserID of the owner of this Dropbox (the one this worker
+        ''' thread is working on). Returns a sysErrors condition otherwise (a negative integer).
+        ''' </summary>
+        ''' <returns>The UserID or sysErrors.USER_NOTLOGGEDIN or other sysErrors condition.</returns>
+        ''' <remarks></remarks>
+        Public ReadOnly Property GetCurrentUserID As Int32
+            Get
+                Return fpusStatusDropbox.UserID
+            End Get
+        End Property
 
         ''' <summary>
         ''' Finds the next Dropbox to synchronize with FriedParts. Returns the UserID of the owner of
@@ -110,8 +135,20 @@ Namespace UpdateService
         ''' This function does the work...
         ''' </summary>
         ''' <returns>A human-readable message explaining what happened -- for log/display as needed (safe to ignore)</returns>
+        ''' <param name="AsThread">Start as a Thread? Forks a new thread process if True. Runs in-line if False. Optional (defaults to True).</param>
         ''' <remarks></remarks>
-        Public Function Start() As String
+        Public Function Start(Optional ByRef AsThread As Boolean = True) As String
+            If AsThread Then
+                Dim blah As New Threading.Thread(AddressOf TheActualThread)
+                blah.Name = "FP Dropbox Worker"
+                blah.Start()
+                Return "[Dropbox Worker]: " & upService.StatusToString(fpusStatusDropbox.Status)
+            Else
+                Return TheActualThread()
+            End If
+        End Function
+
+        Private Function TheActualThread() As String
             Dim resultMsg As String = ""
 
             If theFpUserID > 0 Then

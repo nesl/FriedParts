@@ -1,4 +1,5 @@
 ﻿Imports System.Data
+Imports UpdateService
 
 Partial Class pDevel_devClick
     Inherits System.Web.UI.Page
@@ -15,12 +16,9 @@ Partial Class pDevel_devClick
     End Sub
 
     Private Sub devTestUpdateService()
-        fpusOptionDisablePrescaler = True
-        fpusOptionDisableThreading = True
-        Dim blah As New Threading.Thread(AddressOf apiUpdateService.fpusDispatch)
-        blah.Name = "FriedParts Dispatcher"
-        blah.Start()
-        'Label2b.Text = apiUpdateService.fpusDispatch(True, True)
+        Dim blah As New upService(True, True)
+        Label2.Text = "Result from UpdateServiceDispatcher"
+        Label2b.Text = blah.Start()
     End Sub
 
     Private Sub devTestsysTextModule()

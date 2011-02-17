@@ -69,6 +69,12 @@ Namespace UpdateService
         End Property
 
         ''' <summary>
+        ''' This value is used to implement a manual break which can stop the operation of the dispatcher
+        ''' </summary>
+        ''' <remarks>Use Start() and Stop() respectively</remarks>
+        Private Shared fpusBreak As Boolean = False
+
+        ''' <summary>
         ''' The FriedParts-Update-Service creates a new worker process every ten seconds, but we want to emulate a single worker process behavior.
         ''' Consequently, we use this variable as a semaphore to provide mutual exclusion (MUTEX).
         ''' </summary>
@@ -159,6 +165,7 @@ Namespace UpdateService
             'Update state
             If newStatus = scanStatus.scanIDLE Then
                 fpusStatus.Reset()
+                fpusBreak = False
             Else
                 fpusStatus.Status = newStatus
             End If
@@ -200,6 +207,18 @@ Namespace UpdateService
         End Function
 
         ''' <summary>
+        ''' This function shutsdown any dispatchers currently running at the completion 
+        ''' of their current round of dispatches. It does not kill any worker threads spawned by
+        ''' the dispatcher(s). These are allowed to run to completion.
+        ''' </summary>
+        ''' <remarks>Makes use of the internal fpusBreak variable</remarks>
+        Public Shared Sub Cancel()
+            fpusBreak = True
+        End Sub
+
+
+
+        ''' <summary>
         ''' The actual dispatcher thread. This is the function that gets forked.
         ''' </summary>
         ''' <returns></returns>
@@ -211,7 +230,7 @@ Namespace UpdateService
 
             If fpusStatus.Status = scanStatus.scanIDLE Then
                 UpdateStatus(scanStatus.scanRUNNING)
-                While True
+                While Not fpusBreak
                     'Throttle this during development
                     If Now Then
                         'Debug case -- caller has requested immediate dispatch
@@ -230,8 +249,8 @@ Namespace UpdateService
                     UpdateStatus(scanStatus.scanSLEEPING)
                     Thread.Sleep(1000 * TimerInterval)
                 End While 'Infinite Loop!
-                Throw New Exception("[OH CRAP!] How did we ever reach here?!")
-                Return "[OH CRAP!] How did we ever reach here?!" 'Exit from infinite loop not possible!
+                UpdateStatus(scanStatus.scanIDLE)
+                Return "[OH CRAP!] Manual Dispatcher Service STOP Commanded By User!" 'Exit from infinite loop not possible!
             Else
                 Return "Scanner is busy... try again later!"
             End If

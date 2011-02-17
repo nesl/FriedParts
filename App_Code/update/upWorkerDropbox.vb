@@ -169,9 +169,12 @@ Namespace UpdateService
                     End If
                 Loop
             Else
+                '[Case #2] Automatically select the "next" user and Sync NOW!
                 'Prevent overload (only one thread of this worker type should execute at a time)
                 If fpusStatusDropbox.Status = scanStatus.scanIDLE Then
                     UpdateDropboxStatus(scanStatus.scanRUNNING)
+                    '--got lock, so lets pick a user and update!
+                    theFpUserID = GetNextDropboxUserToUpdate() 'find the next user to update
                     fpusStatusDropbox.UserID = theFpUserID
                     '--validate this user is next in the update queue
                     If theFpUserID <> sysErrors.ERR_NOTFOUND Then
@@ -272,7 +275,7 @@ Namespace UpdateService
             Else
                 '[Case #2] No specific user was requested -- this happens when the Update Service
                 '           dispatcher is performing routing syncronization.
-                theFpUserID = GetNextDropboxUserToUpdate()
+                theFpUserID = sysErrors.USER_NOTLOGGEDIN 'Need to preserve error into later "actual work" function
             End If
         End Sub
     End Class

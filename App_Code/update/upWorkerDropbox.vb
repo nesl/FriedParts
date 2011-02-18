@@ -59,7 +59,7 @@ Namespace UpdateService
             sqlTxt = _
                 "USE    [FriedParts] " & _
                 "Select [UserID] " & _
-                "FROM   [user-Accounts] AS a" & _
+                "FROM   [user-Accounts] AS a " & _
                 "WHERE  ([DropboxUserKey] Is Not NULL) " & _
                 "AND    NOT EXISTS (SELECT * FROM [update-Log] AS b WHERE b.[DataID] = a.[UserID])"
             SelectRows(dt, sqlTxt)

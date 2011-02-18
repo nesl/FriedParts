@@ -37,12 +37,6 @@ Namespace UpdateService
         Protected mutexLocked As Boolean = False
 
         ''' <summary>
-        ''' Holds a list of all the current managed-code (virtual) threads
-        ''' </summary>
-        ''' <remarks></remarks>
-        Public Shared procThreads As New upThreadList
-
-        ''' <summary>
         ''' Holds this threads metadata. Useful for reporting and debugging.
         ''' </summary>
         ''' <remarks></remarks>
@@ -218,7 +212,7 @@ Namespace UpdateService
                     'Successfully acquire lock! Safe to proceed...
                     Dim blah As New Threading.Thread(AddressOf TheActualThread)
                     blah.Name = procMeta.Encode
-                    procThreads.StartThread(blah, procMeta)
+                    upThreadList.StartThread(blah, procMeta)
                     Return "[" & procMeta.GetThreadID & "]: " & upService.StatusToString(procMeta.ThreadStatus)
                 Else
                     'Failed to lock! Someone else is using the semaphore
@@ -233,11 +227,15 @@ Namespace UpdateService
         ''' <summary>
         ''' Aborts the execution of this thread
         ''' </summary>
+        ''' <param name="StopAllThreads">If true, will stop all currently running managed code
+        ''' threads. If false, just this one.</param>
         ''' <remarks></remarks>
-        Public Sub Abort()
-            'Threading.Thread.CurrentThread.Abort()
-            'DirectCast(procThreads.GetThreads(procMeta.GetThreadID), Threading.Thread).Abort()
-            procThreads.StopThread(procMeta.GetThreadID)
+        Public Sub Abort(Optional ByRef StopAllThreads As Boolean = False)
+            If StopAllThreads Then
+                upThreadList.StopAllThreads()
+            Else
+                upThreadList.StopThread(procMeta.GetThreadID)
+            End If
         End Sub
 
 

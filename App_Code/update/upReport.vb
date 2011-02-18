@@ -106,7 +106,7 @@ Namespace UpdateService
             dt = CreateThreadReportTable() 'Load schema
 
             Dim dr As DataRow
-            For Each Metadata As upThreadMetaData In upProcess.procThreads.GetMetadata
+            For Each Metadata As upThreadMetaData In upThreadList.GetMetadata
                 If Metadata IsNot Nothing Then
                     dr = dt.NewRow
                     dr.Item("ThreadID") = Metadata.GetThreadID

@@ -18,9 +18,9 @@ Partial Class pSys_sysService
     Protected Sub btnStop_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnStop.Click
         Console.WriteLine("STOP!!! CLICK!")
         xGaugeDispatcherState.Value = 1
-        FriedPartsUpdateService.Abort()
+        UpdateService.upThreadList.StopAllThreads()
+        ASPxProgressBar2.Value = 0
         blah = False
-        xGaugeDispatcherState.Value = 0
     End Sub
 
     ''' <summary>
@@ -54,10 +54,6 @@ Partial Class pSys_sysService
         lblNumDispatchers.Text = theData.NumDispatcherThreads
         lblNumWorkers.Text = theData.NumWorkerThreads
         lblNumAppPools.Text = theData.NumWebserverProcesses
-
-    End Sub
-
-    Protected Sub btnStop_Command(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.CommandEventArgs) Handles btnStop.Command
 
     End Sub
 End Class

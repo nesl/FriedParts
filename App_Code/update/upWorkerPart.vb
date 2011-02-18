@@ -35,6 +35,7 @@ Namespace UpdateService
     ''' </summary>
     ''' <remarks></remarks>
     Public Class upWorkerPart
+        Inherits upProcess
 
         '===========================================
         '== PROPERTIES / INTERNAL STATE
@@ -48,12 +49,6 @@ Namespace UpdateService
         Private Shared fpusStatusPart As New upMutexPart
 
         ''' <summary>
-        ''' Internal storage of the PartID of the part that this worker is trying to update.
-        ''' </summary>
-        ''' <remarks></remarks>
-        Private fpusPartID As Int32 = sysErrors.PARTADD_MFRNUMNOTUNIQUE
-
-        ''' <summary>
         ''' Returns the PartID of the part represented by this object
         ''' </summary>
         ''' <value>Read only!</value>
@@ -61,85 +56,15 @@ Namespace UpdateService
         ''' <remarks></remarks>
         Public ReadOnly Property GetPartID As Int32
             Get
-                Return fpusPartID
+                Return procMeta.ThreadDataID
             End Get
         End Property
 
 
 
         '===========================================
-        '== LOGGING/REPORTING
-        '===========================================
-
-        ''' <summary>
-        ''' Do not change fpusStatus variables directly. Use the appropriate Update... function.
-        ''' This one is for Parts worker threads.
-        ''' </summary>
-        ''' <param name="newStatus">The new status code</param>
-        ''' <remarks></remarks>
-        Private Sub UpdatePartStatus(ByRef newStatus As scanStatus)
-            If newStatus = scanStatus.scanIDLE Then
-                fpusStatusPart.Reset()
-            Else
-                fpusStatusPart.Status = newStatus
-            End If
-            Dim sqltxt As String = _
-                "INSERT INTO [FriedParts].[dbo].[update-Status]" & _
-                "           ([Date]" & _
-                "           ,[Status]" & _
-                "           ,[PartID])" & _
-                "     VALUES (" & _
-                "            " & txtSqlDate(Now) & "," & _
-                "            " & newStatus & "," & _
-                "            " & fpusPartID & "" & _
-                "           )"
-            dbAcc.SQLexe(sqltxt)
-        End Sub
-
-        ''' <summary>
-        ''' Log a FriedParts-Update-Service part update error event to the update-Log database table
-        ''' </summary>
-        ''' <param name="ErrorMessage">The text of the error message</param>
-        ''' <remarks></remarks>
-        Private Sub LogPartError(ByRef ErrorMessage As String, Optional ByRef MsgType As logMsgTypes = logMsgTypes.msgERROR)
-            Dim sqlTxt As String = _
-                "INSERT INTO [FriedParts].[dbo].[update-Log]" & _
-                "           ([Date]" & _
-                "           ,[PartID]" & _
-                "           ,[MsgType]" & _
-                "           ,[Msg])" & _
-                "     VALUES (" & _
-                "            " & sysText.txtSqlDate(Now) & "," & _
-                "           '" & fpusPartID & "'," & _
-                "           '" & logMsgTypes.msgERROR & "'," & _
-                "           '" & txtDefangSQL(ErrorMessage) & "'" & _
-                "           )"
-            dbAcc.SQLexe(sqlTxt)
-        End Sub
-
-
-
-
-        '===========================================
         '== SPAWNING, MUTEX, & EXECUTION MECHANICS
         '===========================================
-
-        ''' <summary>
-        ''' This function does the work...
-        ''' </summary>
-        ''' <returns>A human-readable message explaining what happened -- for log/display as needed (safe to ignore)</returns>
-        ''' <param name="AsThread">Start as a Thread? Forks a new thread process if True. Runs in-line if False. Optional (defaults to True).</param>
-        ''' <remarks></remarks>
-        Public Function Start(Optional ByRef AsThread As Boolean = True) As String
-            If AsThread Then
-                Dim blah As New Threading.Thread(AddressOf TheActualThread)
-                blah.Name = "FP Part Worker"
-                blah.Start()
-                Return "[Part Worker]: " & upService.StatusToString(fpusStatusPart.Status)
-            Else
-                Return TheActualThread()
-            End If
-        End Function
 
         ''' <summary>
         ''' Worker thread for the updating of parts. This 
@@ -150,30 +75,30 @@ Namespace UpdateService
         ''' </summary>
         ''' <returns>A human-readable message explaining what happened -- for log/display as needed (safe to ignore)</returns>
         ''' <remarks>Is called by fpusDispatch() and never directly</remarks>
-        Private Function TheActualThread() As String
+        Protected Overrides Function TheActualThread() As String
             'MUTEX
             If fpusStatusPart.Status = scanStatus.scanIDLE Then
                 'Claim Semaphore -- LOCK!
                 UpdatePartStatus(scanStatus.scanRUNNING)
 
                 'Find next part to update
-                If fpusPartID <= 0 Then
+                If GetPartID <= 0 Then
                     'Find it
-                    fpusPartID = Me.NextPartToUpdate()
+                    procMeta.ThreadDataID = Me.NextPartToUpdate()
                     'Sanity Check
-                    If Not fpParts.partExistsID(fpusPartID) Then
-                        Throw New Exception("PartID " & fpusPartID & "for Part Worker was NOT Valid!")
+                    If Not fpParts.partExistsID(GetPartID) Then
+                        Throw New Exception("PartID " & GetPartID & "for Part Worker was NOT Valid!")
                     End If
                 End If
 
                 'Update!
-                LogPartError("Scanning/Updating PartID " & fpusPartID, logMsgTypes.msgSTART)
+                LogPartError("Scanning/Updating PartID " & GetPartID, logMsgTypes.msgSTART)
                 Update()
 
                 'Report
                 UpdatePartStatus(scanStatus.scanIDLE) 'Release LOCK
-                LogPartError("Scanned/Updated PartID " & fpusPartID, logMsgTypes.msgSTOP)
-                Return "Scanned/Updated PartID " & fpusPartID
+                LogPartError("Scanned/Updated PartID " & GetPartID, logMsgTypes.msgSTOP)
+                Return "Scanned/Updated PartID " & GetPartID
             Else
                 'Another worker is still busy... abort...
                 LogPartError(sysErrors.ERR_NOTFOUND, "Another worker is still busy. Aborting.")
@@ -235,7 +160,7 @@ Namespace UpdateService
             'Digikey Search
             '==============
             UpdatePartStatus(scanStatus.scanWAITFORDK)
-            Dim dkPartNum As String = apiDigikey.dkPartNumber(fpusPartID)
+            Dim dkPartNum As String = apiDigikey.dkPartNumber(GetPartID)
             If Not (dkPartNum = sysErrors.ERR_NOTFOUND Or dkPartNum = sysErrors.ERR_NOTUNIQUE) Then
                 'this part has a Digikey Part Number
                 Dim DK As New apiDigikey(dkPartNum)
@@ -285,7 +210,7 @@ Namespace UpdateService
                 "UPDATE [FriedParts].[dbo].[part-Common]" & _
                 "   SET " & _
                 "      [Date_LastScanned] = '" & txtSqlDate(Now) & "'" & _
-                "   WHERE [PartID] = " & fpusPartID
+                "   WHERE [PartID] = " & GetPartID
             dbAcc.SQLexe(sqlText)
         End Sub
 
@@ -301,6 +226,11 @@ Namespace UpdateService
         ''' <param name="PartID">A FriedParts PartID. Must be valid.</param>
         ''' <remarks></remarks>
         Public Sub New(Optional ByVal PartID As Int32 = sysErrors.PARTADD_MFRNUMNOTUNIQUE)
+            'Configure Base
+            MyBase.New() 'Always do this and do it first!
+            procMeta.ThreadType = upThreadTypes.ttWorkerPart
+
+            'Perform Specifics
             If PartID > 0 Then
                 'User has asked us to look into a specific PartID -- manual refresh?
 
@@ -310,7 +240,7 @@ Namespace UpdateService
                 End If
 
                 'OK to Proceed!
-                fpusPartID = PartID
+                procMeta.ThreadDataID = PartID
             End If
         End Sub
     End Class

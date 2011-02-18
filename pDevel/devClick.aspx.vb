@@ -1,11 +1,15 @@
 ﻿Imports System.Data
 Imports UpdateService
+Imports System.Diagnostics
 
 Partial Class pDevel_devClick
     Inherits System.Web.UI.Page
 
     Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
-        devTestUpdateService()
+
+        devTestThreadManagement()
+
+        'devTestUpdateService()
         'Dim blah As New txtPathAndFilename("/This/is/a/test.doc", False)
         'Label2.Text = blah.GetPath
         'Label2b.Text = blah.GetFilename
@@ -13,6 +17,14 @@ Partial Class pDevel_devClick
         'OLD TEST CODE
         '=============
         'devTestsysTextModule()
+    End Sub
+
+    Private Sub devTestThreadManagement()
+        Dim IIS_Processes() As Process
+        Dim AllProcesses() As Process
+        IIS_Processes = Process.GetProcessesByName("w3wp")
+        AllProcesses = Process.GetProcesses
+        Dim i As Int32 = 45
     End Sub
 
     Private Sub devTestUpdateService()

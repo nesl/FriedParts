@@ -26,6 +26,19 @@ Public Module sysEnv
         End If
     End Function
 
+    '===================
+    '== PROCESS NAMES ==
+    '===================
+
+    Public Function sysWebserverProcess() As String
+        Select Case Environment.MachineName.ToString()
+            Case "FRED" 'For debugging on FRED machine
+                Return "WebDev.WebServer40"
+            Case Else
+                Return "w3wp"
+        End Select
+    End Function
+
     '================
     '== FILE PATHS ==
     '================

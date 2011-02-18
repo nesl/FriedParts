@@ -7,12 +7,12 @@ Namespace UpdateService
 
     
 
-    Public Class upServiceReport
+    Public Class upReport
         ''' <summary>
         ''' The Application Pool Server Process. Conatins the array of WebServer Threads.
         ''' </summary>
         ''' <remarks>Caches the Sys.Diagnostics information about the Application Pool worker process (the OS thread that services this website -- contains the application-level threads)</remarks>
-        Private TheAppPool As Process
+        Private TheAppPool As Collection
 
         ''' <summary>
         ''' Caches the number of Application Pools running on the server. 
@@ -39,7 +39,7 @@ Namespace UpdateService
         Private Function countWorkers(ByRef WorkerType As upThreadTypes) As Int16
             Dim retval As Int16 = 0
             For Each dr As DataRow In dt.Rows
-                If dr.Field(Of upThreadTypes)("TypeID") = WorkerType Then retval += 1
+                If CByte(dr.Field(Of Int32)("TypeID")) = WorkerType Then retval += 1
             Next
             Return retval
         End Function
@@ -67,7 +67,7 @@ Namespace UpdateService
 
         Public Function CreateThreadReportTable() As Data.DataTable
             Dim Table1 As DataTable
-            Table1 = New DataTable("TextTable")
+            Table1 = New DataTable("ThreadReportTable")
             'Init
             Dim col1 As DataColumn
             '[UID]
@@ -77,17 +77,20 @@ Namespace UpdateService
             '[ThreadType]
             col1 = New DataColumn("TypeID")
             col1.DataType = System.Type.GetType("System.Int32")
+            Table1.Columns.Add(col1)
             col1 = New DataColumn("Type")
             col1.DataType = System.Type.GetType("System.String")
+            Table1.Columns.Add(col1)
             '[DataID]
             col1 = New DataColumn("DataID")
             col1.DataType = System.Type.GetType("System.Int32")
+            Table1.Columns.Add(col1)
             '[TheadStatus]
             col1 = New DataColumn("StatusID")
             col1.DataType = System.Type.GetType("System.Int32")
+            Table1.Columns.Add(col1)
             col1 = New DataColumn("Status")
             col1.DataType = System.Type.GetType("System.String")
-            'Finalize
             Table1.Columns.Add(col1)
             Return Table1
         End Function
@@ -95,32 +98,27 @@ Namespace UpdateService
         Public Sub New()
             'Find the Application Pool Server Process
             Dim theProcesses() As Process
-            theProcesses = Process.GetProcessesByName("w3wp")
+            theProcesses = Process.GetProcessesByName(sysWebserverProcess())
 
-            'Is this it? More than one? Uh Oh!
-            If theProcesses.Length <> 1 Then
-                nServerProcesses = theProcesses.Length
-                Exit Sub
-            End If
-            TheAppPool = theProcesses(0)
-
+            nServerProcesses = theProcesses.Length
+            
             'All set! Let's report!
             dt = CreateThreadReportTable() 'Load schema
+
             Dim dr As DataRow
-            Dim Metadata As upThreadMetaData
-            For Each Th As Thread In TheAppPool.Threads
-                If Th.Name.StartsWith(upThreadMetaData.EncodingStartSymbol) Then
-                    Metadata = New upThreadMetaData(Th.Name)
+            For Each Metadata As upThreadMetaData In upProcess.procThreads.GetMetadata
+                If Metadata IsNot Nothing Then
                     dr = dt.NewRow
                     dr.Item("ThreadID") = Metadata.GetThreadID
-                    dr.Item("DataID") = Metadata.GetThreadDataID
-                    dr.Item("TypeID") = Metadata.GetThreadType
-                    dr.Item("Type") = upService.ThreadTypeToString(Metadata.GetThreadType)
+                    dr.Item("DataID") = Metadata.ThreadDataID
+                    dr.Item("TypeID") = Metadata.ThreadType
+                    dr.Item("Type") = upService.ThreadTypeToString(Metadata.ThreadType)
                     dr.Item("StatusID") = Metadata.ThreadStatus
                     dr.Item("Status") = upService.StatusToString(Metadata.ThreadStatus)
                     dt.Rows.Add(dr)
                 End If
             Next
+
         End Sub
     End Class
 End Namespace

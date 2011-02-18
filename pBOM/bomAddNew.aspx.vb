@@ -293,8 +293,6 @@ Partial Class pBOM_bomAddNew
     Protected Sub btnUploadProject_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnUploadProject.Click
 
         Dim dirName_server As String
-        Dim dirInfo As DirectoryInfo
-        Dim fileInfo As FileInfo()
         Dim toZip As Boolean = False
 
 

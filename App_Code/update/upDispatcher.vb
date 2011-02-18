@@ -8,6 +8,13 @@ Namespace UpdateService
         Inherits upProcess
 
         ''' <summary>
+        ''' The actual semaphore object used to control access. Derivative classes MUST SHADOW this 
+        ''' variable in order to dissociate from the global pool of thread resources.
+        ''' </summary>
+        ''' <remarks></remarks>
+        Protected Shared Shadows mutexSemaphore As Threading.Semaphore
+
+        ''' <summary>
         ''' The timer interval in seconds. This specifies the sleep delay between 
         ''' executions of the maintainence worker (updater) dispatcher
         ''' </summary>
@@ -35,17 +42,6 @@ Namespace UpdateService
         ''' </summary>
         ''' <remarks>Use Start() and Stop() respectively</remarks>
         Private Shared fpusBreak As Boolean = False
-
-        ''' <summary>
-        ''' The FriedParts-Update-Service creates a new worker process every ten seconds, but we want to emulate a single worker process behavior.
-        ''' Consequently, we use this variable as a semaphore to provide mutual exclusion (MUTEX).
-        ''' </summary>
-        ''' <remarks></remarks>
-        Private Shared fpusStatus As New upMutex
-
-        Protected Overrides Sub ResetMutex()
-            fpusStatus.Reset()
-        End Sub
 
         '======================================
         ' SCHEDULING / DISPATCH
@@ -95,34 +91,6 @@ Namespace UpdateService
         End Property
 
         ''' <summary>
-        ''' Do not change fpusStatus variables directly. Use the appropriate Update... function.
-        ''' This one is for Dispatcher threads.
-        ''' </summary>
-        ''' <param name="newStatus">The new status code</param>
-        ''' <remarks></remarks>
-        Private Sub UpdateStatus(ByRef newStatus As scanStatus)
-            'Update state
-            If newStatus = scanStatus.scanIDLE Then
-                fpusStatus.Reset()
-                fpusBreak = False
-            Else
-                fpusStatus.Status = newStatus
-            End If
-            'Write to Database (log)
-            Dim sqltxt As String = _
-                "INSERT INTO [FriedParts].[dbo].[update-Status]" & _
-                "           ([Date]" & _
-                "           ,[Status]" & _
-                "           ,[ThreadID])" & _
-                "     VALUES (" & _
-                "            " & txtSqlDate(Now) & "," & _
-                "            " & newStatus & "," & _
-                "            '" & Thread.CurrentThread.Name & "'" & _
-                "           )"
-            dbAcc.SQLexe(sqltxt)
-        End Sub
-
-        ''' <summary>
         ''' This function shutsdown any dispatchers currently running at the completion 
         ''' of their current round of dispatches. It does not kill any worker threads spawned by
         ''' the dispatcher(s). These are allowed to run to completion.
@@ -144,32 +112,30 @@ Namespace UpdateService
             Dim Now As Boolean = fpusOptionDisablePrescaler
             Dim NoThreads As Boolean = fpusOptionDisableThreading
 
-            If fpusStatus.Status = scanStatus.scanIDLE Then
-                UpdateStatus(scanStatus.scanRUNNING)
-                While Not fpusBreak
-                    'Throttle this during development
-                    If Now Then
-                        'Debug case -- caller has requested immediate dispatch
+
+            UpdateThreadStatus(scanStatus.scanRUNNING)
+            While Not fpusBreak
+                'Throttle this during development
+                If Now Then
+                    'Debug case -- caller has requested immediate dispatch
+                    fpusExecuteDispatch() 'EXECUTE! (decision to thread or not is made inside here)
+                Else
+                    'Normal case -- we prescale (slow) the execution rate of the dispatches
+                    Const Prescaler As Byte = 6 'xxx
+                    Static Dim TimerPrescaler As Byte = 0
+                    TimerPrescaler = TimerPrescaler + 1
+                    If TimerPrescaler = Prescaler Then
                         fpusExecuteDispatch() 'EXECUTE! (decision to thread or not is made inside here)
-                    Else
-                        'Normal case -- we prescale (slow) the execution rate of the dispatches
-                        Const Prescaler As Byte = 6 'xxx
-                        Static Dim TimerPrescaler As Byte = 0
-                        TimerPrescaler = TimerPrescaler + 1
-                        If TimerPrescaler = Prescaler Then
-                            fpusExecuteDispatch() 'EXECUTE! (decision to thread or not is made inside here)
-                            TimerPrescaler = 0 'Reset Prescaler
-                        End If
+                        TimerPrescaler = 0 'Reset Prescaler
                     End If
-                    'Sleep thread!
-                    UpdateStatus(scanStatus.scanSLEEPING)
-                    Thread.Sleep(1000 * TimerInterval)
-                End While 'Infinite Loop!
-                UpdateStatus(scanStatus.scanIDLE)
-                Return "[OH CRAP!] Manual Dispatcher Service STOP Commanded By User!" 'Exit from infinite loop not possible!
-            Else
-                Return "Scanner is busy... try again later!"
-            End If
+                End If
+                'Sleep thread!
+                UpdateThreadStatus(scanStatus.scanSLEEPING)
+                Thread.Sleep(1000 * TimerInterval)
+            End While 'Infinite Loop!
+            UpdateThreadStatus(scanStatus.scanIDLE)
+            LogEvent("[OH CRAP!] Manual Dispatcher Service (Thread#: " & procMeta.GetThreadID & ") STOP Commanded By User!", logMsgTypes.msgSTOP)
+            Return "[OH CRAP!] Manual Dispatcher Service STOP Commanded By User!" 'Exit from infinite loop not possible!
         End Function
 
         ''' <summary>

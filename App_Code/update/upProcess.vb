@@ -2,31 +2,6 @@
 
 Namespace UpdateService
 
-    ''' <summary>
-    ''' Update Service's base MUTEX class -- provides mutual exclusion by acting as the 
-    ''' semaphore
-    ''' </summary>
-    ''' <remarks>Specific worker classes will extend this base class by adding 
-    ''' worker-specific parameters to the class definition</remarks>
-    Public Class upMutex
-        Public Status As scanStatus = scanStatus.scanIDLE
-        ''' <summary>
-        ''' Resets (e.g. releases) the MUTEX 
-        ''' </summary>
-        ''' <remarks>Extended by inheritors</remarks>
-        Public Overridable Sub Reset()
-            Status = scanStatus.scanIDLE
-        End Sub
-    End Class
-
-
-
-    '==============================================================================================
-    '==============================================================================================
-
-    '==============================================================================================
-    '==============================================================================================
-
 
     ''' <summary>
     ''' This is the base class of all Update Service processes because each one runs in 
@@ -39,6 +14,33 @@ Namespace UpdateService
         '===========================================
         '== STATE / PROPERTIES
         '===========================================
+
+        ''' <summary>
+        ''' The maximum number of concurrent copies of this process that are allowed to run simultaneously
+        ''' </summary>
+        ''' <remarks>Redefine this number BY SHADOWING IT in derivative classes if need 
+        ''' more than single concurrency.</remarks>
+        Protected Shared mutexMaxConcurrent As Byte = 1
+
+        ''' <summary>
+        ''' The actual semaphore object used to control access. Derivative classes MUST SHADOW this 
+        ''' variable in order to dissociate from the global pool of thread resources.
+        ''' </summary>
+        ''' <remarks></remarks>
+        Protected Shared mutexSemaphore As Threading.Semaphore
+
+        ''' <summary>
+        ''' Represents whether this process is currently holding a lock (one of the semaphores) 
+        ''' or not.
+        ''' </summary>
+        ''' <remarks></remarks>
+        Protected mutexLocked As Boolean = False
+
+        ''' <summary>
+        ''' Holds a list of all the current managed-code (virtual) threads
+        ''' </summary>
+        ''' <remarks></remarks>
+        Public Shared procThreads As New upThreadList
 
         ''' <summary>
         ''' Holds this threads metadata. Useful for reporting and debugging.
@@ -90,7 +92,10 @@ Namespace UpdateService
         ''' <remarks>This status change will be visible outside the thread for monitoring. Yay!</remarks>
         Protected Sub UpdateThreadStatus(ByRef newStatus As scanStatus)
             If newStatus = scanStatus.scanIDLE Then
-                ResetMutex()
+                If procMeta.ThreadStatus <> scanStatus.scanIDLE Then
+                    'Detected transition back to IDLE state...
+                    ReleaseMutex()
+                End If
             Else
                 procMeta.ThreadStatus = newStatus
             End If
@@ -106,9 +111,9 @@ Namespace UpdateService
                 "            " & txtSqlDate(Now) & "," & _
                 "            " & procMeta.ThreadStatus & "," & _
                 "            " & procMeta.GetThreadID & "," & _
-                "            " & procMeta.ThreadDataID & "" & _
-                "            " & procMeta.ThreadType & "" & _
-                "            " & ThreadTypeToString(procMeta.ThreadType) & "" & _
+                "            " & procMeta.ThreadDataID & "," & _
+                "            " & procMeta.ThreadType & "," & _
+                "            '" & ThreadTypeToString(procMeta.ThreadType) & "'" & _
                 "           )"
             dbAcc.SQLexe(sqltxt)
         End Sub
@@ -144,17 +149,52 @@ Namespace UpdateService
 
 
         '===========================================
-        '== THREAD EXECUTION
+        '== MUTUAL EXCLUSION (MUTEX)
         '===========================================
 
         ''' <summary>
-        ''' If this process is going to require mutual exclusion control (MUTEX) then implement
-        ''' the apppropriate MUTEX release calls in this subroutine. Otherwise implement an 
-        ''' empty subroutine.
+        ''' Initializes the mutual exclusion lock used to manage concurrency.
         ''' </summary>
-        ''' <remarks>Required in order to force the developer to be aware of 
-        ''' this requirement when working with MUTEX.</remarks>
-        Protected MustOverride Sub ResetMutex()
+        ''' <remarks>This is only really called from the constructor here. Derivative classes
+        ''' should never need to mess with this, but in case I didn't forsee some additional
+        ''' process specific initialization it is declared protected to allow override/extension
+        ''' </remarks>
+        Protected Sub InitMutex()
+            mutexSemaphore = New Threading.Semaphore(mutexMaxConcurrent, mutexMaxConcurrent)
+        End Sub
+
+        ''' <summary>
+        ''' Attempt to gain exclusive rights to run this process.
+        ''' </summary>
+        ''' <returns>Whether or not we were able to successful acquire the lock.</returns>
+        ''' <remarks></remarks>
+        Protected Function LockMutex() As Boolean
+            If mutexSemaphore.WaitOne(1) Then
+                'We successfully locked it
+                mutexLocked = True
+                Return True
+            Else
+                Return False
+            End If
+        End Function
+
+        ''' <summary>
+        ''' Releases the exclusive lock on the the right to run this process.
+        ''' </summary>
+        ''' <remarks>Fails silently if you call it, but there is nothing to release (because you
+        ''' never locked it in the first place).</remarks>
+        Protected Sub ReleaseMutex()
+            If mutexLocked Then
+                mutexSemaphore.Release(1)
+            End If
+        End Sub
+
+
+
+
+        '===========================================
+        '== THREAD EXECUTION
+        '===========================================
 
         ''' <summary>
         ''' Entry point for the thread. This is where the work of the thread is done. The thread is
@@ -174,15 +214,31 @@ Namespace UpdateService
         ''' <remarks></remarks>
         Public Function Start(Optional ByRef AsThread As Boolean = True) As String
             If AsThread Then
-                Dim blah As New Threading.Thread(AddressOf TheActualThread)
-                blah.Name = procMeta.Encode
-                blah.Start()
-                Return "[" & procMeta.GetThreadID & "]: " & upService.StatusToString(procMeta.ThreadStatus)
+                If LockMutex() Then
+                    'Successfully acquire lock! Safe to proceed...
+                    Dim blah As New Threading.Thread(AddressOf TheActualThread)
+                    blah.Name = procMeta.Encode
+                    procThreads.StartThread(blah, procMeta)
+                    Return "[" & procMeta.GetThreadID & "]: " & upService.StatusToString(procMeta.ThreadStatus)
+                Else
+                    'Failed to lock! Someone else is using the semaphore
+                    LogEvent("Failed to start. LOCKED. Only " & mutexMaxConcurrent & " concurrent instances allowed.")
+                    Return "[" & procMeta.GetThreadID & "]: " & upService.StatusToString(procMeta.ThreadStatus)
+                End If
             Else
                 Return TheActualThread()
             End If
         End Function
 
+        ''' <summary>
+        ''' Aborts the execution of this thread
+        ''' </summary>
+        ''' <remarks></remarks>
+        Public Sub Abort()
+            'Threading.Thread.CurrentThread.Abort()
+            'DirectCast(procThreads.GetThreads(procMeta.GetThreadID), Threading.Thread).Abort()
+            procThreads.StopThread(procMeta.GetThreadID)
+        End Sub
 
 
         '===========================================
@@ -197,6 +253,8 @@ Namespace UpdateService
         Public Sub New()
             'Update METADATA
             procMeta = New upThreadMetaData(GetNextProcID(), upThreadTypes.ttGeneric, sysErrors.ERR_NOTFOUND, scanStatus.scanIDLE)
+            'MUTEX
+            InitMutex()
         End Sub
     End Class
 End Namespace

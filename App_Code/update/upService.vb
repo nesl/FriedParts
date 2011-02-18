@@ -5,6 +5,70 @@ Imports System.Threading
 Namespace UpdateService
 
     ''' <summary>
+    ''' Acts like an Operating System table -- tracking references to all the Managed Threads
+    ''' being created.
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Class upThreadList
+
+        Protected Shared procAllThreads As New Collection
+        Protected Shared procAllMeta As New Collection
+
+        Public ReadOnly Property GetThreads As Collection
+            Get
+                Return procAllThreads
+            End Get
+        End Property
+
+        Public ReadOnly Property GetMetadata As Collection
+            Get
+                Return procAllMeta
+            End Get
+        End Property
+
+        Public ReadOnly Property CountThreads As Int16
+            Get
+                Return procAllThreads.Count
+            End Get
+        End Property
+        ''' <summary>
+        ''' Adds a new managed code thread
+        ''' </summary>
+        ''' <param name="TheThread">The FriedParts upProcess object</param>
+        ''' <param name="TheMetaData">The associated upThreadMetaData object</param>
+        ''' <remarks></remarks>
+        Public Sub StartThread(ByRef TheThread As Thread, ByRef TheMetaData As upThreadMetaData)
+            TheThread.Start() 'Actually start the thread
+            procAllThreads.Add(TheThread, TheMetaData.GetThreadID)
+            procAllMeta.Add(TheMetaData, TheMetaData.GetThreadID)
+        End Sub
+
+        ''' <summary>
+        ''' Stops the specified managed code thread
+        ''' </summary>
+        ''' <param name="TheThreadID">The FriedParts issued ThreadID</param>
+        ''' <remarks>Fails silently if the thread is not found! Careful!</remarks>
+        Public Sub StopThread(ByRef TheThreadID As Int32)
+            If procAllThreads.Contains(TheThreadID) Then
+                DirectCast(procAllThreads(TheThreadID), Thread).Abort() 'Actually stop the thread
+                procAllThreads.Remove(TheThreadID) 'Remove the reference? -- it will be null at this point so I don't know if this will work
+            End If
+        End Sub
+
+        ''' <summary>
+        ''' Shutsdown all Update Service threads. Use to keep the server 
+        ''' from running out of resources if things get away from us.
+        ''' </summary>
+        ''' <remarks></remarks>
+        Public Sub StopAllThreads()
+            For Each Th As Thread In procAllThreads
+                Th.Abort()
+            Next
+        End Sub
+    End Class
+
+
+    ''' <summary>
     ''' Contains all the metadata about a specific FriedParts-Update-Service thread
     ''' </summary>
     ''' <remarks></remarks>

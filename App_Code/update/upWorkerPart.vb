@@ -4,29 +4,6 @@ Imports System.Data
 Namespace UpdateService
 
     '===========================================
-    '== MUTEX/Semaphore
-    '===========================================
-
-    ''' <summary>
-    ''' Worker-specific Semaphore
-    ''' </summary>
-    ''' <remarks>
-    ''' The FriedParts-Update-Service creates a new worker process every ten seconds, but we 
-    ''' want to emulate a single worker process behavior.
-    ''' Consequently, we use this variable as a semaphore to provide mutual exclusion (MUTEX).
-    ''' </remarks>
-    Public Class upMutexPart
-        Inherits upMutex
-        Public PartID As Int32 = sysErrors.PARTADD_MFRNUMNOTUNIQUE
-        Public Overrides Sub Reset()
-            MyBase.Reset()
-            PartID = sysErrors.PARTADD_MFRNUMNOTUNIQUE
-        End Sub
-    End Class
-
-
-
-    '===========================================
     '== WORKER CLASS
     '===========================================
 
@@ -42,11 +19,11 @@ Namespace UpdateService
         '===========================================
 
         ''' <summary>
-        ''' The FriedParts-Update-Service creates a new worker process every ten seconds, but we want to emulate a single worker process behavior.
-        ''' Consequently, we use this variable as a semaphore to provide mutual exclusion (MUTEX).
+        ''' The actual semaphore object used to control access. Derivative classes MUST SHADOW this 
+        ''' variable in order to dissociate from the global pool of thread resources.
         ''' </summary>
         ''' <remarks></remarks>
-        Private Shared fpusStatusPart As New upMutexPart
+        Protected Shared Shadows mutexSemaphore As Threading.Semaphore
 
         ''' <summary>
         ''' Returns the PartID of the part represented by this object
@@ -77,33 +54,28 @@ Namespace UpdateService
         ''' <remarks>Is called by fpusDispatch() and never directly</remarks>
         Protected Overrides Function TheActualThread() As String
             'MUTEX
-            If fpusStatusPart.Status = scanStatus.scanIDLE Then
-                'Claim Semaphore -- LOCK!
-                UpdatePartStatus(scanStatus.scanRUNNING)
 
-                'Find next part to update
-                If GetPartID <= 0 Then
-                    'Find it
-                    procMeta.ThreadDataID = Me.NextPartToUpdate()
-                    'Sanity Check
-                    If Not fpParts.partExistsID(GetPartID) Then
-                        Throw New Exception("PartID " & GetPartID & "for Part Worker was NOT Valid!")
-                    End If
+            'Claim Semaphore -- LOCK!
+            UpdateThreadStatus(scanStatus.scanRUNNING)
+
+            'Find next part to update
+            If GetPartID <= 0 Then
+                'Find it
+                procMeta.ThreadDataID = Me.NextPartToUpdate()
+                'Sanity Check
+                If Not fpParts.partExistsID(GetPartID) Then
+                    Throw New Exception("PartID " & GetPartID & "for Part Worker was NOT Valid!")
                 End If
-
-                'Update!
-                LogPartError("Scanning/Updating PartID " & GetPartID, logMsgTypes.msgSTART)
-                Update()
-
-                'Report
-                UpdatePartStatus(scanStatus.scanIDLE) 'Release LOCK
-                LogPartError("Scanned/Updated PartID " & GetPartID, logMsgTypes.msgSTOP)
-                Return "Scanned/Updated PartID " & GetPartID
-            Else
-                'Another worker is still busy... abort...
-                LogPartError(sysErrors.ERR_NOTFOUND, "Another worker is still busy. Aborting.")
-                Return "Another worker is still busy. Aborting."
             End If
+
+            'Update!
+            LogEvent("Scanning/Updating PartID " & GetPartID, logMsgTypes.msgSTART)
+            Update()
+
+            'Report
+            UpdateThreadStatus(scanStatus.scanIDLE) 'Release LOCK
+            LogEvent("Scanned/Updated PartID " & GetPartID, logMsgTypes.msgSTOP)
+            Return "Scanned/Updated PartID " & GetPartID
         End Function
 
 
@@ -139,7 +111,7 @@ Namespace UpdateService
                 "ORDER BY [FriedParts].[dbo].[Date_LastScanned] DESC")
             If dt.Rows.Count = 0 Then
                 'Error No Parts Found! -- this can't happen
-                LogPartError(sysErrors.ERR_NOTFOUND, "No Parts Found! [part-Common] table EMPTY?!")
+                LogEvent(sysErrors.ERR_NOTFOUND, "No Parts Found! [part-Common] table EMPTY?!")
                 Return sysErrors.ERR_NOTFOUND
             Else
                 'Grab the first record -- which should be the least updated one because we sorted by scan-date
@@ -159,7 +131,7 @@ Namespace UpdateService
 
             'Digikey Search
             '==============
-            UpdatePartStatus(scanStatus.scanWAITFORDK)
+            UpdateThreadStatus(scanStatus.scanWAITFORDK)
             Dim dkPartNum As String = apiDigikey.dkPartNumber(GetPartID)
             If Not (dkPartNum = sysErrors.ERR_NOTFOUND Or dkPartNum = sysErrors.ERR_NOTUNIQUE) Then
                 'this part has a Digikey Part Number
@@ -183,26 +155,26 @@ Namespace UpdateService
                     'linkDigikey.NavigateUrl = DK.getDatasheetURL
                 Else
                     'Digikey part number is not found
-                    LogPartError("Digikey part number not found -- or Digikey timeout")
+                    LogEvent("Digikey part number not found -- or Digikey timeout")
                 End If
             Else
                 If dkPartNum = sysErrors.ERR_NOTFOUND Then
                     'Digikey Part Number not known for this part
-                    LogPartError("This part does not have a Digikey part number!")
+                    LogEvent("This part does not have a Digikey part number!")
                 Else
                     'Multiple Digikey Part Numbers found
-                    LogPartError("This part had multiple matching Digikey part numbers!")
+                    LogEvent("This part had multiple matching Digikey part numbers!")
                 End If
             End If
 
             'Octopart Search
             '===============
-            UpdatePartStatus(scanStatus.scanWAITFOROP)
+            UpdateThreadStatus(scanStatus.scanWAITFOROP)
             Dim OP As New Octopart("The Part Number")
             'Make Changes
             'Log Changes
             'Update Status Entry in Database
-            UpdatePartStatus(scanStatus.scanIDLE)
+            UpdateThreadStatus(scanStatus.scanIDLE)
 
             'Mark this one as SCANNED!
             '=========================

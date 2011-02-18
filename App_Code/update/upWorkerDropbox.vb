@@ -5,23 +5,6 @@ Imports UpdateService.upService
 Namespace UpdateService
 
     ''' <summary>
-    ''' Worker-specific Semaphore
-    ''' </summary>
-    ''' <remarks>
-    ''' The FriedParts-Update-Service creates a new worker process every ten seconds, but we 
-    ''' want to emulate a single worker process behavior.
-    ''' Consequently, we use this variable as a semaphore to provide mutual exclusion (MUTEX).
-    ''' </remarks>
-    Public Class upMutexDropbox
-        Inherits upMutex
-        Public UserID As Int32 = sysErrors.USER_NOTLOGGEDIN
-        Public Overrides Sub Reset()
-            MyBase.Reset()
-            UserID = sysErrors.USER_NOTLOGGEDIN
-        End Sub
-    End Class
-
-    ''' <summary>
     ''' Worker thread for the syncing of Dropbox accounts with the FriedParts server. This 
     ''' dispatcher is separate from other sync/update processes that happen in FriedParts so that
     ''' updates can happen in parallel when sourced from different data providers. For example,
@@ -39,18 +22,11 @@ Namespace UpdateService
         Private Const GAIN_LOCK_RETRY As Int16 = 100
 
         ''' <summary>
-        ''' Worker-specific Semaphore instantiation!
+        ''' The actual semaphore object used to control access. Derivative classes MUST SHADOW this 
+        ''' variable in order to dissociate from the global pool of thread resources.
         ''' </summary>
         ''' <remarks></remarks>
-        Private Shared fpusStatusDropbox As New upMutexDropbox
-
-        ''' <summary>
-        ''' Implements the MUTEX release operation
-        ''' </summary>
-        ''' <remarks>Required by the base class</remarks>
-        Protected Overrides Sub ResetMutex()
-            fpusStatusDropbox.Reset()
-        End Sub
+        Protected Shared Shadows mutexSemaphore As Threading.Semaphore
 
         ''' <summary>
         ''' Retrieves the FriedParts UserID of the owner of this Dropbox (the one this worker
@@ -72,20 +48,37 @@ Namespace UpdateService
         ''' </summary>
         ''' <returns>The FriedParts UserID of the owner of the Dropbox we are going to update. Returns 
         ''' sysErrors.ERR_NOTFOUND if no valid Dropbox exists</returns>
-        ''' <remarks>Helper function to dpusDispatch()</remarks>
+        ''' <remarks>Prioritizes new users to FriedParts -- people who just linked their dropboxes, 
+        ''' but have never been synced before.</remarks>
         Private Function GetNextDropboxUserToUpdate() As Int32
-            'Find who we last updated...
-            Dim sqlTxt As String = _
-                "  SELECT [UserID]" & _
-                "    FROM [FriedParts].[dbo].[update-Status] " & _
-                "   WHERE [UserID] IS NOT NULL AND [UserID] > 0" & _
-                "ORDER BY [Date] DESC"
+            'Init
             Dim dt As New DataTable
+            Dim sqlTxt As String
+
+            'Are there any VIP's waiting? (VIP's are people who just joined so they have not been sync'd yet)
+            sqlTxt = _
+                "USE    [FriedParts] " & _
+                "Select [UserID] " & _
+                "FROM   [user-Accounts] AS a" & _
+                "WHERE  ([DropboxUserKey] Is Not NULL) " & _
+                "AND    NOT EXISTS (SELECT * FROM [update-Log] AS b WHERE b.[DataID] = a.[UserID])"
+            SelectRows(dt, sqlTxt)
+            If dt.Rows.Count > 0 Then
+                Return dt.Rows(0).Field(Of Int32)("UserID")
+            End If
+
+            'Find who we last updated...
+            sqlTxt = _
+                "  SELECT [DataID]" & _
+                "    FROM [FriedParts].[dbo].[update-Status] " & _
+                "   WHERE [ThreadTypeID] = " & upThreadTypes.ttWorkerDropbox & _
+                "         AND [DataID] IS NOT NULL AND [DataID] > 0" & _
+                "ORDER BY [Date] DESC"
             SelectRows(dt, sqlTxt)
             Dim LastUserID As Int32
             If dt.Rows.Count > 0 Then
-                'We have previously updated someones dropbox... who? LastUserID
-                LastUserID = dt.Rows(0).Field(Of Int32)("UserID")
+                'We have previously updated someone's dropbox... who? LastUserID
+                LastUserID = dt.Rows(0).Field(Of Int32)("DataID")
             Else
                 'No previous updates on record
                 LastUserID = sysErrors.ERR_NOTFOUND
@@ -125,46 +118,19 @@ Namespace UpdateService
 
         Protected Overrides Function TheActualThread() As String
             Dim resultMsg As String = ""
-
-            If GetOwnerID > 0 Then
-                '[Case #1] Sync a specific user NOW!
-                'Prevent overload -- ok if another worker thread, just make sure that it isn't hitting the exact same user
-                Dim GotLock As Boolean = False
-                While fpusStatusDropbox.UserID = GetOwnerID
-                    Threading.Thread.Sleep(GAIN_LOCK_RETRY)
-                    'WARNING: Could possibly deadlock here if you have a bug in the scan code...
-                End While
-                Do While Not GotLock
-                    If fpusStatusDropbox.UserID <> GetOwnerID Then
-                        'Do it!
-                        fpusStatusDropbox.Status = scanStatus.scanSYNCING
-                        fpusStatusDropbox.UserID = GetOwnerID
-                        resultMsg = SyncMeBabyOneMoreTime()
-                        GotLock = True 'break from loop
-                    End If
-                Loop
+            'Automatically select the "next" user and Sync NOW!
+            UpdateThreadStatus(scanStatus.scanRUNNING)
+            '--got lock, so lets pick a user and update!
+            procMeta.ThreadDataID = GetNextDropboxUserToUpdate() 'find the next user to update
+            '--validate this user is next in the update queue
+            If GetOwnerID <> sysErrors.ERR_NOTFOUND Then
+                resultMsg = SyncMeBabyOneMoreTime()
             Else
-                '[Case #2] Automatically select the "next" user and Sync NOW!
-                'Prevent overload (only one thread of this worker type should execute at a time)
-                If fpusStatusDropbox.Status = scanStatus.scanIDLE Then
-                    UpdateThreadStatus(scanStatus.scanRUNNING)
-                    '--got lock, so lets pick a user and update!
-                    procMeta.ThreadDataID = GetNextDropboxUserToUpdate() 'find the next user to update
-                    fpusStatusDropbox.UserID = GetOwnerID
-                    '--validate this user is next in the update queue
-                    If GetOwnerID <> sysErrors.ERR_NOTFOUND Then
-                        resultMsg = SyncMeBabyOneMoreTime()
-                    Else
-                        resultMsg = "There are no registered Dropbox users, so nothing to update!"
-                    End If
-                    UpdateThreadStatus(scanStatus.scanIDLE)
-                Else
-                    'Another worker is still busy... abort...
-                    resultMsg = "Another worker is still busy. Aborting."
-                End If
-                LogEvent(resultMsg)
-                UpdateThreadStatus(scanStatus.scanIDLE)
+                resultMsg = "There are no registered Dropbox users, so nothing to update!"
             End If
+            'Finalize
+            LogEvent(resultMsg)
+            UpdateThreadStatus(scanStatus.scanIDLE) 'IMPORTANT! Signals we are done (releases semaphore)
             Return resultMsg
         End Function
 
@@ -189,26 +155,14 @@ Namespace UpdateService
         ''' <summary>
         ''' Constructor.
         ''' </summary>
-        ''' <param name="UserID">Optional. If provided (must be a valid!) the UserID will be sync'd immediately. Otherwise, we'll just figure who goes next in our round-robin schedule.</param>
         ''' <remarks>Don't forget to call Start() to actually start the sync work! Just instantiating the class is not enough!</remarks>
-        Public Sub New(Optional ByRef UserID As Int32 = sysErrors.USER_NOTLOGGEDIN)
+        Public Sub New()
             'Configure Base
             MyBase.New() 'Always do this and do it first!
             procMeta.ThreadType = upThreadTypes.ttWorkerDropbox
 
             'Perform Specifics
-            '[DETERMINE WHICH USER'S DROPBOX TO UPDATE]
-            If UserID > 0 Then
-                '[Case #1] User was specifically requested -- this happens when users first link their
-                '           Dropbox accounts to FriedParts and we want to quickly perform an initial 
-                '           population...
-                procMeta.ThreadDataID = UserID
-            Else
-                '[Case #2] No specific user was requested -- this happens when the Update Service
-                '           dispatcher is performing routing syncronization.
-                procMeta.ThreadDataID = sysErrors.USER_NOTLOGGEDIN 'Need to preserve error into later "actual work" function
-
-            End If
+            procMeta.ThreadDataID = sysErrors.USER_NOTLOGGEDIN 'Need to preserve error into later "actual work" function
         End Sub
     End Class
 End Namespace

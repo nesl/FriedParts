@@ -28,9 +28,9 @@ Partial Class pDevel_devClick
     End Sub
 
     Private Sub devTestUpdateService()
-        Dim blah As New upService(True, False)
-        Label2.Text = "Result from UpdateServiceDispatcher"
-        Label2b.Text = blah.Start()
+        'Dim blah As New upService(True, False)
+        'Label2.Text = "Result from UpdateServiceDispatcher"
+        'Label2b.Text = blah.Start()
     End Sub
 
     Private Sub devTestsysTextModule()

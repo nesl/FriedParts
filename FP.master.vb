@@ -11,9 +11,10 @@ Partial Class FP
             MsgBox(xMsgBox, passedIN("Code"), passedIN("P1"), passedIN("P2"))
         End If
 
-        'Reroute after message box?
-        '   Strip off the query string and redirect
-        '   Server.Transfer(theURL.Scheme & theURL.Host & theURL.AbsolutePath)
+        'Ensure that the background Update-Service is running (auto-recover from server restarts)
+        If Not UpdateService.upReport.UpdateServiceIsRunning Then
+            UpdateService.upThreadList.StartUpdateService()
+        End If
 
         'Reroute after successful login...
         If Not (passedIN("Next") Is Nothing) Then

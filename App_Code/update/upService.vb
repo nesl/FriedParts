@@ -13,6 +13,24 @@ Namespace UpdateService
 
         Private procAllThreads As New Collection
         Private procAllMeta As New Collection
+        Private procStopService As Boolean = False
+
+        ''' <summary>
+        ''' The main entry point for starting the FriedParts Update Service.
+        ''' Starts up a dispatcher.
+        ''' </summary>
+        ''' <param name="Commanded">True to indicate manual override of auto-start disable.
+        ''' If True, startup is gauranteed. If False, startup will obey the auto-start state.</param>
+        ''' <remarks>Safe to call this repeatedly (though not efficent). MUTEX 
+        ''' protects against multiple instances of the entire service running
+        ''' blindly and unmanaged in parallel.</remarks>
+        Public Sub StartUpdateService(Optional ByRef Commanded As Boolean = False)
+            If ((Not procStopService) Or Commanded) Then
+                procStopService = False
+                Dim FriedPartsUpdateService As New UpdateService.upDispatcher
+                FriedPartsUpdateService.Start()
+            End If
+        End Sub
 
         ''' <summary>
         ''' Vacuums up the frayed threads (dead/completed threads)!
@@ -78,11 +96,13 @@ Namespace UpdateService
         ''' Shutsdown all Update Service threads. Use to keep the server 
         ''' from running out of resources if things get away from us.
         ''' </summary>
-        ''' <remarks></remarks>
+        ''' <remarks>(WARNING) Assumes commanded shutdown and will flag for it so that 
+        ''' auto-restart does not occur!</remarks>
         Public Sub StopAllThreads()
             For Each Th As Thread In procAllThreads
                 Th.Abort()
             Next
+            procStopService = True
         End Sub
     End Module
 

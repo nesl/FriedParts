@@ -36,6 +36,8 @@ Namespace UpdateService
                 Return nServerProcesses
             End Get
         End Property
+
+
         Private Function countWorkers(ByRef WorkerType As upThreadTypes) As Int16
             Dim retval As Int16 = 0
             For Each dr As DataRow In dt.Rows
@@ -43,6 +45,20 @@ Namespace UpdateService
             Next
             Return retval
         End Function
+
+        ''' <summary>
+        ''' Statis method for efficiently assessing whether the Update Service is 
+        ''' online.
+        ''' </summary>
+        ''' <returns>True if running.</returns>
+        ''' <remarks>True if at least one dispatcher is running.</remarks>
+        Public Shared Function UpdateServiceIsRunning() As Boolean
+            For Each Worker As upThreadMetaData In upThreadList.GetMetadata
+                If Worker.ThreadType = upThreadTypes.ttDispatcher Then Return True
+            Next
+            Return False
+        End Function
+
         Public ReadOnly Property NumWorkerThreads(Optional ByVal WorkerType As upThreadTypes = upThreadTypes.rpAllWorkers) As Int16
             Get
                 If WorkerType = upThreadTypes.rpAllWorkers Then

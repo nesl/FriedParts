@@ -1,7 +1,6 @@
 ﻿
 Partial Class pSys_sysService
     Inherits System.Web.UI.Page
-    Protected FriedPartsUpdateService As UpdateService.upDispatcher
 
     Protected Const ResetPageInSeconds As Byte = 20
 
@@ -24,8 +23,7 @@ Partial Class pSys_sysService
     End Sub
 
     Protected Sub btnStart_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnStart.Click
-        FriedPartsUpdateService = New UpdateService.upDispatcher()
-        FriedPartsUpdateService.Start()
+        UpdateService.upThreadList.StartUpdateService(True)
         xGaugeDispatcherState.Value = 2
     End Sub
 

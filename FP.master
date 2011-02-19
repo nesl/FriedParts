@@ -143,7 +143,39 @@
         </div> <!-- [END] (Right Column) Content Pane-->
     </div> <!-- [END] CONTENT CONTAINER (holds the two columns with absolute width and position to prevent folding of the page and force scroll bars if browser window is too small -->
     
-    <!--#include file="~/pSys/MsgBox.include"-->
+
+
+
+
+    <dxpc:ASPxPopupControl ID="xMsgBox" runat="server" ClientInstanceName="xMsgBox" 
+                       Modal="True" CloseAction="CloseButton" Width="207px" 
+                       BackColor="#FFFF00"
+                       AllowDragging="True" PopupHorizontalAlign="WindowCenter" 
+                       PopupVerticalAlign="WindowCenter"
+                       HeaderText="Error!" ClientSideEvents-CloseUp="
+                       function(s,e){                      
+                       alert('Hi!');
+                       var theUrl = window.location.href;
+                       window.location.href = theUrl.substring(0,theUrl.indexOf('?'));
+                       }
+                       ">
+      <ContentCollection>
+        <dxpc:PopupControlContentControl ID="PopupControlContentControl1" runat="server">
+          <ContentHTML>
+            <div id="Outer_Div" style="position:relative; width:280px;">
+              <div id="Image_Div" style="float:left; width:50px">
+                <asp:Image ID="errImage" runat="server" AlternateText="Warning!" ImageUrl="http://friedparts.nesl.ucla.edu/FriedParts/images/System/warning.gif" />
+                <asp:Image ID="okImage" runat="server" AlternateText="Information" ImageUrl="http://friedparts.nesl.ucla.edu/FriedParts/images/System/check.gif" />
+              </div>
+              <div id="Content_Div" style="float:right; width:200px; text-align:center; padding:15px;">
+                <asp:Label ID="xMessage" runat="server" Text="Label"></asp:Label>        
+              </div>
+            </div>
+          </ContentHTML>
+        </dxpc:PopupControlContentControl>
+      </ContentCollection>
+    </dxpc:ASPxPopupControl>      
+
     
     </form> <!-- [END] Background Div -->
     

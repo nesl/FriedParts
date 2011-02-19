@@ -40,6 +40,50 @@ Namespace UpdateService
             End Get
         End Property
 
+        '===========================================
+        '== MUTUAL EXCLUSION (MUTEX)
+        '===========================================
+
+        ''' <summary>
+        ''' Initializes the mutual exclusion lock used to manage concurrency.
+        ''' </summary>
+        ''' <remarks>This is only really called from the constructor here. Derivative classes
+        ''' should never need to mess with this, but in case I didn't forsee some additional
+        ''' process specific initialization it is declared protected to allow override/extension
+        ''' </remarks>
+        Protected Overrides Sub MutexInit()
+            If mutexSemaphore Is Nothing Then mutexSemaphore = New Threading.Semaphore(mutexMaxConcurrent, mutexMaxConcurrent)
+            mutexLocked = False
+        End Sub
+
+        ''' <summary>
+        ''' Attempt to gain exclusive rights to run this process.
+        ''' </summary>
+        ''' <returns>Whether or not we were able to successful acquire the lock.</returns>
+        ''' <remarks></remarks>
+        Protected Overrides Function MutexLock() As Boolean
+            If mutexSemaphore.WaitOne(1) Then
+                mutexLocked = True
+                Return True
+            Else
+                Return False
+            End If
+        End Function
+
+        ''' <summary>
+        ''' Releases the exclusive lock on the the right to run this process.
+        ''' </summary>
+        ''' <remarks>Fails silently if you call it, but there is nothing to release (because you
+        ''' never locked it in the first place).</remarks>
+        Protected Overrides Sub MutexRelease()
+            mutexSemaphore.Release(1)
+            mutexLocked = False
+        End Sub
+
+
+
+
+
         ''' <summary>
         ''' Finds the next Dropbox to synchronize with FriedParts. Returns the UserID of the owner of
         ''' this Dropbox. Updates proceed in FIFO order with the oldest (least recently updated) 

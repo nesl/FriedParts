@@ -9,24 +9,41 @@ Namespace UpdateService
     ''' being created.
     ''' </summary>
     ''' <remarks></remarks>
-    Public Class upThreadList
+    Public Module upThreadList
 
-        Protected Shared procAllThreads As New Collection
-        Protected Shared procAllMeta As New Collection
+        Private procAllThreads As New Collection
+        Private procAllMeta As New Collection
 
-        Public Shared ReadOnly Property GetThreads As Collection
+        ''' <summary>
+        ''' Vacuums up the frayed threads (dead/completed threads)!
+        ''' </summary>
+        ''' <remarks>Garbage collection won't occur as long as we have a reference to the thread
+        ''' stored in this List</remarks>
+        Private Sub Vacuum()
+            For i As Int16 = 1 To procAllThreads.Count
+                If Not DirectCast(procAllThreads(i), Thread).IsAlive Then
+                    'Frayed Thread located! Cut it out!
+                    procAllThreads.Remove(i)
+                    procAllMeta.Remove(i)
+                End If
+            Next
+        End Sub
+
+        Public ReadOnly Property GetThreads As Collection
             Get
+                Vacuum()
                 Return procAllThreads
             End Get
         End Property
 
-        Public Shared ReadOnly Property GetMetadata As Collection
+        Public ReadOnly Property GetMetadata As Collection
             Get
+                Vacuum()
                 Return procAllMeta
             End Get
         End Property
 
-        Public Shared ReadOnly Property CountThreads As Int16
+        Public ReadOnly Property CountThreads As Int16
             Get
                 Return procAllThreads.Count
             End Get
@@ -37,7 +54,7 @@ Namespace UpdateService
         ''' <param name="TheThread">The FriedParts upProcess object</param>
         ''' <param name="TheMetaData">The associated upThreadMetaData object</param>
         ''' <remarks></remarks>
-        Public Shared Sub StartThread(ByRef TheThread As Thread, ByRef TheMetaData As upThreadMetaData)
+        Public Sub StartThread(ByRef TheThread As Thread, ByRef TheMetaData As upThreadMetaData)
             TheThread.Start() 'Actually start the thread
             procAllThreads.Add(TheThread, TheMetaData.GetThreadID)
             procAllMeta.Add(TheMetaData, TheMetaData.GetThreadID)
@@ -48,7 +65,7 @@ Namespace UpdateService
         ''' </summary>
         ''' <param name="TheThreadID">The FriedParts issued ThreadID</param>
         ''' <remarks>Fails silently if the thread is not found! Careful!</remarks>
-        Public Shared Sub StopThread(ByRef TheThreadID As Int32)
+        Public Sub StopThread(ByRef TheThreadID As Int32)
             If procAllThreads.Contains(TheThreadID) Then
                 DirectCast(procAllThreads(TheThreadID), Thread).Abort() 'Actually stop the thread
                 procAllThreads.Remove(TheThreadID) 'Remove the reference? -- it will be null at this point so I don't know if this will work
@@ -60,12 +77,12 @@ Namespace UpdateService
         ''' from running out of resources if things get away from us.
         ''' </summary>
         ''' <remarks></remarks>
-        Public Shared Sub StopAllThreads()
+        Public Sub StopAllThreads()
             For Each Th As Thread In procAllThreads
                 Th.Abort()
             Next
         End Sub
-    End Class
+    End Module
 
 
     ''' <summary>

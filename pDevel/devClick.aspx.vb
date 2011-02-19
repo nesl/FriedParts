@@ -7,7 +7,8 @@ Partial Class pDevel_devClick
 
     Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
 
-        devTestThreadManagement()
+        devTestSemaphore()
+        'devTestThreadManagement()
 
         'devTestUpdateService()
         'Dim blah As New txtPathAndFilename("/This/is/a/test.doc", False)
@@ -17,6 +18,58 @@ Partial Class pDevel_devClick
         'OLD TEST CODE
         '=============
         'devTestsysTextModule()
+    End Sub
+
+    Private MustInherit Class Base
+        Public MustOverride Function LockRequest() As Boolean
+        Public MustOverride Sub Release()
+        Public Function KeystoneLock() As Boolean
+            'This is the climax!
+            Return LockRequest()
+        End Function
+        Public Sub New()
+        End Sub
+    End Class
+
+    Private Class Deriv1
+        Inherits Base
+        Public Shared Shadows TheSem As Threading.Semaphore
+        Public Overrides Function LockRequest() As Boolean
+            Return TheSem.WaitOne(1)
+        End Function
+        Public Overrides Sub Release()
+            TheSem.Release(1)
+        End Sub
+        Public Sub New()
+            If TheSem Is Nothing Then TheSem = New Threading.Semaphore(1, 1)
+        End Sub
+    End Class
+
+    Private Class Deriv2
+        Inherits Base
+        Public Shared Shadows TheSem As Threading.Semaphore
+        Public Overrides Function LockRequest() As Boolean
+            Return TheSem.WaitOne(1)
+        End Function
+        Public Overrides Sub Release()
+            TheSem.Release(1)
+        End Sub
+        Public Sub New()
+            If TheSem Is Nothing Then TheSem = New Threading.Semaphore(1, 1)
+        End Sub
+    End Class
+
+    Private Sub devTestSemaphore()
+        Dim theSem As New Threading.Semaphore(1, 1)
+        Dim obj1a As New Deriv1
+        Dim obj1b As New Deriv1
+        Dim obj2a As New Deriv2
+        Label2.Text = "Semaphore Lock Request Result:"
+        Label2b.Text = "" & obj1a.KeystoneLock & ", " & obj1b.KeystoneLock & ", " & obj2a.KeystoneLock
+        Label3.Text = "Subsequent Request:"
+        Label3b.Text = ""
+
+
     End Sub
 
     Private Sub devTestThreadManagement()

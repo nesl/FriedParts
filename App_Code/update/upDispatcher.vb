@@ -66,9 +66,24 @@ Namespace UpdateService
         ''' <remarks></remarks>
         Protected Overrides Function MutexLock() As Boolean
             If mutexSemaphore.WaitOne(1) Then
+                'Lock succeeded
                 mutexLocked = True
                 Return True
             Else
+                '[Lock failed]
+                'Are we deadlocked? -- happens if we exit abnormally (e.g. manually)
+                Dim RunReport As New upReport
+                If RunReport.NumWorkerThreads(upThreadTypes.ttDispatcher) = 0 Then
+                    'Force lock release because no one is holding it... state-sync error
+                    Try
+                        While True
+                            'Infinite loop, we'll exit via the exception caused when we over-release it
+                            MutexRelease()
+                        End While
+                    Catch ex As SemaphoreFullException
+                        'Released all outstanding semaphores
+                    End Try
+                End If
                 Return False
             End If
         End Function

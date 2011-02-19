@@ -32,7 +32,15 @@
                     <dxrp:ASPxRoundPanel ID="ASPxRoundPanel1" runat="server" Width="200px" HeaderText="Control Panel">
                     <PanelCollection>
                         <dx:PanelContent ID="PanelContent1" runat="server">
+                        <div class="fpSmall">
                             <table>
+                                <tr>
+                                    <td colspan="3">
+                                        <dxe:ASPxProgressBar ID="xProgress" runat="server" Height="6px" Width="200px" ShowPosition="false"
+                                            CssFilePath="~/App_Themes/PlasticBlue/{0}/styles.css" CssPostfix="PlasticBlue" >
+                                        </dxe:ASPxProgressBar>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td>
                                         <dx:ASPxGaugeControl ID="xGaugeDispatcherState" runat="server" 
@@ -55,8 +63,13 @@
                                             </Gauges>
                                         </dx:ASPxGaugeControl>
                                     </td>
-                                    <td><asp:Button ID="btnStart" runat="server" Text="START" /></td>
-                                    <td><asp:Button ID="btnStop" runat="server" Text="STOP" /></td>
+                                    <td colspan="2">
+                                        <asp:Button ID="btnStart" runat="server" Text="Start Service" Font-Names="Tahoma" Font-Size="8pt" />
+                                        <asp:Button ID="btnStop" runat="server" Text="Stop Service" Font-Names="Tahoma" Font-Size="8pt" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3"><asp:Label ID="lblDispatcherState" runat="server" Text=""></asp:Label></td>
                                 </tr>
                             </table>
                             <table>
@@ -73,54 +86,41 @@
                                     <td><asp:Label ID="lblNumWorkers" runat="server" Text=""></asp:Label></td>
                                 </tr>
                             </table>
+                        </div>
                         </dx:PanelContent>    
                     </PanelCollection>
                     </dxrp:ASPxRoundPanel>
                 </div>
+                                
+                
+                <!-- WORKER THREADS TABLE -->                
                 <div style="float:left; margin-left:20px">
-                    <dxrp:ASPxRoundPanel ID="ASPxRoundPanel2" runat="server" Width="200px" HeaderText="Progress">
-                    <PanelCollection>
-                        <dx:PanelContent ID="PanelContent2" runat="server">
-                            Processing Record:
-                            <hr />
-                            <dxe:ASPxProgressBar ID="ASPxProgressBar2"
-                                runat="server" Height="21px" Position="50" Width="200px">
-                            </dxe:ASPxProgressBar>
-                        </dx:PanelContent>    
-                    </PanelCollection>
-                    </dxrp:ASPxRoundPanel>
-                </div>
-                <div style="float:left; margin-left:20px">
-                    <dxrp:ASPxRoundPanel ID="ASPxRoundPanel3" runat="server" Width="200px" HeaderText="Progress">
+                    <dxrp:ASPxRoundPanel ID="ASPxRoundPanel3" runat="server" Width="200px" HeaderText="Update-Service Workers">
                     <PanelCollection>
                         <dx:PanelContent ID="PanelContent3" runat="server">
-                            <dx:ASPxGridView ID="xGridThreads" runat="server" 
-                                CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass">
-                                <Images SpriteCssFilePath="~/App_Themes/Glass/{0}/sprite.css">
-                                    <LoadingPanelOnStatusBar Url="~/App_Themes/Glass/GridView/gvLoadingOnStatusBar.gif">
-                                    </LoadingPanelOnStatusBar>
-                                    <LoadingPanel Url="~/App_Themes/Glass/GridView/Loading.gif">
-                                    </LoadingPanel>
-                                </Images>
-                                <ImagesFilterControl>
-                                    <LoadingPanel Url="~/App_Themes/Glass/Editors/Loading.gif">
-                                    </LoadingPanel>
-                                </ImagesFilterControl>
-                                <Styles CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass">
-                                    <Header ImageSpacing="5px" SortingImageSpacing="5px">
-                                    </Header>
-                                </Styles>
-                                <StylesEditors>
-                                    <CalendarHeader Spacing="1px">
-                                    </CalendarHeader>
-                                    <ProgressBar Height="25px">
-                                    </ProgressBar>
-                                </StylesEditors>
+                            <dx:ASPxGridView ID="xGridThreads" runat="server" Font-Names="Tahoma" 
+                                Font-Size="X-Small" EnableCallBacks="False">
                             </dx:ASPxGridView>
                         </dx:PanelContent>    
                     </PanelCollection>
                     </dxrp:ASPxRoundPanel>
                 </div>
+
+
+                <!-- EVENT LOG TABLE -->
+                <div style="float:left; margin-left:20px">
+                    <dxrp:ASPxRoundPanel ID="ASPxRoundPanel2" runat="server" Width="500px" HeaderText="Event Log">
+                    <PanelCollection>
+                        <dx:PanelContent ID="PanelContent2" runat="server">
+                            <dx:ASPxGridView ID="xGridEvents" runat="server" Font-Names="Tahoma" 
+                                Font-Size="X-Small" EnableCallBacks="False">
+                            </dx:ASPxGridView>
+                        </dx:PanelContent>    
+                    </PanelCollection>
+                    </dxrp:ASPxRoundPanel>
+                </div>
+
+
 
             </div>
         </ContentTemplate>

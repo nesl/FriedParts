@@ -20,13 +20,15 @@ Namespace UpdateService
         ''' <remarks>Garbage collection won't occur as long as we have a reference to the thread
         ''' stored in this List</remarks>
         Private Sub Vacuum()
-            For i As Int16 = 1 To procAllThreads.Count
-                If Not DirectCast(procAllThreads(i), Thread).IsAlive Then
-                    'Frayed Thread located! Cut it out!
-                    procAllThreads.Remove(i)
-                    procAllMeta.Remove(i)
-                End If
-            Next
+            If procAllThreads.Count > 0 Then
+                For i As Int16 = 1 To procAllThreads.Count
+                    If Not DirectCast(procAllThreads(i), Thread).IsAlive Then
+                        'Frayed Thread located! Cut it out!
+                        procAllThreads.Remove(i)
+                        procAllMeta.Remove(i)
+                    End If
+                Next
+            End If
         End Sub
 
         Public ReadOnly Property GetThreads As Collection

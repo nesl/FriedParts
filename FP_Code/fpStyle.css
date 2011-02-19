@@ -13,6 +13,12 @@ div {
     font-size: 8pt; 
     font-weight: bold; 
 }
+div.fpSmall{
+    font-family: Tahoma; 
+    color: #444; 
+    font-size: 7pt; 
+    font-weight: bold;
+}
 div.fpMsgbox{
     position:absolute; 
     width:100%; 

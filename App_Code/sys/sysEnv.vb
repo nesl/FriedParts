@@ -106,5 +106,6 @@ Public Module sysEnv
 
     '>dropbox.Status -- Of Type DropboxStates; The current status of the current users Dropbox account
     '>dropbox.Account -- Of Type DropboxUser; The object holding the actual data structure
+    '>dropbox.Cache.Contents -- Of Type DataTable; DataSource for xGridDropboxContents in filesDropbox.aspx
 
 End Module

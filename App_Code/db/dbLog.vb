@@ -104,8 +104,13 @@ Public Module dbLog
         Optional ByVal Param1_Desc As String = "", Optional ByVal Param1_Old As String = "", Optional ByVal Param1_New As String = "", _
         Optional ByVal Param2_Desc As String = "", Optional ByVal Param2_Old As String = "", Optional ByVal Param2_New As String = "", _
         Optional ByVal Param3_Desc As String = "", Optional ByVal Param3_Old As String = "", Optional ByVal Param3_New As String = "")
-
-        logServiceActivity(Me_Page, HttpContext.Current.Session("user.UserID"), LogMessage, SQL_Redo, SQL_Undo, Param1_Desc, Param1_Old, Param1_New, Param2_Desc, Param2_Old, Param2_New, Param3_Desc, Param3_Old, Param3_New)
+        Dim theActiveUserID As Integer
+        If Not HttpContext.Current Is Nothing AndAlso Not HttpContext.Current.Session("user.UserID") Is Nothing Then
+            theActiveUserID = HttpContext.Current.Session("user.UserID")
+        Else
+            theActiveUserID = sysErrors.ERR_NOTFOUND
+        End If
+        logServiceActivity(Me_Page, theActiveUserID, LogMessage, SQL_Redo, SQL_Undo, Param1_Desc, Param1_Old, Param1_New, Param2_Desc, Param2_Old, Param2_New, Param3_Desc, Param3_Old, Param3_New)
     End Sub
 
 

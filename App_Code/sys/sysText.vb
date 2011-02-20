@@ -11,6 +11,11 @@ Public Module sysText
         Private F As String = Nothing
         Private X As String = Nothing
 
+        ''' <summary>
+        ''' Returns the entire PATH portion including the the terminating "/"
+        ''' </summary>
+        ''' <returns>the path *with* terminating delimiter</returns>
+        ''' <remarks>Example: "/FriedParts/Blahmooquack.Txt" --> "/FriedParts/"</remarks>
         Public ReadOnly Property GetPath As String
             Get
                 Return P

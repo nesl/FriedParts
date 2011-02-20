@@ -99,6 +99,17 @@ Namespace apiDropbox
             End Try
         End Function
 
+        ''' <summary>
+        ''' Deletes all files in a user's FriedParts Dropbox Folder. This effectively resets the
+        ''' folder. It does not effect any other user as the libraries are still registered with
+        ''' FriedParts. The correct files will simply be replaced on the next sync pass performed
+        ''' by a background worker. This is useful in case your folder gets full of extra junk files.
+        ''' </summary>
+        ''' <remarks></remarks>
+        Public Sub deleteAllFiles()
+            Dropbox.Delete(DropboxStatic.apiDropboxRoot)
+        End Sub
+
         '
         ''' <summary>
         ''' Downloads the specified dropbox file and returns true on success...
@@ -110,7 +121,7 @@ Namespace apiDropbox
         ''' <returns>True on success. False otherwise.</returns>
         ''' <remarks>Handles all of the logging tasks.</remarks>
         Public Function downloadFile(ByRef DropboxPathAndFilename As String, ByRef LocalPathAndFilename As String, Optional ByRef Which_Webpage As System.Web.UI.Page = Nothing) As Boolean
-            Dim PaF As New txtPathAndFilename(DropboxPathAndFilename, True)
+            Dim PaF As New txtPathAndFilename(DropboxPathAndFilename)
             Dim tStart As Date
             Dim tStop As Date
             logDropbox(apiDropbox.DropboxStates.Downloading, PaF.GetFilename, PaF.GetPath)
@@ -241,9 +252,9 @@ Namespace apiDropbox
                                 SyncFile(userFile)
                             Catch ex As FileNotFoundException
                                 'Doesn't exist on the server!
-                                If fplibValidExtension(userFile.Extension, userFile.Path) Then
+                                Dim uFile As New txtPathAndFilename(userFile.Path)
+                                If fplibValidExtension(userFile.Extension, uFile.GetPath) Then
                                     'Is a valid library type so lets add it!
-                                    Dim uFile As New txtPathAndFilename(userFile.Path)
                                     Dim downloadSuccess As Boolean = downloadFile(userFile.Path, dropboxROOT() & uFile.GetPathSubDirsOnly.Substring(1).Replace("/", "\") & uFile.GetFilename)
                                     If downloadSuccess Then
                                         'Download succeeded
@@ -277,6 +288,95 @@ Namespace apiDropbox
                 End If
             Next 'Looping through local (to server) directories
         End Sub
+
+        Public Shared Function CreateContentsTable() As DataTable
+            Dim Table1 As DataTable
+            Table1 = New DataTable("TextTable")
+            'Init
+            Dim col1 As DataColumn
+            '[UID]
+            col1 = New DataColumn("UID")
+            col1.DataType = System.Type.GetType("System.Int16")
+            col1.AutoIncrement = True
+            col1.AutoIncrementSeed = 1
+            col1.AutoIncrementStep = 1
+            Table1.Columns.Add(col1)
+            '[Something]
+            col1 = New DataColumn("Path")
+            col1.DataType = System.Type.GetType("System.String")
+            Table1.Columns.Add(col1)
+            '[Something]
+            col1 = New DataColumn("Filename")
+            col1.DataType = System.Type.GetType("System.String")
+            Table1.Columns.Add(col1)
+            '[Something]
+            col1 = New DataColumn("Notes")
+            col1.DataType = System.Type.GetType("System.String")
+            Table1.Columns.Add(col1)
+            Return Table1
+        End Function
+
+        Private iFileCount As Integer = sysErrors.ERR_NOTFOUND
+        Public ReadOnly Property GetContentsFileCount() As Integer
+            Get
+                Return iFileCount
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the complete (unfiltered) contents of the first layers of this user's Dropbox.
+        ''' </summary>
+        ''' <returns>DataTable in CreateContentsTable() schema</returns>
+        ''' <remarks>TODO: CONVERT TO RECURSIVE IMPLEMENTATION -- done iteratively right now for expedience</remarks>
+        Public Function GetContents() As DataTable
+            'Return value
+            Dim OutTable As New DataTable
+            OutTable = CreateContentsTable()
+            'Iterative variables
+            Dim theAppRootMeta As DropNet.Models.MetaData
+            Dim theDirMeta As DropNet.Models.MetaData
+            Dim entry As DropNet.Models.MetaData
+
+            'Does Approot Exist?
+            Dropbox.CreateFolder(apiDropboxRoot) 'Creating it is faster than Metadata retrieval and testing for existance; No effect if Dir already exists
+
+            'Get Metadata for Dropbox AppRoot
+            theAppRootMeta = Dropbox.GetMetaData(apiDropboxRoot)
+
+            'Follow Directory Structure
+            iFileCount = 0
+            For Each entry In theAppRootMeta.Contents
+                If entry.Is_Dir Then
+                    'This Entry is a FOLDER!
+                    'Write out the files in here!
+                    theDirMeta = Dropbox.GetMetaData(apiDropboxRoot & entry.Name & "/")
+                    For Each userFile As DropNet.Models.MetaData In theDirMeta.Contents
+                        If Not userFile.Is_Deleted Then
+                            'Path, Filename, Notes
+                            iFileCount += 1
+                            If userFile.Is_Dir Then
+                                'Sub-folder
+                                Dim vals() As String = {iFileCount, userFile.Path & "/", userFile.Name, "FOLDER!"}
+                                OutTable.Rows.Add(vals)
+                            Else
+                                'File
+                                Dim vals() As String = {iFileCount, userFile.Path, userFile.Name, ""}
+                                OutTable.Rows.Add(vals)
+                            End If
+                        End If
+                    Next 'Writing out the file in this subfolder
+                Else
+                    'This entry is a FILE -- just write it out
+                    'Path, Filename, Notes
+                    If Not entry.Is_Deleted Then
+                        iFileCount += 1
+                        Dim vals() As String = {iFileCount, entry.Path, entry.Name, ""}
+                        OutTable.Rows.Add(vals)
+                    End If
+                End If
+            Next
+            Return OutTable
+        End Function
 
         'For use now with our workaround
         Public Shared Function getDropboxClient(ByRef UserTokens As DropboxUserCredentials) As DropNet.DropNetClient

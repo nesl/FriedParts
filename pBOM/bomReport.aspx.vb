@@ -5,8 +5,7 @@ Partial Class pBOM_bomReport
 
     'If you click on a different project in the projects table, then we update the session variable which is used as a parameter-passing mechanism to the report itself
     Protected Sub xGridProjects_FocusedRowChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles xGridProjects.FocusedRowChanged
-        Dim drow As DataRow
-        drow = xGridProjects.GetDataRow(xGridProjects.FocusedRowIndex)
+        Dim drow As DataRow = xGridProjects.GetDataRow(xGridProjects.FocusedRowIndex)
         If drow IsNot Nothing Then
             'ReportWindow.Visible = True
             HttpContext.Current.Session("bom.ProjectID") = drow.Field(Of Integer)("ProjectID")

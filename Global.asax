@@ -23,7 +23,12 @@
         ' Note: The Session_End event is raised only when the sessionstate mode
         ' is set to InProc in the Web.config file. If session mode is set to StateServer 
         ' or SQLServer, the event is not raised.
-        Response.Redirect("http://friedparts.nesl.ucla.edu/friedparts/")
+        Try
+            Response.Redirect("http://friedparts.nesl.ucla.edu/friedparts/")
+        Catch ex As HttpException
+            'Response object not available in the current context
+            'xxx -- implement better handling in the future?
+        End Try
     End Sub
        
 </script>

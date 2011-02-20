@@ -39,13 +39,22 @@ Namespace UpdateService
         ''' stored in this List</remarks>
         Private Sub Vacuum()
             If procAllThreads.Count > 0 Then
-                For i As Int16 = 1 To procAllThreads.Count
-                    If Not DirectCast(procAllThreads(i), Thread).IsAlive Then
-                        'Frayed Thread located! Cut it out!
-                        procAllThreads.Remove(i)
-                        procAllMeta.Remove(i)
-                    End If
-                Next
+                Dim AllDone As Boolean = False
+                Do Until AllDone
+                    AllDone = True
+                    For i As Int16 = 1 To procAllThreads.Count
+                        If Not DirectCast(procAllThreads(i), Thread).IsAlive Then
+                            'Frayed Thread located! Cut it out!
+                            procAllThreads.Remove(i)
+                            procAllMeta.Remove(i)
+                            'We need to reiterate in case there are others... 
+                            '   the index of the collection has just changed!
+                            AllDone = False
+                            Exit For 'Re-loop
+                        End If
+                    Next
+                    'Exit For esacapes to here!
+                Loop
             End If
         End Sub
 

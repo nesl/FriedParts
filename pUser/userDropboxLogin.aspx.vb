@@ -1,4 +1,6 @@
-﻿
+﻿Imports apiDropbox
+Imports apiDropbox.DropboxStatic
+
 Partial Class pUser_userDropboxLogin
     Inherits System.Web.UI.Page
 

@@ -1,6 +1,8 @@
 ﻿Imports Microsoft.VisualBasic
 Imports System.Data
 Imports UpdateService.upService
+Imports apiDropbox
+Imports apiDropbox.DropboxStatic
 
 Namespace UpdateService
 

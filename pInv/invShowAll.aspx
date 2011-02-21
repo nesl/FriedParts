@@ -69,7 +69,7 @@
     AllowDragging="True" EnableAnimation="true" 
         ShowShadow="true" HeaderText="Part Details" 
     EnableClientSideAPI="True" EnableViewState="False" PopupAction="None" 
-        BackColor="#FFFF99" Left="10" Top="10" Height="800px" Width="625px">
+        BackColor="#FFFF99" Left="5" Top="40" Height="800px" Width="625px">
     </dxpc:ASPxPopupControl>    
 
     <script type="text/javascript">

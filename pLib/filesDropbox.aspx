@@ -59,7 +59,7 @@
 
                     <br />
 
-                    <dxrp:ASPxRoundPanel ID="xrpDropboxEvents" runat="server" Width="700px" HeaderText="RECENT EVENTS">
+                    <dxrp:ASPxRoundPanel ID="xrpDropboxEvents" runat="server" Width="900px" HeaderText="RECENT EVENTS">
                     <PanelCollection>
                     <dx:PanelContent>
                         <div style="margin-bottom:10px; width:500px;">
@@ -80,13 +80,13 @@
                                     VisibleIndex="1">
                                 </dxwgv:GridViewDataTextColumn>
                                 <dxwgv:GridViewDataTextColumn ShowInCustomizationForm="True" 
-                                    VisibleIndex="2" FieldName="OpDesc">
+                                    VisibleIndex="2" FieldName="OpDesc" Width="100px">
                                 </dxwgv:GridViewDataTextColumn>
                                 <dxwgv:GridViewDataTextColumn ShowInCustomizationForm="True" 
                                     VisibleIndex="3" FieldName="Filename">
                                 </dxwgv:GridViewDataTextColumn>
                                 <dxwgv:GridViewDataTextColumn ShowInCustomizationForm="True" 
-                                    VisibleIndex="4" FieldName="Message" Width="200px">
+                                    VisibleIndex="4" FieldName="Message" Width="300px">
                                 </dxwgv:GridViewDataTextColumn>
                             </Columns>
                             <Settings ShowFilterRow="True" />
@@ -192,6 +192,10 @@
                     <dxrp:ASPxRoundPanel ID="ASPxRoundPanel4" runat="server" Width="600px" HeaderText="Server-Local Files">
                         <PanelCollection>
                             <dx:PanelContent ID="PanelContent3" runat="server">
+                                <div class="fpHighlightBox">
+                                    Files you own are in bold.
+                                    <hr />
+                                </div>
                                 <dxwgv:ASPxGridView ID="xGridServer" runat="server" Font-Names="Tahoma" 
                                     Font-Size="X-Small"
                                     AutoGenerateColumns="False">

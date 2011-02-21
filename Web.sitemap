@@ -20,8 +20,7 @@
             <siteMapNode url="~/pBOM/bomViewProject.aspx" title="View Project"  description="View a FriedProject's Details and Downloadable Files" />
         </siteMapNode>
         <siteMapNode title="Libraries">
-            <siteMapNode url="~/pLib/libAddNew.aspx" title="Add/Upload"  description="Mui! desc2" />
-            <siteMapNode url="~/pLib/libBrowse.aspx" title="View/Download"  description="Mui! desc2" />
+            <siteMapNode title="Manage Dropbox Files"  url="~/pLib/filesDropbox.aspx" description="Monitor Dropbox Activity" />
         </siteMapNode>
         <siteMapNode title="Administration"  description="Permanent utilities for managing the FriedParts universe">
             <siteMapNode title="Communication">
@@ -32,10 +31,7 @@
                 <siteMapNode title="Data Integrity"  description="Populating the SQL relationships from old COMMON table" url="~/pAdmin/dbUtils.aspx" />
                 <siteMapNode title="Apache Log Parser"  description="Parses Apache Log Files" url="~/pAdmin/logApache.aspx" />
             </siteMapNode>
-            <siteMapNode title="Web Services">
-                <siteMapNode title="Update Service"  url="~/pSys/sysService.aspx" description="Period Database Maintenance Service Routine" />
-                <siteMapNode title="Dropbox Service"  url="~/pAdmin/filesDropbox.aspx" description="Monitor Dropbox Activity" />
-            </siteMapNode>
+            <siteMapNode title="Update Service"  url="~/pSys/sysService.aspx" description="Period Database Maintenance Service Routine" />
         </siteMapNode>
         <siteMapNode title="Development"  description="For testing purposes only!">
             <siteMapNode title="Bugs &amp; Docs (GitHub)"  description="Development documentation and bug tracking">

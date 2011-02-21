@@ -39,6 +39,9 @@ Partial Class pAdmin_filesDropbox
                 HttpContext.Current.Session("dropbox.Cache.Contents") = Nothing
             End If
 
+            'Default Tab
+            xTabPages.ActiveTabIndex = 0
+
             'Update Status
             lblAccountHolder.Text = theDropbox.GetAccountInfo.display_name & " (" & theDropbox.GetAccountInfo.email & ")"
             If Not HttpContext.Current.Session("dropbox.Status") Is Nothing Then

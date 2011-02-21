@@ -72,14 +72,9 @@
                             Font-Size="X-Small"
                             AutoGenerateColumns="False" DataSourceID="SqlDataSource1">
                             <Columns>
-                                <dxwgv:GridViewCommandColumn ShowInCustomizationForm="True" VisibleIndex="0">
-                                    <ClearFilterButton Visible="True">
-                                    </ClearFilterButton>
-                                </dxwgv:GridViewCommandColumn>
                                 <dxwgv:GridViewDataDateColumn FieldName="TimestampDate" 
-                                    ShowInCustomizationForm="True" VisibleIndex="0" 
-                                    PropertiesDateEdit-DisplayFormatString="G">
-<PropertiesDateEdit DisplayFormatString="G"></PropertiesDateEdit>
+                                    ShowInCustomizationForm="True" VisibleIndex="0">
+                                    <PropertiesDateEdit DisplayFormatString="G"></PropertiesDateEdit>
                                 </dxwgv:GridViewDataDateColumn>
                                 <dxwgv:GridViewDataTextColumn FieldName="UserName" ShowInCustomizationForm="True" 
                                     VisibleIndex="1">
@@ -91,7 +86,7 @@
                                     VisibleIndex="3" FieldName="Filename">
                                 </dxwgv:GridViewDataTextColumn>
                                 <dxwgv:GridViewDataTextColumn ShowInCustomizationForm="True" 
-                                    VisibleIndex="4" FieldName="Message">
+                                    VisibleIndex="4" FieldName="Message" Width="200px">
                                 </dxwgv:GridViewDataTextColumn>
                             </Columns>
                             <Settings ShowFilterRow="True" />

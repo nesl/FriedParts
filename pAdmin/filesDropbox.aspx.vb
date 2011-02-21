@@ -12,6 +12,12 @@ Partial Class pAdmin_filesDropbox
             xGridDropboxContents.DataBind()
             xGridDropboxContents.DataSource = HttpContext.Current.Session("dropbox.Cache.Contents")
         End If
+        'Rescan server disk if last scan was more than 5 minutes ago...
+        If DropboxServer.HowStale.TotalSeconds > 300 Then
+            DropboxServer.Update()
+        End If
+        xGridServer.DataSource = apiDropbox.DropboxServer.GetDataSource
+        xGridServer.DataBind()
     End Sub
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -28,7 +34,10 @@ Partial Class pAdmin_filesDropbox
         End If
 
         If Not (IsCallback Or IsPostBack) Then
-            'Initial Page Load
+            'Initial Page Load (Delete prior state if still present)
+            If Not HttpContext.Current.Session("dropbox.Cache.Contents") Is Nothing Then
+                HttpContext.Current.Session("dropbox.Cache.Contents") = Nothing
+            End If
 
             'Update Status
             lblAccountHolder.Text = theDropbox.GetAccountInfo.display_name & " (" & theDropbox.GetAccountInfo.email & ")"
@@ -72,6 +81,14 @@ Partial Class pAdmin_filesDropbox
                dUser.GetContents
             xGridDropboxContents.DataSource = HttpContext.Current.Session("dropbox.Cache.Contents")
             xGridDropboxContents.DataBind()
+        End If
+    End Sub
+
+    Protected Sub xGridServer_HtmlRowPrepared(ByVal sender As Object, ByVal e As DevExpress.Web.ASPxGridView.ASPxGridViewTableRowEventArgs) Handles xGridServer.HtmlRowPrepared
+        'Fires for each row of the grid after data is loaded into it, but before formatting. 
+        '   Used to implement data specific display issues (like hilighting files you own)
+        If suGetUsername().CompareTo(Convert.ToString(e.GetValue("Owner"))) = 0 Then
+            e.Row.Font.Bold = True
         End If
     End Sub
 End Class

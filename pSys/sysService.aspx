@@ -113,7 +113,19 @@
                     <PanelCollection>
                         <dx:PanelContent ID="PanelContent2" runat="server">
                             <dx:ASPxGridView ID="xGridEvents" runat="server" Font-Names="Tahoma" 
-                                Font-Size="X-Small" EnableCallBacks="False">
+                                Font-Size="X-Small" EnableCallBacks="False" AutoGenerateColumns="false">
+                                <Columns>
+                                 <dx:GridViewDataDateColumn FieldName="Date" 
+                                    ShowInCustomizationForm="True" VisibleIndex="0" 
+                                    PropertiesDateEdit-DisplayFormatString="G">
+                                </dx:GridViewDataDateColumn>
+                                <dx:GridViewDataTextColumn FieldName="ThreadID" ShowInCustomizationForm="True" 
+                                    VisibleIndex="1">
+                                </dx:GridViewDataTextColumn>
+                                <dx:GridViewDataTextColumn ShowInCustomizationForm="True" 
+                                    VisibleIndex="2" FieldName="Msg">
+                                </dx:GridViewDataTextColumn>
+                                </Columns>
                             </dx:ASPxGridView>
                         </dx:PanelContent>    
                     </PanelCollection>

@@ -68,6 +68,12 @@ Public Module sysEnv
         End Select
     End Function
 
+    ''' <summary>
+    ''' The server-local path of the Dropbox storage location
+    ''' </summary>
+    ''' <returns>The path which is machine specific. Delimiter terminated.</returns>
+    ''' <remarks>The function call enables the code to support local debugging 
+    ''' environments</remarks>
     Public Function dropboxROOT() As String
         Select Case Environment.MachineName.ToString()
             Case "FRED" 'For debugging on FRED machine

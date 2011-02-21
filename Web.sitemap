@@ -33,7 +33,7 @@
                 <siteMapNode title="Apache Log Parser"  description="Parses Apache Log Files" url="~/pAdmin/logApache.aspx" />
             </siteMapNode>
             <siteMapNode title="Web Services">
-                <siteMapNode title="FP Web Service"  url="~/pSys/sysService.aspx" description="Period Database Maintenance Service Routine" />
+                <siteMapNode title="Update Service"  url="~/pSys/sysService.aspx" description="Period Database Maintenance Service Routine" />
                 <siteMapNode title="Dropbox Service"  url="~/pAdmin/filesDropbox.aspx" description="Monitor Dropbox Activity" />
             </siteMapNode>
         </siteMapNode>

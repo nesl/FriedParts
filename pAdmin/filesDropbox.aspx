@@ -20,7 +20,7 @@
     <!-- TAB PAGES -->     
 <div>
     <dxtc:ASPxPageControl ID="xTabPages" ClientInstanceName="xTabPages" 
-        runat="server" ActiveTabIndex="0" 
+        runat="server" ActiveTabIndex="2" 
         Height="200px" Width="700px" 
         CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass" 
         TabSpacing="0px" EnableCallBacks="True">
@@ -77,7 +77,9 @@
                                     </ClearFilterButton>
                                 </dxwgv:GridViewCommandColumn>
                                 <dxwgv:GridViewDataDateColumn FieldName="TimestampDate" 
-                                    ShowInCustomizationForm="True" VisibleIndex="0">
+                                    ShowInCustomizationForm="True" VisibleIndex="0" 
+                                    PropertiesDateEdit-DisplayFormatString="G">
+<PropertiesDateEdit DisplayFormatString="G"></PropertiesDateEdit>
                                 </dxwgv:GridViewDataDateColumn>
                                 <dxwgv:GridViewDataTextColumn FieldName="UserName" ShowInCustomizationForm="True" 
                                     VisibleIndex="1">
@@ -184,14 +186,11 @@
                                 </dxwgv:ASPxGridView>
                             </dx:PanelContent>    
                         </PanelCollection>
-                    </dxrp:ASPxRoundPanel>
-
-
-
-
-                    
+                    </dxrp:ASPxRoundPanel>                   
                 </asp:Panel>
             </dxw:ContentControl></ContentCollection></dxtc:TabPage>
+
+
 
             <dxtc:TabPage Text="Server Dropbox Contents"><ContentCollection><dxw:ContentControl ID="ContentControl3" runat="server">                    
                 <asp:Panel ID="Panel2" runat="server" style="color:black;">
@@ -207,13 +206,38 @@
                                             <EditFormSettings Visible="False" />
                                         </dxwgv:GridViewDataColumn>
                                         <dxwgv:GridViewDataTextColumn FieldName="Path" ShowInCustomizationForm="True" 
-                                            VisibleIndex="1">
+                                            VisibleIndex="5">
                                         </dxwgv:GridViewDataTextColumn>
                                         <dxwgv:GridViewDataTextColumn FieldName="Filename" ShowInCustomizationForm="True" 
-                                            VisibleIndex="1">
+                                            VisibleIndex="6">
                                         </dxwgv:GridViewDataTextColumn>
+                                        <dxwgv:GridViewDataTextColumn FieldName="FileSize" Caption="Size (in KB)" ShowInCustomizationForm="True" 
+                                            VisibleIndex="7">
+                                            <CellStyle HorizontalAlign="Right">
+                                            </CellStyle>
+                                        </dxwgv:GridViewDataTextColumn>
+                                        <dxwgv:GridViewDataTextColumn FieldName="Owner" ShowInCustomizationForm="True" 
+                                            VisibleIndex="4">
+                                        </dxwgv:GridViewDataTextColumn>
+                                        <dxwgv:GridViewDataTextColumn FieldName="Version" ShowInCustomizationForm="True" 
+                                            VisibleIndex="3">
+                                            <CellStyle HorizontalAlign="Center">
+                                            </CellStyle>
+                                        </dxwgv:GridViewDataTextColumn>
+                                        <dxwgv:GridViewDataDateColumn FieldName="LastUpdate" 
+                                            ShowInCustomizationForm="True" VisibleIndex="1">
+                                            <PropertiesDateEdit DisplayFormatString="G">
+                                        </PropertiesDateEdit>
+                                        </dxwgv:GridViewDataDateColumn>
+                                        <dxwgv:GridViewDataDateColumn FieldName="LastAccessed" 
+                                            ShowInCustomizationForm="True" VisibleIndex="2">
+                                            <PropertiesDateEdit DisplayFormatString="G">
+                                        </PropertiesDateEdit>
+                                        </dxwgv:GridViewDataDateColumn>
                                         <dxwgv:GridViewDataTextColumn FieldName="Notes" ShowInCustomizationForm="True" 
-                                            VisibleIndex="1">
+                                            VisibleIndex="8" Width="150px">
+                                            <CellStyle HorizontalAlign="Left">
+                                            </CellStyle>
                                         </dxwgv:GridViewDataTextColumn>
                                     </Columns>
                                     <SettingsPager PageSize="50">

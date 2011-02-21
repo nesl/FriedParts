@@ -14,15 +14,22 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     
     <dxwgv:ASPxGridView ID="xGV" runat="server"
-        CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass" AutoGenerateColumns="false">
+        CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass" 
+        AutoGenerateColumns="false" Font-Names="Tahoma" Font-Size="X-Small" 
+        SettingsPager-PageSize="20">
+
         <Images ImageFolder="~/App_Themes/Glass/{0}/">
         </Images>
+
         <Settings ShowFilterRow="True" ShowGroupPanel="True" />
+
         <SettingsLoadingPanel Text="Searching&amp;hellip;" />
+
         <Styles CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass">
             <Header ImageSpacing="5px" SortingImageSpacing="5px">
             </Header>
         </Styles>
+
         <Columns>
             <dxwgv:GridViewDataTextColumn Caption="Type of Part" FieldName="Type" ReadOnly="True" VisibleIndex="1">
             </dxwgv:GridViewDataTextColumn>
@@ -30,7 +37,8 @@
             </dxwgv:GridViewDataTextColumn>
             <dxwgv:GridViewDataTextColumn Caption="Part Number" FieldName="mfrPartNum" VisibleIndex="3">
             </dxwgv:GridViewDataTextColumn>
-            <dxwgv:GridViewDataTextColumn Caption="Description" FieldName="Description" VisibleIndex="4">
+            <dxwgv:GridViewDataTextColumn Caption="Description" FieldName="Description" VisibleIndex="4"
+                Width="200px">
             </dxwgv:GridViewDataTextColumn>
             <dxwgv:GridViewDataTextColumn Caption="Value" FieldName="Value" VisibleIndex="5">
             </dxwgv:GridViewDataTextColumn>
@@ -38,16 +46,22 @@
             </dxwgv:GridViewDataTextColumn>
             <dxwgv:GridViewDataTextColumn Caption="Tolerance" FieldName="Tol" VisibleIndex="7">
             </dxwgv:GridViewDataTextColumn>
-            <dxwgv:GridViewDataCheckColumn Caption="Verified" FieldName="Verified" VisibleIndex="8">
+            <dxwgv:GridViewDataCheckColumn Caption="Verified" FieldName="Verified" VisibleIndex="8"
+                Width="25px">
             </dxwgv:GridViewDataCheckColumn>
-            <dxwgv:GridViewDataCheckColumn Caption="Obsolete" FieldName="Obsolete" VisibleIndex="9">
+            <dxwgv:GridViewDataCheckColumn Caption="Obsolete" FieldName="Obsolete" VisibleIndex="9"
+                Width="25px">
             </dxwgv:GridViewDataCheckColumn>
-            <dxwgv:GridViewDataCheckColumn Caption="RoHS" FieldName="RoHS" VisibleIndex="10">
+            <dxwgv:GridViewDataCheckColumn Caption="RoHS" FieldName="RoHS" VisibleIndex="10"
+                Width="25px">
             </dxwgv:GridViewDataCheckColumn>
-            <dxwgv:GridViewDataTextColumn Caption="PartID" FieldName="PartID" VisibleIndex="11">
+            <dxwgv:GridViewDataTextColumn Caption="PartID" FieldName="PartID" VisibleIndex="11"
+                Width="25px">
             </dxwgv:GridViewDataTextColumn>
         </Columns>
+
         <SettingsBehavior AllowFocusedRow="True" />
+
         <ClientSideEvents RowClick="function(s, e) { OnGridRowClicked(e.visibleIndex); }"/>
     </dxwgv:ASPxGridView>
   

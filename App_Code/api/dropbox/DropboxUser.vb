@@ -289,6 +289,11 @@ Namespace apiDropbox
             Next 'Looping through local (to server) directories
         End Sub
 
+        ''' <summary>
+        ''' Creates the Contents Table schema.
+        ''' </summary>
+        ''' <returns>Structured (but empty) DataTable</returns>
+        ''' <remarks></remarks>
         Public Shared Function CreateContentsTable() As DataTable
             Dim Table1 As DataTable
             Table1 = New DataTable("TextTable")

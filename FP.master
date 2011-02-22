@@ -154,7 +154,6 @@
                        PopupVerticalAlign="WindowCenter"
                        HeaderText="Error!" ClientSideEvents-CloseUp="
                        function(s,e){                      
-                       alert('Hi!');
                        var theUrl = window.location.href;
                        window.location.href = theUrl.substring(0,theUrl.indexOf('?'));
                        }

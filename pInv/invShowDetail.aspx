@@ -22,68 +22,72 @@
     
 </head>
 <body>
-    <form id="form1" runat="server" style="font-family: Tahoma, Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: normal; font-style: normal; font-variant: normal; color: #000000">
-        <div id="OVERALL_CONTAINER" style="position:relative; top:70px; left:0px;">
+    <form id="form1" runat="server" style="font-family: Tahoma, Arial, Helvetica, sans-serif; 
+        font-size: 9pt; font-weight: normal; font-style: normal; font-variant: normal; 
+        color: #000000">
+        <div id="OVERALL_CONTAINER" style="position:relative; top:0px; left:0px;">
 
             <!-- HEADER -->
-            <div style="margin-bottom:10px">
+            <div style="margin-bottom:10px; height:40px;">
                 <asp:SqlDataSource ID="fpSQLData" runat="server"></asp:SqlDataSource>
-                <div id="TitleMfr" runat="server" style="font-size:11pt; font-weight:bold;"></div>
-                <div id="TitlePart" runat="server" style="font-size:14pt; font-weight:bold;"></div>
+                <div style="float:left; height:40px; border-right: 1px solid gray; padding-right: 5px; margin-right:10px;">
+                    <span style="vertical-align:top; color:Gray">ID#</span>
+                    <span style="vertical-align:bottom; font-size:24pt">
+                        <asp:Label ID="lblFPID" runat="server" Text="8888"></asp:Label>
+                    </span>
+                </div>
+                <div style="float:left; height:40px;">
+                    <div id="TitleMfr" runat="server" style="font-size:11pt; font-weight:bold;"></div>
+                    <div id="TitlePart" runat="server" style="font-size:14pt; font-weight:bold;"></div>
+                </div>
             </div>
-
+            <div style="float:none;"></div>
             <!-- TAB PAGES -->        
             <dxtc:ASPxPageControl ID="xTabPages" ClientInstanceName="xTabPages" 
-                runat="server" ActiveTabIndex="3" 
-                Height="200px" Width="590px" 
-                CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass" 
-                TabSpacing="0px" EnableCallBacks="True">
-                <LoadingPanelImage Url="~/App_Themes/Glass/Web/Loading.gif">
-                </LoadingPanelImage>
-                <ContentStyle>
-                    <Border BorderColor="#4986A2" />
-                </ContentStyle>
+                runat="server" ActiveTabIndex="2" EnableCallBacks="True" Width="590px" Height="690px">
 
                 <TabPages>
                 
                     <dxtc:TabPage Text="Summary"><ContentCollection><dxw:ContentControl ID="ContentControl1" runat="server">                    
                         <asp:Panel ID="Panel5" runat="server" style="color:black;">
                             <!-- Page Content Goes HERE -->
-                                            <b>Description:</b><br />
-                    <asp:TextBox ID="TextBoxDesc" runat="server" Height="30px" Width="325px" 
-                        BorderColor="#00CC66" BorderStyle="Solid" BorderWidth="1px" 
-                        TextMode="MultiLine" Rows="2">Blah!</asp:TextBox>
-                    <br />
-                    <b>Extended Description:</b><br />
-                    <asp:TextBox ID="TextBoxXDesc" runat="server" Height="125px" Width="325px" 
-                        BorderColor="#00CC66" BorderStyle="Solid" BorderWidth="1px"
-                        TextMode="MultiLine">Blah!</asp:TextBox>
-
-                            <!-- Top Right Column -->
-                            <div id="TopBoxRightCol" runat="server" style="position:absolute; top:0; right:0; width:225px; height:350px">
-                                <dxrp:ASPxRoundPanel ID="ASPxRoundPanel1" runat="server" Width="225px" 
-                                    HeaderText="Part Photo">
-                                <PanelCollection>
-                                    <dx:PanelContent ID="PanelContent1" runat="server">
-                                    <div style="overflow:hidden; width:200px; height:200px"> <!-- This div is a fixed size to trap large images before we get a chance to resize them -->
-                                        <img id="ImagePart" alt="Image of the Part" src="" runat="server" width="200" height="200" /> <!-- Use javascript to resize image dynamically? onload="ResizeImage(this,200,200);"-->
-                                    </div>
-                                    </dx:PanelContent>
-                                </PanelCollection>
-                                </dxrp:ASPxRoundPanel>
+                            <div style="position:relative;">
+                                <b>Description:</b><br />
+                                <asp:TextBox ID="TextBoxDesc" runat="server" Height="30px" Width="325px" 
+                                    BorderColor="#00CC66" BorderStyle="Solid" BorderWidth="1px" 
+                                    TextMode="MultiLine" Rows="2">Blah!</asp:TextBox>
                                 <br />
-                                <dxrp:ASPxRoundPanel ID="ASPxRoundPanel2" runat="server" Width="225px" 
-                                    HeaderText="Specifications">
+                                <b>Extended Description:</b><br />
+                                <asp:TextBox ID="TextBoxXDesc" runat="server" Height="125px" Width="325px" 
+                                    BorderColor="#00CC66" BorderStyle="Solid" BorderWidth="1px"
+                                    TextMode="MultiLine">Blah!</asp:TextBox>
+
+                                <!-- Top Right Column -->
+                                <div id="TopBoxRightCol" runat="server" style="position:absolute; top:0; right:0; width:225px; height:350px">
+                                    <dxrp:ASPxRoundPanel ID="ASPxRoundPanel1" runat="server" Width="225px" 
+                                        HeaderText="Part Photo">
                                     <PanelCollection>
-                                        <dx:PanelContent ID="PanelContent2" runat="server">
-                                        <a id="sDatasheet" href="" runat="server" target="_blank">Datasheet</a> <br />
-                                        <div id="sValue" runat="server"> </div>
-                                        <div id="sTemp" runat="server"></div>
+                                        <dx:PanelContent ID="PanelContent1" runat="server">
+                                        <div style="overflow:hidden; width:200px; height:200px"> <!-- This div is a fixed size to trap large images before we get a chance to resize them -->
+                                            <img id="ImagePart" alt="Image of the Part" src="" runat="server" width="200" height="200" /> 
+                                            <!-- Use javascript to resize image dynamically? onload="ResizeImage(this,200,200);"-->
+                                        </div>
                                         </dx:PanelContent>
                                     </PanelCollection>
-                                </dxrp:ASPxRoundPanel>
-                            </div> <!-- Top Right Column -->
-
+                                    </dxrp:ASPxRoundPanel>
+                                    <br />
+                                    <dxrp:ASPxRoundPanel ID="ASPxRoundPanel2" runat="server" Width="225px" 
+                                        HeaderText="Specifications">
+                                        <PanelCollection>
+                                            <dx:PanelContent ID="PanelContent2" runat="server">
+                                            <a id="sDatasheet" href="" runat="server" target="_blank">Datasheet</a> <br />
+                                            <div id="sValue" runat="server"> </div>
+                                            <div id="sTemp" runat="server"></div>
+                                            </dx:PanelContent>
+                                        </PanelCollection>
+                                    </dxrp:ASPxRoundPanel>
+                                </div> <!-- Top Right Column -->
+                            </div>
                         </asp:Panel>
                     </dxw:ContentControl></ContentCollection></dxtc:TabPage>
             
@@ -113,7 +117,9 @@
                                 </dxwgv:GridViewDataColumn>
                                 </Columns>
                             </dxwgv:ASPxGridView>
-                                    
+                            
+                            <br /><br />
+                            
                             <b>Distributor Inventory:</b><br />
                             <dxwgv:ASPxGridView ID="xGVDist" runat="server" AutoGenerateColumns="false">
                                 <Settings ShowFilterRow="True" />

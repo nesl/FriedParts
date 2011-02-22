@@ -17,6 +17,10 @@ Partial Class pInv_invShowDetail
             'TITLES
             TitleMfr.InnerText = DR.Field(Of String)("mfrName")
             TitlePart.InnerText = DR.Field(Of String)("mfrPartNum")
+            lblFPID.Text = passedIN("detail")
+
+            'TAB PAGES
+            xTabPages.ActiveTabIndex = 0
 
             'IMAGE
             'Enables dynamic image resizing which is really important, but I can't seem to get working right now

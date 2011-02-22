@@ -14,6 +14,12 @@
         ' Code that runs when an unhandled error occurs
     End Sub
 
+    Sub Application_PostReleaseRequestState(ByVal sender As Object, ByVal e As EventArgs)
+        If Response.ContentType = "text/html" Then
+            Response.Filter = New sysReplaceHTML(Response.Filter)
+        End If
+    End Sub
+    
     Sub Session_Start(ByVal sender As Object, ByVal e As EventArgs)
         ' Code that runs when a new session is started
     End Sub

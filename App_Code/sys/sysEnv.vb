@@ -26,6 +26,24 @@ Public Module sysEnv
         End If
     End Function
 
+    '==================
+    '== SERVER NAME ==
+    '==================
+
+    ''' <summary>
+    ''' Is this machine the production server?
+    ''' </summary>
+    ''' <returns>True if the machine running this function is the server</returns>
+    ''' <remarks>Used to prevent spawing of Update Service worker threads on development machines.</remarks>
+    Public Function sysIsServer() As Boolean
+        Select Case Environment.MachineName.ToString()
+            Case "FRED" 'For debugging on FRED machine
+                Return False
+            Case Else
+                Return True
+        End Select
+    End Function
+
     '===================
     '== PROCESS NAMES ==
     '===================

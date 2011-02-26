@@ -1,58 +1,33 @@
 ﻿Imports Microsoft.VisualBasic
-Imports System
-Imports System.Net
-Imports System.IO
-Imports System.Text.RegularExpressions
-Imports System.Char
-Imports System.Environment
-Imports System.Collections
-Imports System.String
-Imports System.Data
+Imports Newtonsoft.Json.Linq
 
-'VB.NET Happy Octopart, Inc. API
-'By Newton Truong
-Public Module apiOctoparts
-    'Web addresses
-    Private Const OCTOPART_URL_PREFIX As String = "http://octopart.com/api/v2/parts/search?q="
-    'Finish Parsing Tag
-    Public Const ENDOFSOURCE As String = "ENDOFSOURCE"
-
-    '==========================
-    '==  CLASS DISTRIBUTOR   ==
-    '==========================
-    'Mfr_List block
-    Public Class Distributor
-        Public sku As String
-        Public avail As String
-        Public sendrfq_url As String
-        Public prices As String
-        Public clickthrough_url As String
-        Public displayname As String
-        Public buynow_url As String
-    End Class
+Namespace apiOctopart
 
     '=======================
     '==  CLASS OCTOPART   ==
     '=======================
     Public Class Octopart
         'Internal Variables
-        Private json As String        'Raw text of webpage (JSON format)
-        Private Octopart_ToString As String     'Debug style summary of the object parsing
+        ''' <summary>
+        ''' The entire results from Octopart in JSON.NET format
+        ''' </summary>
+        ''' <remarks></remarks>
+        Private JSON As JToken 'The entire results from Octopart
+
+        ''' <summary>
+        ''' The UID for this part as defined by Octopart
+        ''' </summary>
+        ''' <remarks></remarks>
+        Private OctopartUID As String
 
         'Public Properties
-        Protected table_MpnList As DataTable
-        Public ReadOnly Property MPN_List() As DataTable
-            Get
-                Return table_MpnList
-            End Get
-        End Property
-
         Protected table_DatasheetUrl As DataTable
         Public ReadOnly Property DatasheetURL_List() As DataTable
             Get
                 Return table_DatasheetUrl
             End Get
         End Property
+
         'Used to set the fieldname in the combobox datasource
         Public ReadOnly Property DatsheetURL_FieldName() As String
             Get
@@ -66,6 +41,7 @@ Public Module apiOctoparts
                 Return table_ImageUrl
             End Get
         End Property
+
         'Used to set the fieldname in the combobox datasource
         Public ReadOnly Property ImageURL_FieldName() As String
             Get
@@ -164,41 +140,6 @@ Public Module apiOctoparts
             End Get
         End Property
 
-        'Parser State Machine States
-        Private Enum ParserStates As Byte
-            Top_Level = 0
-            Item_Level = 1
-            Descriptions_Level = 2
-        End Enum
-
-        'Constructor
-        Public Sub New()
-            Err.Raise(-234324, , "Class Octopart cannot be constructed with default (e.g. 0) parameters")
-        End Sub
-
-        Public Sub New(ByVal PartToSearch As String)
-            'Format the query
-            Dim URL As String = OCTOPART_URL_PREFIX & _
-                                System.Web.HttpUtility.UrlEncode(PartToSearch) _
-                                'Append the user's search request to the end of the string
-            'Get the source
-            Dim myWebClient As New WebClient()
-            Dim Source As String = myWebClient.DownloadString(URL)    'Source is the text received from OCTOPARTS website
-            json = Source 'Save the raw page text for later...
-
-            'Find out how many MPN's match these search terms
-            parseMpnTable()
-
-            'Process the part... (if only one matching mpn to query, populate me, otherwise will not do much)
-            If MPN_List.Rows.Count = 1 Then
-                'Pass "Source" not "json" because fetch functions consume it
-                Octopart_ToString = fetchBlock(Source, MPN_List.Rows(0).Field(Of String)("MfrPartNum"))
-                MpnLoaded = True
-            Else
-                MpnLoaded = False
-            End If
-        End Sub
-
         'Loads the Image and Datasheet URL Tables
         'Call on loaded part changed
         Protected Sub Load_URL_Tables()
@@ -218,41 +159,6 @@ Public Module apiOctoparts
                 table_ImageUrl.Rows.Add(urlstring)
             Next
 
-        End Sub
-
-        'Clears the specific selected manufacturer part number data, without 
-        '   requiring another trip to the Octopart server. Use this to switch 
-        '   between MPN's when multiple match the initial query.
-        Public Sub clear()
-            MpnLoaded = False
-            Me.lmpn = ""
-            Me.ldesc = ""
-            Me.lavg_Avail = ""
-            Me.lnum_Suppliers = ""
-            Me.lspecs.Clear()
-            Me.lspecsMeta.Clear()
-            Me.ldatasheets.Clear()
-            Me.lmfr_List.Clear()
-            Me.lmfr_ListMeta.Clear()
-            Me.limages.Clear()
-            Me.ldetail_Url = ""
-            Me.lmanufacturer = ""
-            table_DatasheetUrl = Nothing
-            table_ImageUrl = Nothing
-        End Sub
-
-        'Switches the specific selected manufacturer part number data, without 
-        '   requiring another trip to the Octopart server. Use this to switch 
-        '   between MPN's when multiple match the initial query.
-        Public Sub switch(ByVal ManufacturerPartNumber As String)
-            'Process the part... (if only one matching mpn to query, populate me, otherwise will not do much)
-            Me.clear() 'clear out the current part so that we may replace it
-            If MPN_List.Rows.Count > 0 Then
-                Dim source As String = json 'must pass in a copy because the fetch functions consume the string
-                Octopart_ToString = fetchBlock(source, ManufacturerPartNumber)
-                Load_URL_Tables()
-                MpnLoaded = True
-            End If
         End Sub
 
         'Meaningful ToString function!
@@ -676,124 +582,6 @@ Public Module apiOctoparts
             Return Nothing
         End Function
 
-        Private Function bracketIndexes(ByVal source As String) As Array
-            Dim bounds() As Integer = {-1, -1}
-            'find frist '['
-            Dim i As Integer = 0
-            Dim length As Integer = source.Length
-            While (i < length)
-                If source(i) <> "[" Then
-                    i = i + 1
-                Else
-                    Exit While
-                End If
-            End While
-
-            If i <> length Then
-                bounds(0) = i
-            Else
-                Return bounds
-            End If
-            i = i + 1
-
-            'now to find ']'
-            'need to keep other '[' in check
-            Dim token As Integer = 0 'for counting '['
-            While (i < length)
-                If source(i) = "["c Then
-                    token = token + 1
-                End If
-                If source(i) = "]" And token > 0 Then
-                    token = token - 1
-                ElseIf source(i) = "]" And token = 0 Then
-                    bounds(1) = i
-                    Exit While
-                End If
-                i = i + 1
-            End While
-
-            Return bounds
-        End Function
-
-        Private Function curlyBracketIndexes(ByVal source As String) As Array
-            Dim bounds() As Integer = {-1, -1}
-            'find frist '{'
-            Dim i As Integer = 0
-            Dim length As Integer = source.Length
-
-            While (i < length)
-                If source(i) <> "{" Then
-                    i = i + 1
-                Else
-                    Exit While
-                End If
-            End While
-
-            If i <> length Then
-                bounds(0) = i
-            Else
-                Return bounds
-            End If
-            i = i + 1
-
-            'now to find '}'
-            'need to keep other '{' in check
-            Dim token As Integer = 0 'for counting '{'
-            While (i < length)
-                If source(i) = "{"c Then
-                    token = token + 1
-                End If
-                If source(i) = "}" And token > 0 Then
-                    token = token - 1
-                ElseIf source(i) = "}" And token = 0 Then
-                    bounds(1) = i
-                    Exit While
-                End If
-                i = i + 1
-            End While
-
-            Return bounds
-        End Function
-
-        Private Function quoteIndexes(ByVal source As String) As Array
-            Dim bounds() As Integer = {-1, -1}
-            Dim i As Integer = 0
-            Dim length As Integer = source.Length
-
-            'find frist '"'
-            While (i < length)
-                If source(i) <> """" Then
-                    i = i + 1
-                Else
-                    Exit While
-                End If
-            End While
-
-            If i <> length Then
-                bounds(0) = i
-            Else
-                Return bounds
-            End If
-            i = i + 1
-
-            'now to find second '"'
-            While (i < length)
-                If source(i) <> """" Then
-                    i = i + 1
-                Else
-                    Exit While
-                End If
-            End While
-
-            If i <> length Then
-                bounds(1) = i
-            Else
-                Return bounds
-            End If
-
-            Return bounds
-        End Function
-
         Private Function parseMfrListBlock(ByRef mfr_ListBlock As String) As String
             'index temp values
             Dim indexes() As Integer
@@ -894,61 +682,20 @@ Public Module apiOctoparts
                     "buynow_url: " & dist.buynow_url & vbCrLf
         End Function
 
+        'Constructor
+        Public Sub New()
+            Throw New Exception("Class Octopart cannot be constructed with default (e.g. 0) parameters")
+        End Sub
+
+        ''' <summary>
+        ''' The only constructor. Populate this part's data from the JSON.NET formatted results.
+        ''' </summary>
+        ''' <param name="part_uid"></param>
+        ''' <param name="Results"></param>
+        ''' <remarks></remarks>
+        Public Sub New(ByRef part_uid As String, ByRef Results As Newtonsoft.Json.Linq.JToken)
+
+        End Sub
     End Class
-    '==========================
-    '== [END] CLASS OCTOPART ==
-    '==========================
 
-    Function fetch(ByRef source As String) As String
-
-        'clear keyword
-        Dim keyword As String = ""
-
-        Dim charsToTrimFromSource() As Char = {"{"c, "["c, "]"c, "}"c, ","c, ":", " "c}
-        Dim charsToTrimFromKeyword(charsToTrimFromSource.Length) As Char
-        charsToTrimFromSource.CopyTo(charsToTrimFromKeyword, 0)
-        charsToTrimFromKeyword(charsToTrimFromSource.Length) = """"c
-
-        'look for the next ':' character
-        Dim find1 As Integer = source.IndexOf(":"c)  'colon
-        Dim find2 As Integer = source.IndexOf(","c)  'comma
-        Dim findQ As Integer = source.IndexOf(""""c) 'quotes
-        Dim endex As Integer    'end index of keyword
-
-        'Short-circuit: Test for EOF now, so we don't waste processing
-        '-1 means that there is no ':' or ',' which means the text is empty or full of meaningless characters
-        If find1 = -1 Or find2 = -1 Then
-            Return ENDOFSOURCE
-        End If
-
-        'Find the Keyword's boundaries
-
-        'Deal with escaped text
-        If findQ = 0 Then
-            'If we start with quotes, find the next quotes, since quotes escape regular command/keyword processing
-            Dim findQ2 As Integer = source.IndexOf(""""c, findQ + 1) 'find the next quotes
-            If findQ2 > find1 Then
-                find1 = source.IndexOf(":"c, findQ2) 'find the next colon (because the last one was escaped)
-            End If
-            If findQ2 > find2 Then
-                find2 = source.IndexOf(","c, findQ2) 'find the next comma (because the last one was escaped)
-            End If
-        End If
-
-        'Normal Keyword processing (not in an escaped block)
-        If find1 > find2 Then  'find where the next object ends
-            endex = find2
-        Else
-            endex = find1
-        End If
-
-        'Extract Keyword, Cleanup, and Return
-        keyword = source.Substring(0, endex + 1)    'get the keyword'
-        source = source.Remove(0, endex + 1)    'trim the keyword from source
-        source = source.TrimStart(charsToTrimFromSource)  'trim extra from source
-        keyword = keyword.TrimStart(charsToTrimFromKeyword)    'clean up keyword
-        keyword = keyword.TrimEnd(charsToTrimFromKeyword)  'clean up keyword
-        Return keyword
-
-    End Function
-End Module
+End Namespace

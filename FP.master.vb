@@ -12,8 +12,10 @@ Partial Class FP
         End If
 
         'Ensure that the background Update-Service is running (auto-recover from server restarts)
-        If Not UpdateService.upReport.UpdateServiceIsRunning Then
-            UpdateService.upThreadList.StartUpdateService()
+        If sysIsServer() Then
+            If Not UpdateService.upReport.UpdateServiceIsRunning Then
+                UpdateService.upThreadList.StartUpdateService()
+            End If
         End If
 
         'Reroute after successful login...

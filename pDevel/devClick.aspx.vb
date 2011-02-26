@@ -6,8 +6,8 @@ Partial Class pDevel_devClick
     Inherits System.Web.UI.Page
 
     Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
-
-        devTestSemaphore()
+        devJSON()
+        'devTestSemaphore()
         'devTestThreadManagement()
 
         'devTestUpdateService()
@@ -103,6 +103,21 @@ Partial Class pDevel_devClick
         Label1.Text = W.Date.Month & "/" & W.Date.Day & "/" & W.Date.Year
         W = W + TS
         Label1.Text = Label1.Text & " ||| " & W.Date.Month & "/" & W.Date.Day & "/" & W.Date.Year
+    End Sub
+
+
+
+    Private Sub devJSON()
+        'Format the query
+        Dim URL As String = "http://octopart.com/api/v2/parts/search?q=tantalum+capacitor&start=10"
+
+        'Get the source
+        Dim myWebClient As New System.Net.WebClient()
+        Dim Source As String = myWebClient.DownloadString(URL)    'Source is the text received from OCTOPARTS website
+
+        Dim o As Newtonsoft.Json.Linq.JObject = Newtonsoft.Json.Linq.JObject.Parse(Source)
+        Dim obj As Newtonsoft.Json.Linq.JToken = o.SelectToken("results[0].item")
+
     End Sub
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load

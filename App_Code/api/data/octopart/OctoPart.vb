@@ -1,24 +1,173 @@
 ﻿Imports Microsoft.VisualBasic
 Imports Newtonsoft.Json.Linq
+Imports fpManufacturer
 
 Namespace apiOctopart
 
     '=======================
     '==  CLASS OCTOPART   ==
     '=======================
-    Public Class Octopart
+    ''' <summary>
+    ''' Represents a single part (manufacturer part number) and all of the associated
+    ''' data.
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Class OctoPart
         'Internal Variables
         ''' <summary>
-        ''' The entire results from Octopart in JSON.NET format
+        ''' The entire result from Octopart in JSON.NET format for this
+        ''' specific part.
         ''' </summary>
         ''' <remarks></remarks>
-        Private JSON As JToken 'The entire results from Octopart
+        Protected Part As JToken 'The entire results from Octopart
+
+        ''' <summary>
+        ''' The Octopart summary description (Highlight)
+        ''' </summary>
+        ''' <remarks>This is the only value stored outside the "item" object 
+        ''' of the "result" object so for development expediency we'll just store 
+        ''' this one directly and the rest will be available under the "item"
+        ''' object stored as variable "Part"</remarks>
+        Protected iHighlight As String
 
         ''' <summary>
         ''' The UID for this part as defined by Octopart
         ''' </summary>
+        ''' <returns>These ID's are SQL bigints!</returns>
         ''' <remarks></remarks>
-        Private OctopartUID As String
+        Public ReadOnly Property OctopartID As Int64
+            Get
+                Return Part.Item("uid")
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Internal variable. The manufacturer object.
+        ''' </summary>
+        ''' <remarks></remarks>
+        Protected iMfr As fpMfr
+
+        ''' <summary>
+        ''' The Manufacturer information. fpMfr object. Contains full details about this manufacturer.
+        ''' </summary>
+        ''' <value></value>
+        ''' <returns></returns>
+        ''' <remarks>Use return_value.DefaultName to get the Manufacturer's name.</remarks>
+        Public ReadOnly Property Manufacturer As fpMfr
+            Get
+                Return iMfr
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' The Manufacturer Part Number
+        ''' </summary>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public ReadOnly Property MfrPartNum() As String
+            Get
+                Return Part.Item("mpn")
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' The short description.
+        ''' </summary>
+        ''' <returns></returns>
+        ''' <remarks>Uses Octopart's "Highlight" summary</remarks>
+        Public ReadOnly Property DescriptionShort() As String
+            Get
+                Return iHighlight
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' The long description.  -- currently unimplemented.
+        ''' </summary>
+        ''' <value></value>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public ReadOnly Property DescriptionLong() As String
+            Get
+                Static Desc As String = Nothing
+                If Desc Is Nothing Then
+                    'Long description = One distributors description + a table of properties
+                    Desc = Part.Item("descriptions[0]").Item("text").ToString & vbCrLf & vbCrLf
+                    For i As UInt16 = 0 To DirectCast(Part.Item("specs"), JArray).Count - 1
+                        Dim NumValues As UInt16 = DirectCast(Part.Item("specs[" & i & "]").Item("values"), JArray).Count
+                        Select Case NumValues
+                            Case 0
+                                'Skip this one... no values known.
+                            Case 1
+                                'Only one value so format it inline.
+                                Desc += Part.Item("specs[" & i & "]").Item("attribute").Item("displayname").ToString & ": " & _
+                                    Part.Item("specs[" & i & "]").Item("values[0]").ToString
+                            Case Else
+                                'Multiple part values to format it with indentation.
+                                Desc += Part.Item("specs[" & i & "]").Item("attribute").Item("displayname").ToString & ": "
+                        End Select
+                        Desc += Part.Item("specs[" & i & "]").Item("values").Item("displayname").ToString & ": "
+                    Next
+                End If
+                Return Desc
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' The URL for detailed information about this part at Octopart.com
+        ''' </summary>
+        ''' <value></value>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public ReadOnly Property MyURL() As String
+            Get
+                Return Part.Item("detail_url")
+            End Get
+        End Property
+
+
+
+        ''' <summary>
+        ''' Worker function. Does the processing of construction.
+        ''' </summary>
+        ''' <remarks>Assumes the JTokens are all valid at this point.</remarks>
+        Protected Sub PopulateMe()
+            '[Manufacturer]
+            '   We add manufacturers to our FriedParts database the first time we see them. 
+            '   Even if the user is not going to add this part. That way, in the future, if
+            '   some elects to manually add a part, the list of existing Mfr's is bigger and
+            '   aligned with Octopart's representation of them.
+            Dim opMfrName As String = Part.Item("manufacturer").Item("displayname")
+            If fpMfrStatic.mfrExists(opMfrName, , , iMfr) Then
+                'We have this Manufacturer in FriedParts already -- and we just populated iMfr with it
+                'Nothing left to do.
+            Else
+                'This guy is missing! Let's add it!
+                iMfr = New fpMfr( _
+                            fpMfrStatic.mfrAdd(Part.Item("manufacturer").Item("displayname"), _
+                                                Part.Item("manufacturer").Item("homepage_url"), _
+                                                Part.Item("manufacturer").Item("id") _
+                                              ) _
+                                )
+            End If
+
+        End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         'Public Properties
         Protected table_DatasheetUrl As DataTable
@@ -49,26 +198,11 @@ Namespace apiOctopart
             End Get
         End Property
 
-        Protected MpnLoaded As Boolean         'MPN data loaded?
-        Public ReadOnly Property PartReady() As Boolean
-            Get
-                Return MpnLoaded
-            End Get
-        End Property
 
-        Protected lmpn As String                    'Manufacturer Part Number
-        Public ReadOnly Property MPN() As String
-            Get
-                Return lmpn
-            End Get
-        End Property
 
-        Protected ldesc As String                   'Descriptions
-        Public ReadOnly Property Desc() As String
-            Get
-                Return ldesc
-            End Get
-        End Property
+
+
+
 
         Protected lavg_Avail As String              'Average distributors available
         Public ReadOnly Property avg_Avail() As String
@@ -133,18 +267,13 @@ Namespace apiOctopart
             End Get
         End Property
 
-        Protected lmanufacturer As String           'Manufacturer name
-        Public ReadOnly Property Manufacturer() As String
-            Get
-                Return lmanufacturer
-            End Get
-        End Property
+        
 
         'Loads the Image and Datasheet URL Tables
         'Call on loaded part changed
         Protected Sub Load_URL_Tables()
             '[DATASHEET]
-            table_DatasheetUrl = apiWebPart.createTableDatasheetURL()
+            table_DatasheetUrl = apiWebPart.CreateTableDatasheetURL()
 
             'Octoparts
             For Each urlstring In ldatasheets
@@ -152,7 +281,7 @@ Namespace apiOctopart
             Next
 
             '[IMAGES]
-            table_ImageUrl = apiWebPart.createTableImageURL()
+            table_ImageUrl = apiWebPart.CreateTableImageURL()
 
             'Octoparts
             For Each urlstring In limages
@@ -166,123 +295,6 @@ Namespace apiOctopart
             Return Octopart_ToString
         End Function
 
-        'Parses the webpage to create the MPN_List datatable object
-        Private Sub parseMpnTable()
-
-            'DEFINE THE TABLE
-
-            Dim Table1 As DataTable = New DataTable("MpnTable")
-            Dim col1 As DataColumn
-            'Column 0: ParentID
-            col1 = New DataColumn("MpnID")
-            col1.DataType = System.Type.GetType("System.Int32")
-            Table1.Columns.Add(col1)
-            'Column 1: MPN
-            col1 = New DataColumn("MfrPartNum")
-            col1.DataType = System.Type.GetType("System.String")
-            Table1.Columns.Add(col1)
-            'Column 2: short description
-            col1 = New DataColumn("Highlight")
-            col1.DataType = System.Type.GetType("System.String")
-            Table1.Columns.Add(col1)
-            'Column 3: detail
-            col1 = New DataColumn("Description")
-            col1.DataType = System.Type.GetType("System.String")
-            Table1.Columns.Add(col1)
-
-
-
-            'POPULATE THE TABLE
-
-            Dim Source As String = json
-            Dim K As String
-            Dim parserState As ParserStates = ParserStates.Top_Level
-            Dim dr As DataRow
-            Dim item_counter As Byte = 0
-
-            K = fetch(Source)
-            Do Until K = ENDOFSOURCE
-                K = fetch(Source)
-                Select Case parserState
-                    Case ParserStates.Top_Level
-                        'Normal level to find "item"
-                        Select Case K
-                            Case "item"
-                                item_counter = item_counter + 1
-                                If Not dr Is Nothing Then
-                                    'Save previous item data if it exists
-                                    Table1.Rows.Add(dr)
-                                End If
-                                dr = Table1.NewRow()
-                                dr.Item(0) = item_counter 'Row UID
-                                parserState = ParserStates.Item_Level
-                            Case "descriptions"
-                                'Oh no! Something is out of sync! Stay at top level!
-                                Err.Raise(-123, , "@Top Level, found Descriptions")
-                            Case "mpn"
-                                Err.Raise(-124, , "@Top Leve, found Mpn")
-                            Case Else
-                                'Keep looking...
-                        End Select
-                    Case ParserStates.Item_Level
-                        'Normal level to find "descriptions", "highlight" and "mpn"
-                        Select Case K
-                            Case "item"
-                                'Next ITEM!
-                                item_counter = item_counter + 1
-                                If Not dr Is Nothing Then
-                                    'Save previous item data if it exists
-                                    Table1.Rows.Add(dr)
-                                End If
-                                dr = Table1.NewRow()
-                                dr.Item(0) = item_counter 'Row UID
-                                parserState = ParserStates.Item_Level
-                            Case "descriptions"
-                                parserState = ParserStates.Descriptions_Level
-                            Case "mpn"
-                                K = fetch(Source)
-                                dr.Item(1) = K 'MPN added to row
-                            Case "highlight"
-                                K = fetch(Source)
-                                dr.Item(2) = K 'Short description added to row
-                            Case Else
-                        End Select
-                    Case ParserStates.Descriptions_Level
-                        'Normal level to find "text"
-                        Select Case K
-                            Case "text"
-                                K = fetch(Source)
-                                dr.Item(3) = K
-                                parserState = ParserStates.Item_Level
-                            Case "item"
-                            Case "descriptions"
-                                Err.Raise(-130, , "@Desc Level, found Desc")
-                            Case "mpn"
-                                'Found an Item-Level property! Must
-                                'mean that the Description was empty
-                                parserState = ParserStates.Item_Level 'Go back to item-level to recover
-                                K = fetch(Source)
-                                dr.Item(1) = K 'MPN added to row
-                            Case "highlight"
-                                'Found an Item-Level property! Must
-                                'mean that the Description was empty
-                                parserState = ParserStates.Item_Level 'Go back to item-level to recover
-                                K = fetch(Source)
-                                dr.Item(2) = K 'Short description added to row
-                            Case Else
-                        End Select
-                End Select
-            Loop
-
-            'Save last item
-            If Not dr Is Nothing Then
-                'Save previous item data if it exists
-                Table1.Rows.Add(dr)
-            End If
-
-            'RETURN TABLE! YAY!
-            table_MpnList = Table1
-        End Sub
 
         'Populates the OP object (must declare NEW prior to pass-in)
         'Requires page text (source) and the Manufacturer Part Number you're looking for (searchParam)
@@ -682,6 +694,8 @@ Namespace apiOctopart
                     "buynow_url: " & dist.buynow_url & vbCrLf
         End Function
 
+
+
         'Constructor
         Public Sub New()
             Throw New Exception("Class Octopart cannot be constructed with default (e.g. 0) parameters")
@@ -690,11 +704,18 @@ Namespace apiOctopart
         ''' <summary>
         ''' The only constructor. Populate this part's data from the JSON.NET formatted results.
         ''' </summary>
-        ''' <param name="part_uid"></param>
-        ''' <param name="Results"></param>
+        ''' <param name="PartResultJToken">The JSON.NET JToken corresponding to 
+        ''' this part record in the results set. Namely, rJSON.SelectToken("results[3]")
+        ''' where 3 is the appropriate index into the list of parts results from 
+        ''' the search</param>
         ''' <remarks></remarks>
-        Public Sub New(ByRef part_uid As String, ByRef Results As Newtonsoft.Json.Linq.JToken)
-
+        Public Sub New(ByRef PartResultJToken As Newtonsoft.Json.Linq.JToken)
+            If PartResultJToken Is Nothing Then
+                Throw New Exception("Invalid Octopart Token provided.")
+            End If
+            iHighlight = PartResultJToken.Item("highlight")
+            Part = PartResultJToken.Item("item")
+            PopulateMe()
         End Sub
     End Class
 

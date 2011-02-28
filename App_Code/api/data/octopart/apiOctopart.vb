@@ -12,7 +12,11 @@ Imports Newtonsoft
 
 Namespace apiOctopart
 
-    Public Class OctoCommands
+    ''' <summary>
+    ''' Encapsulates all of the Octopart API (REST URLs)
+    ''' </summary>
+    ''' <remarks>Usage: OctoCommands.API &amp; OctoCommands.(the command) &amp; (string parameters)</remarks>
+    Public Module OctoCommands
         ''' <summary>
         ''' The API interaction point. Web address of the REST API base.
         ''' </summary>
@@ -24,19 +28,43 @@ Namespace apiOctopart
         ''' </summary>
         ''' <remarks></remarks>
         Public Const PartSearch As String = "parts/search?q="
-    End Class
+    End Module
 
-    Public Class OctopartStatic
-        
+    ''' <summary>
+    ''' This class contains all of the static and common content to 
+    ''' Octopart API interactions.
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Module OctopartStatic
 
+        Public Enum OctopartErrors As Integer
+            ID_UNKNOWN = -1
+        End Enum
 
+        Public Function CreateTableMpnList() As DataTable
+            'DEFINE THE TABLE
+            Dim Table1 As DataTable = New DataTable("MpnTable")
+            Dim col1 As DataColumn
+            'Column 0: ParentID
+            col1 = New DataColumn("OctopartID")
+            col1.DataType = System.Type.GetType("System.Int32")
+            Table1.Columns.Add(col1)
+            'Column 1: MPN
+            col1 = New DataColumn("MfrPartNum")
+            col1.DataType = System.Type.GetType("System.String")
+            Table1.Columns.Add(col1)
+            'Column 2: short description
+            col1 = New DataColumn("Highlight")
+            col1.DataType = System.Type.GetType("System.String")
+            Table1.Columns.Add(col1)
+            'Column 3: detail
+            col1 = New DataColumn("Description")
+            col1.DataType = System.Type.GetType("System.String")
+            Table1.Columns.Add(col1)
+            Return Table1
+        End Function
 
-
-
-
-        'Finish Parsing Tag
-        Public Const ENDOFSOURCE As String = "ENDOFSOURCE"
-    End Class
+    End Module
 
     '==========================
     '==  CLASS DISTRIBUTOR   ==

@@ -18,53 +18,83 @@ Namespace apiOctopart
         ''' <remarks>rJson = Results JSON object</remarks>
         Private rJson As JObject
 
-        Protected table_MpnList As DataTable
-        Public ReadOnly Property MPN_List() As DataTable
+        ''' <summary>
+        ''' Internal. Stores list of MPNs returned resulting from this Octopart Search
+        ''' </summary>
+        ''' <remarks></remarks>
+        Protected iDtMpns As DataTable
+
+        ''' <summary>
+        ''' Returns a datatable (for use as a datasource) of the Manufacturer Part Numbers (MPN) 
+        ''' returned from the Octopart search.
+        ''' </summary>
+        ''' <value></value>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public ReadOnly Property DataSouceResults() As DataTable
             Get
-                Return table_MpnList
+                Return iDtMpns
             End Get
         End Property
 
+        ''' <summary>
+        ''' Internal variable. The Parts collection of OctoPart objects. 
+        ''' </summary>
+        ''' <remarks></remarks>
+        Protected iParts As Collection
 
+        ''' <summary>
+        ''' The Parts collection.
+        ''' </summary>
+        ''' <value></value>
+        ''' <returns>A collection of OctoPart objects. Each representing 
+        ''' a single manufacturer part number from the result set.</returns>
+        ''' <remarks></remarks>
+        Public ReadOnly Property Parts As Collection
+            Get
+                Return iParts
+            End Get
+        End Property
 
+        ''' <summary>
+        ''' The total amount of time in seconds that it took to complete
+        ''' this search at Octopart.com.
+        ''' </summary>
+        ''' <returns>The server crunch time in seconds.</returns>
+        ''' <remarks></remarks>
+        Public ReadOnly Property RunTime() As Single
+            Get
+                Return rJson.SelectToken("time")
+            End Get
+        End Property
 
-        'Switches the specific selected manufacturer part number data, without 
-        '   requiring another trip to the Octopart server. Use this to switch 
-        '   between MPN's when multiple match the initial query.
-        Public Sub switch(ByVal ManufacturerPartNumber As String)
-            'Process the part... (if only one matching mpn to query, populate me, otherwise will not do much)
-            Me.clear() 'clear out the current part so that we may replace it
-            If MPN_List.Rows.Count > 0 Then
-                Dim source As String = json 'must pass in a copy because the fetch functions consume the string
-                Octopart_ToString = fetchBlock(source, ManufacturerPartNumber)
-                Load_URL_Tables()
-                MpnLoaded = True
-            End If
-        End Sub
+        ''' <summary>
+        ''' The total number of results returned by the search.
+        ''' </summary>
+        ''' <returns></returns>
+        ''' <remarks>For large result sets, most of them will NOT be 
+        ''' returned in detail. Therefore the actual content of the
+        ''' search is more limited. Useful for warning the user to
+        ''' narrow their search.</remarks>
+        Public ReadOnly Property NumResultsTotal() As UInt32
+            Get
+                Return rJson.SelectToken("hits")
+            End Get
+        End Property
 
-        'Clears the specific selected manufacturer part number data, without 
-        '   requiring another trip to the Octopart server. Use this to switch 
-        '   between MPN's when multiple match the initial query.
-        '
-        '   WE MAY NOT ACTUALLY WIND UP NEEDING THIS FUNCTION
-        '
-        Public Sub clear()
-            MpnLoaded = False
-            Me.lmpn = ""
-            Me.ldesc = ""
-            Me.lavg_Avail = ""
-            Me.lnum_Suppliers = ""
-            Me.lspecs.Clear()
-            Me.lspecsMeta.Clear()
-            Me.ldatasheets.Clear()
-            Me.lmfr_List.Clear()
-            Me.lmfr_ListMeta.Clear()
-            Me.limages.Clear()
-            Me.ldetail_Url = ""
-            Me.lmanufacturer = ""
-            table_DatasheetUrl = Nothing
-            table_ImageUrl = Nothing
-        End Sub
+        ''' <summary>
+        ''' The number of parts (manufacturer part numbers) found in this Octopart 
+        ''' search -- and also available for use.
+        ''' </summary>
+        ''' <returns>The result count</returns>
+        ''' <remarks>Sometimes a search returns too many results. We only download
+        ''' a few for efficiency since the user will most likely have to narrow
+        ''' the search anyway.</remarks>
+        Public ReadOnly Property Count() As Integer
+            Get
+                Return iDtMpns.Rows.Count
+            End Get
+        End Property
 
         ''' <summary>
         ''' Empty construction not allowed. 
@@ -85,6 +115,7 @@ Namespace apiOctopart
             Dim URL As String = OctoCommands.API & OctoCommands.PartSearch & _
                                 System.Web.HttpUtility.UrlEncode(TheSearchTerms) _
                                 'Append the user's search request to the end of the string
+
             'Get the source
             Dim myWebClient As New System.Net.WebClient()
             Dim Source As String
@@ -99,26 +130,42 @@ Namespace apiOctopart
                     Throw New Exception(ex.Message)
                 End If
             End Try
+            'Sanity/Safety check
+            If Source Is Nothing Then
+                Throw New NullReferenceException("Missing HTML content! The WebClient did not return anything!")
+            End If
 
             'Parse the JSON!
             rJson = JObject.Parse(Source)
 
-            'Learn stuff from it!
-            Dim obj As JToken = rJson.SelectToken("results[0].item")
+            '[Learn stuff from it!]
+            '----------------------
+            Dim jT As JToken
+            Dim dr As DataRow
+            Dim Result As JToken
+            Dim Part As OctoPart
+            iParts = New Collection
 
+            jT = rJson.SelectToken("results")
+            iDtMpns = apiOctopart.CreateTableMpnList
+            For i As UInt32 = 0 To DirectCast(jT, JArray).Count - 1
+                'Extract this result record
+                Result = rJson.SelectToken("results[" & i & "]")
 
-            'Find out how many MPN's match these search terms
-            parseMpnTable()
+                'Create the results table (summary)
+                dr = iDtMpns.NewRow
+                dr.Item("OctopartID") = Result.Item("item").Item("uid")
+                dr.Item("MfrPartNum") = Result.Item("item").Item("mpn")
+                dr.Item("Highlight") = Result.Item("highlight")
+                dr.Item("Description") = Result.Item("item").Item("descriptions[0]") 'We use the first description, since there might be many.
 
-            'Process the part... (if only one matching mpn to query, populate me, otherwise will not do much)
-            If MPN_List.Rows.Count = 1 Then
-                'Pass "Source" not "json" because fetch functions consume it
-                Octopart_ToString = fetchBlock(Source, MPN_List.Rows(0).Field(Of String)("MfrPartNum"))
-                MpnLoaded = True
-            Else
-                MpnLoaded = False
-            End If
+                '...and the Part Object (detailed)
+                Part = New OctoPart(Result)
+                iParts.Add(Part, Part.OctopartID)
+            Next
+
         End Sub
+
     End Class
 
 End Namespace

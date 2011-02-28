@@ -21,6 +21,7 @@ Imports apiDropbox 'For Dropbox States
 '   user.RoleDesc   -- Our DB's Permission level for this user (description)
 
 Public Module sysUser
+    Public Const SYSTEM_USERNAME As String = "System Context"
     Public Const OpenIDEndPointGoogle As String = "https://www.google.com/accounts/o8/id"
 
     Public Enum LoginStates As Byte
@@ -219,9 +220,25 @@ Public Module sysUser
         End If
     End Sub
 
+
+
+
+
+
+
+
+
+
+
+
+
     'Returns the name of the current user
     Public Function suGetUsername() As String
-        Return HttpContext.Current.Session("user.Name")
+        If HttpContext.Current Is Nothing Then
+            Return SYSTEM_USERNAME
+        Else
+            Return HttpContext.Current.Session("user.Name")
+        End If
     End Function
 
     'Returns the name of the specified user
@@ -238,7 +255,12 @@ Public Module sysUser
 
     'Returns the first name of the current user
     Public Function suGetUserFirstName() As String
-        Return sysText.txtGetWord(HttpContext.Current.Session("user.Name"), 1)
+        If HttpContext.Current Is Nothing Then
+            Return sysText.txtGetWord(SYSTEM_USERNAME, 1)
+        Else
+            Return sysText.txtGetWord(HttpContext.Current.Session("user.Name"), 1)
+        End If
+
     End Function
 
     'Returns the first name of the specified user
@@ -262,10 +284,10 @@ Public Module sysUser
                 'Value defined (not server process), but user not logged in
                 Return sysErrors.USER_NOTLOGGEDIN
             End If
-        Catch ex As Exception
-            'Probably a NULL_REFERENCE_EXCEPTION because we're running as a server process
+        Catch ex As NullReferenceException
+            'Most likely cause is that there is no httpContext.Current because
+            'we are running as a server process
             Return sysErrors.USER_NOTLOGGEDIN
         End Try
-
     End Function
 End Module

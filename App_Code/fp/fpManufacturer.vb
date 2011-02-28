@@ -98,9 +98,15 @@ Namespace fpManufacturer
         ''' <remarks>Manufacturers may have several "names" assigned due 
         ''' to legal variations and varying abbreviations across data
         ''' providers.</remarks>
-        Public Function AddName(ByRef TheName As String) As Int32
+        Public Function AddName(ByRef TheName As String, Optional ByRef OctopartID As Int64 = OctopartErrors.ID_UNKNOWN) As Int32
             'Defang!
             Dim safeName As String = sysText.txtDefangSQL(Trim(TheName))
+            Dim safeOctoID As String
+            If OctopartID = OctopartErrors.ID_UNKNOWN Then
+                safeOctoID = "NULL"
+            Else
+                safeOctoID = OctopartID
+            End If
             'Confirm uniqueness!
             Dim sqltxt As String = _
                 "SELECT [mfrNameID]" & _
@@ -117,10 +123,12 @@ Namespace fpManufacturer
             dbAcc.SQLexe( _
                 "INSERT INTO [FriedParts].[dbo].[mfr-Names]" & _
                 "           ([mfrID]" & _
-                "           ,[mfrName])" & _
+                "           ,[mfrName]" & _
+                "           ,[mfrOctopartID])" & _
                 "     VALUES (" & _
                 "           " & iMfrID & "," & _
                 "           '" & safeName & "'" & _
+                "           " & safeOctoID & "" & _
                 "           )")
             'Retrieve the mfrNameID of the name we just added
             dt.Clear() 'Reset
@@ -401,7 +409,7 @@ Namespace fpManufacturer
         ''' <param name="Result">[Output value] If only one MfrID was found, we return the object. Otherwise this is set to Nothing. [Usage] dim m as New fpMfr.</param>
         ''' <returns>The boolean value reporting the existence of this manufacturer name. Follows the rules specified by the other parameters. To retrieve the actual object see the Result parameter.</returns>
         ''' <remarks></remarks>
-        Public Function mfrExistsName(ByRef MfrName As String, Optional ByRef Exact As Boolean = True, Optional ByRef AllowMultiple As Boolean = False, Optional ByRef Result As fpMfr = Nothing) As Boolean
+        Public Function mfrExists(ByRef MfrName As String, Optional ByRef Exact As Boolean = True, Optional ByRef AllowMultiple As Boolean = False, Optional ByRef Result As fpMfr = Nothing) As Boolean
             Try
                 Result = New fpMfr(MfrName, Exact)
             Catch ex As Exception
@@ -470,19 +478,19 @@ Namespace fpManufacturer
                     Case 0
                         'Not found! ERROR!!! (should never happen)
                         dbLog.logSys(0, "[Add Mfr] '" & MfrName & "' Not Found! During Add Using Temp ID: " & tempUID)
-                        Return sysErrors.ERR_NOTFOUND 'ERROR!
+                        Throw New ManufacturerNotFoundException("[Add Mfr] '" & MfrName & "' Not Found! During Add Using Temp ID: " & tempUID)
                     Case 1
                         'Yay! Perfect (this is exactly what should happen)
                         newMfrID = dt.Rows(0).Field(Of Int32)(0) 'query only selected one row
                     Case Else
                         'Found more than one!!! Oh No!!! (shouldn't happen)
                         dbLog.logSys(0, "[Add Mfr] '" & MfrName & "' Matched multiple using Temp ID: " & tempUID)
-                        Return sysErrors.ERR_NOTFOUND 'ERROR!
+                        Throw New ManufacturerNotUniqueException("[Add Mfr] '" & MfrName & "' Matched multiple using Temp ID: " & tempUID)
                 End Select
                 '
                 '[STEP 3] ADD THE NEW MFR-NAME RECORD
                 '
-                Dim newMfrNameID As Int32 = addMfrAlias(newMfrID, MfrName)
+                Dim newMfrNameID As Int32 = New fpMfr(newMfrID).AddName(MfrName, MfrOctopartID)
                 '
                 '[STEP 4] GO BACK AND ADD THE CORRECT RELATIONSHIP TO THE NEW NAME
                 '

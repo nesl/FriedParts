@@ -446,7 +446,7 @@ Namespace fpManufacturer
         Public Function mfrAdd(ByVal MfrName As String, Optional ByVal MfrWebsite As String = "", Optional ByRef MfrOctopartID As Int64 = OctopartErrors.ID_UNKNOWN, Optional ByRef Me_Page As Page = Nothing) As Int32
             Dim dt As New DataTable
             Dim MfrObject As fpMfr
-            If Not mfrExistsName(MfrName, True, True, MfrObject) Then
+            If Not mfrExists(MfrName, True, True, MfrObject) Then
                 'NOT FOUND! ADD THIS MANUFACTURER!
                 'This is actually a bit of a tricky process
                 '
@@ -534,7 +534,9 @@ Namespace fpManufacturer
         Public Sub logMfr(ByRef Me_Page As Page, ByVal UserID As Int16, ByVal MfrID As Int16, Optional ByRef IsAnUpdate As Boolean = False)
             If IsAnUpdate Then
                 'Don't have UNDO implemented right now... needs a lot of work to do that... 'xxx
-                logServiceActivity(Me_Page, UserID, suGetUserFirstName(UserID) & " updated manufacturer " & mfrGetName(MfrID), "", "", "MfrID", MfrID, "MfrName", mfrGetName(MfrID), "MfrWebsite", mfrGetWebsite(MfrID))
+                logServiceActivity(Me_Page, UserID, suGetUserFirstName(UserID) & " updated manufacturer " & _
+                                   mfrGetName(MfrID), "", "", "MfrID", MfrID, "MfrName", mfrGetName(MfrID) _
+                                   )
             Else
                 Dim sqlUndo As String = _
                     "DELETE FROM [FriedParts].[dbo].[mfr-Names]" & _
@@ -543,7 +545,9 @@ Namespace fpManufacturer
                     "DELETE FROM [FriedParts].[dbo].[mfr-Common]" & _
                     " WHERE [MfrID] = " & MfrID & vbCrLf & _
                     "GO" & vbCrLf
-                logServiceActivity(Me_Page, UserID, suGetUserFirstName(UserID) & " added a new manufacturer, " & mfrGetName(MfrID), "", sqlUndo, "MfrID", MfrID, "MfrName", mfrGetName(MfrID), "MfrWebsite", mfrGetWebsite(MfrID))
+                logServiceActivity(Me_Page, UserID, suGetUserFirstName(UserID) & " added a new manufacturer, " & _
+                                   mfrGetName(MfrID), "", sqlUndo, "MfrID", MfrID, "MfrName", mfrGetName(MfrID), _
+                                   )
             End If
         End Sub
 

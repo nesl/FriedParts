@@ -36,7 +36,16 @@ Namespace apiOctopart
     ''' </summary>
     ''' <remarks></remarks>
     Public Module OctopartStatic
+        ''' <summary>
+        ''' The Octopart abbreviation for United States Dollars (used in pricing)
+        ''' </summary>
+        ''' <remarks></remarks>
+        Public Const US_DOLLARS As String = "USD"
 
+        ''' <summary>
+        ''' Octopart module error codes
+        ''' </summary>
+        ''' <remarks></remarks>
         Public Enum OctopartErrors As Integer
             ID_UNKNOWN = -1
         End Enum

@@ -4,15 +4,41 @@ Partial Class pAdmin_dbUtils
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not IsCallback And Not IsPostBack Then dbUtils.dbOrphCount(True)
         'Orphaned Records
-        orphrecsLbl.Text = "Found " & dbOrphDist() & " orphaned distributor part records, " & dbOrphCADD() & " orphaned CADD entries, and " & dbOrphBins() & " orphaned inventory records."
+        orphrecsLit.Text = "<table>" & _
+                            "<tr><td class=""fpTableLabel"">FOUND ORPHANS:</td><td></td></tr>" & _
+                            AddStat("Distributor Part Records", dbOrphDistParts) & _
+                            AddStat("Distributor Name Records", dbOrphDistNames) & _
+                            AddStat("Manufacturer Name Records", dbOrphMfrNames) & _
+                            AddStat("CADD Entries", dbOrphCADD) & _
+                            AddStat("Inventory Records", dbOrphBins) & _
+                            "<tr><td><hr></td><td><hr></td></tr>" & _
+                            AddStat("TOTAL EFFECTED", dbUtils.dbOrphCount()) & _
+                            "</table>"
     End Sub
+
+    ''' <summary>
+    ''' Returns the HTML for a table row
+    ''' </summary>
+    ''' <param name="Label"></param>
+    ''' <param name="Statistic"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Protected Function AddStat(ByRef Label As String, ByRef Statistic As Int32) As String
+        Dim htmlOut As String = "<tr><td class=""fpTableLabel"">" & Label & ":</td>" & _
+                                "<td>" & Statistic & "</td></tr>"
+        dbUtils.dbOrphCount(, Statistic)
+        Return htmlOut
+    End Function
 
     Protected Sub orphrecsBtn_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles orphrecsBtn.Click
         Dim count As Int16 = dbOrphCount()
         dbOrphBins(True)
         dbOrphCADD(True)
-        dbOrphDist(True)
+        dbOrphDistNames(True)
+        dbOrphDistParts(True)
+        dbOrphMfrNames(True)
         MsgBox(Me, sysErrors.DBUTILS_ORPHANDONE, count)
     End Sub
 

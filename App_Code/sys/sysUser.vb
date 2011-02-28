@@ -22,6 +22,7 @@ Imports apiDropbox 'For Dropbox States
 
 Public Module sysUser
     Public Const SYSTEM_USERNAME As String = "System Context"
+    Public Const SYSTEM_USERID As Int32 = 0
     Public Const OpenIDEndPointGoogle As String = "https://www.google.com/accounts/o8/id"
 
     Public Enum LoginStates As Byte
@@ -277,14 +278,19 @@ Public Module sysUser
     ''' <remarks></remarks>
     Public Function suGetUserID() As Int32
         Try
-            If IsNumeric(HttpContext.Current.Session("user.UserID")) Then
-                'Valid user login
-                Return HttpContext.Current.Session("user.UserID")
+            If HttpContext.Current Is Nothing Then
+                'Running as a server process -- no user involved.
+                Return SYSTEM_USERID
             Else
-                'Value defined (not server process), but user not logged in
-                Return sysErrors.USER_NOTLOGGEDIN
+                If CInt(HttpContext.Current.Session("user.UserID")) Then
+                    'Valid user login
+                    Return HttpContext.Current.Session("user.UserID")
+                Else
+                    'Value defined (not server process), but user not logged in
+                    Return sysErrors.USER_NOTLOGGEDIN
+                End If
             End If
-        Catch ex As NullReferenceException
+        Catch ex As InvalidCastException
             'Most likely cause is that there is no httpContext.Current because
             'we are running as a server process
             Return sysErrors.USER_NOTLOGGEDIN

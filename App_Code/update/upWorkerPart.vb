@@ -1,5 +1,6 @@
 ﻿Imports Microsoft.VisualBasic
 Imports System.Data
+Imports apiOctopart
 
 Namespace UpdateService
 
@@ -117,7 +118,7 @@ Namespace UpdateService
                 procMeta.ThreadDataID = Me.NextPartToUpdate()
                 'Sanity Check
                 If Not fpParts.partExistsID(GetPartID) Then
-                    Throw New Exception("PartID " & GetPartID & "for Part Worker was NOT Valid!")
+                    Throw New Exception("PartID " & GetPartID & " for Part Worker was NOT Valid!")
                 End If
             End If
 
@@ -182,44 +183,6 @@ Namespace UpdateService
         ''' different workers to run them in parallel.)</remarks>
         Public Sub Update()
 
-            'Digikey Search
-            '==============
-            UpdateThreadStatus(scanStatus.scanWAITFORDK)
-            Dim dkPartNum As String = apiDigikey.dkPartNumber(GetPartID)
-            If Not (dkPartNum = sysErrors.ERR_NOTFOUND Or dkPartNum = sysErrors.ERR_NOTUNIQUE) Then
-                'this part has a Digikey Part Number
-                Dim DK As New apiDigikey(dkPartNum)
-                If DK.PartReady Then
-                    'Check Part Type
-                    'Check Pricing
-                    'Check Long Description
-                    'Check Value, Units
-                    'Check Value Numeric
-                    'Check Temp Codes
-
-                    'hiddenDigikeyPartNumber.Value = DK.getDigikeyPartNum
-                    'hiddenMfrPartNumber.Value = DK.getMfrPartNum
-                    'xPanelDkNo.Visible = False
-                    'xPanelDkYes.Visible = True
-                    'xLblDigikey.Text = "FOUND! " & DK.getMfrName & " " & DK.getMfrPartNum & ": " & DK.getShortDesc
-                    'imgDigikey.ImageUrl = DK.getImageURL
-                    'imgDigikey.Width = 200
-                    'imgDigikey.Height = 200
-                    'linkDigikey.NavigateUrl = DK.getDatasheetURL
-                Else
-                    'Digikey part number is not found
-                    LogEvent("Digikey part number not found -- or Digikey timeout")
-                End If
-            Else
-                If dkPartNum = sysErrors.ERR_NOTFOUND Then
-                    'Digikey Part Number not known for this part
-                    LogEvent("This part does not have a Digikey part number!")
-                Else
-                    'Multiple Digikey Part Numbers found
-                    LogEvent("This part had multiple matching Digikey part numbers!")
-                End If
-            End If
-
             'Octopart Search
             '===============
             UpdateThreadStatus(scanStatus.scanWAITFOROP)
@@ -234,7 +197,7 @@ Namespace UpdateService
             Dim sqlText As String = _
                 "UPDATE [FriedParts].[dbo].[part-Common]" & _
                 "   SET " & _
-                "      [Date_LastScanned] = '" & txtSqlDate(Now) & "'" & _
+                "      [Date_LastScanned] = " & txtSqlDate(Now) & "" & _
                 "   WHERE [PartID] = " & GetPartID
             dbAcc.SQLexe(sqlText)
         End Sub

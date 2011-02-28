@@ -6,7 +6,8 @@ Partial Class pDevel_devClick
     Inherits System.Web.UI.Page
 
     Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
-        devJSON()
+        devInstitution()
+        'devJSON()
         'devTestSemaphore()
         'devTestThreadManagement()
 
@@ -19,45 +20,6 @@ Partial Class pDevel_devClick
         '=============
         'devTestsysTextModule()
     End Sub
-
-    Private MustInherit Class Base
-        Public MustOverride Function LockRequest() As Boolean
-        Public MustOverride Sub Release()
-        Public Function KeystoneLock() As Boolean
-            'This is the climax!
-            Return LockRequest()
-        End Function
-        Public Sub New()
-        End Sub
-    End Class
-
-    Private Class Deriv1
-        Inherits Base
-        Public Shared Shadows TheSem As Threading.Semaphore
-        Public Overrides Function LockRequest() As Boolean
-            Return TheSem.WaitOne(1)
-        End Function
-        Public Overrides Sub Release()
-            TheSem.Release(1)
-        End Sub
-        Public Sub New()
-            If TheSem Is Nothing Then TheSem = New Threading.Semaphore(1, 1)
-        End Sub
-    End Class
-
-    Private Class Deriv2
-        Inherits Base
-        Public Shared Shadows TheSem As Threading.Semaphore
-        Public Overrides Function LockRequest() As Boolean
-            Return TheSem.WaitOne(1)
-        End Function
-        Public Overrides Sub Release()
-            TheSem.Release(1)
-        End Sub
-        Public Sub New()
-            If TheSem Is Nothing Then TheSem = New Threading.Semaphore(1, 1)
-        End Sub
-    End Class
 
     Private Sub devTestSemaphore()
         Dim theSem As New Threading.Semaphore(1, 1)
@@ -105,8 +67,6 @@ Partial Class pDevel_devClick
         Label1.Text = Label1.Text & " ||| " & W.Date.Month & "/" & W.Date.Day & "/" & W.Date.Year
     End Sub
 
-
-
     Private Sub devJSON()
         'Format the query
         Dim URL As String = "http://octopart.com/api/v2/parts/search?q=tantalum+capacitor&start=10"
@@ -119,6 +79,55 @@ Partial Class pDevel_devClick
         Dim obj As Newtonsoft.Json.Linq.JToken = o.SelectToken("results[0].item")
 
     End Sub
+
+    ''' <summary>
+    ''' Development for the fpInstitution object model
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private Sub devInstitution()
+        Dim DistID As Int32 = fpDistributor.fpDist.Add("Testing-Refactor", "http://deleteme.com", 666)
+        Dim TheDist As New fpDistributor.fpDist(DistID)
+        Console.WriteLine("Hello, " & TheDist.DefaultName)
+    End Sub
+
+    Private MustInherit Class Base
+        Public MustOverride Function LockRequest() As Boolean
+        Public MustOverride Sub Release()
+        Public Function KeystoneLock() As Boolean
+            'This is the climax!
+            Return LockRequest()
+        End Function
+        Public Sub New()
+        End Sub
+    End Class
+
+    Private Class Deriv1
+        Inherits Base
+        Public Shared Shadows TheSem As Threading.Semaphore
+        Public Overrides Function LockRequest() As Boolean
+            Return TheSem.WaitOne(1)
+        End Function
+        Public Overrides Sub Release()
+            TheSem.Release(1)
+        End Sub
+        Public Sub New()
+            If TheSem Is Nothing Then TheSem = New Threading.Semaphore(1, 1)
+        End Sub
+    End Class
+
+    Private Class Deriv2
+        Inherits Base
+        Public Shared Shadows TheSem As Threading.Semaphore
+        Public Overrides Function LockRequest() As Boolean
+            Return TheSem.WaitOne(1)
+        End Function
+        Public Overrides Sub Release()
+            TheSem.Release(1)
+        End Sub
+        Public Sub New()
+            If TheSem Is Nothing Then TheSem = New Threading.Semaphore(1, 1)
+        End Sub
+    End Class
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim dt As DataTable = New fpProj.fpBOM(8).GetDataSource

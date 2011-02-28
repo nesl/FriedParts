@@ -14,7 +14,9 @@
         <PanelCollection>  
             <dx:PanelContent id="haha" runat="server">
                 <hr />
-                <asp:Label ID="orphrecsLbl" runat="server" Text="Label"></asp:Label><br />
+                <div>
+                    <asp:Literal ID="orphrecsLit" runat="server"></asp:Literal>
+                </div>
                 <asp:Button ID="orphrecsBtn" runat="server" Text="Correct this?" />    
                 <hr />
                 <asp:Button ID="btnCreateCadAltiumLibTable" runat="server" Text="Create cad-AltiumLib Table" />    

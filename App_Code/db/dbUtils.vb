@@ -4,9 +4,73 @@ Imports System.Data
 'Database Maintainence, Recovery, and Data Integrity Tools
 Public Module dbUtils
 
+    ''' <summary>
+    ''' Deletes orphaned Distributor institution records. Misalignment between [dist-Names] and [dist-Common]
+    ''' </summary>
+    ''' <param name="DELETE">Deletes if true; Just counts the records scheduled for deletion if false.</param>
+    ''' <returns>The number of records scheduled for deletion if DELETE=false, sysErrors.NO_ERROR otherwise.</returns>
+    ''' <remarks>Delete the distributor if it has no name.</remarks>
+    Public Function dbOrphDistNames(Optional ByVal DELETE As Boolean = False) As Int16
+        Dim SqlText1 As String = _
+            "FROM [FriedParts].[dbo].[dist-Common] " & _
+            "WHERE [DistID] NOT IN (SELECT [DistID] FROM [FriedParts].[dbo].[dist-Names])"
+        Dim SqlText2 As String = _
+            "FROM [FriedParts].[dbo].[dist-Names] " & _
+            "WHERE [DistID] NOT IN (SELECT [DistID] FROM [FriedParts].[dbo].[dist-Common])"
+        If DELETE Then
+            SqlText1 = "DELETE " & SqlText1
+            dbAcc.SQLexe(SqlText1)
+            SqlText2 = "DELETE " & SqlText2
+            dbAcc.SQLexe(SqlText2)
+            Return sysErrors.NO_ERROR
+        Else
+            SqlText1 = "SELECT * " & SqlText1
+            Dim dt As New DataTable
+            dt = dbAcc.SelectRows(dt, SqlText1)
+            Dim NumRecordsEffected As UInt16 = dt.Rows.Count
+            dt.Clear()
+            SqlText2 = "SELECT * " & SqlText2
+            dt = dbAcc.SelectRows(dt, SqlText2)
+            NumRecordsEffected += dt.Rows.Count
+            Return NumRecordsEffected
+        End If
+    End Function
+
+    ''' <summary>
+    ''' Deletes orphaned Manufacturer institution records. Misalignment between [mfr-Names] and [mfr-Common]
+    ''' </summary>
+    ''' <param name="DELETE">Deletes if true; Just counts the records scheduled for deletion if false.</param>
+    ''' <returns>The number of records scheduled for deletion if DELETE=false, sysErrors.NO_ERROR otherwise.</returns>
+    ''' <remarks>Delete the name if it has no distributor.</remarks>
+    Public Function dbOrphMfrNames(Optional ByVal DELETE As Boolean = False) As Int16
+        Dim SqlText1 As String = _
+            "FROM [FriedParts].[dbo].[mfr-Common] " & _
+            "WHERE [mfrID] NOT IN (SELECT [mfrID] FROM [FriedParts].[dbo].[mfr-Names])"
+        Dim SqlText2 As String = _
+            "FROM [FriedParts].[dbo].[mfr-Names] " & _
+            "WHERE [mfrID] NOT IN (SELECT [mfrID] FROM [FriedParts].[dbo].[mfr-Common])"
+        If DELETE Then
+            SqlText1 = "DELETE " & SqlText1
+            dbAcc.SQLexe(SqlText1)
+            SqlText2 = "DELETE " & SqlText2
+            dbAcc.SQLexe(SqlText2)
+            Return sysErrors.NO_ERROR
+        Else
+            SqlText1 = "SELECT * " & SqlText1
+            Dim dt As New DataTable
+            dt = dbAcc.SelectRows(dt, SqlText1)
+            Dim NumRecordsEffected As UInt16 = dt.Rows.Count
+            dt.Clear()
+            SqlText2 = "SELECT * " & SqlText2
+            dt = dbAcc.SelectRows(dt, SqlText2)
+            NumRecordsEffected += dt.Rows.Count
+            Return NumRecordsEffected
+        End If
+    End Function
+
     'Detect and Delete orphaned records in the distributor, CADD, and Inventory tables
     'The most common cause is from the addition of "test" parts or during errors while adding a part
-    Public Function dbOrphDist(Optional ByVal DELETE As Boolean = False) As Int16
+    Public Function dbOrphDistParts(Optional ByVal DELETE As Boolean = False) As Int16
         Dim SqlText As String = _
             "FROM [FriedParts].[dbo].[dist-Parts] " & _
             "WHERE [PartID] NOT IN (SELECT [PartID] FROM [FriedParts].[dbo].[part-Common])"
@@ -52,8 +116,11 @@ Public Module dbUtils
         End If
     End Function
     'Returns a complete count of orphaned records
-    Public Function dbOrphCount() As Int16
-        Return dbOrphBins() + dbOrphCADD() + dbOrphDist()
+    Public Function dbOrphCount(Optional ByRef Reset As Boolean = False, Optional ByRef Additional As Int32 = 0) As Int16
+        Static iCounter As Int32 = 0
+        If Reset Then iCounter = 0
+        iCounter += Additional
+        Return iCounter
     End Function
 
     'Appends append_table to the end of orig_table. 

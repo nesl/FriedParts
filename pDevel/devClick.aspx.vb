@@ -130,6 +130,7 @@ Partial Class pDevel_devClick
     End Class
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        suLoginRequired(Me) 'Necessary for testing functions that write to the DB (e.g. log changes)
         Dim dt As DataTable = New fpProj.fpBOM(8).GetDataSource
         xGrid.DataSource = dt
     End Sub

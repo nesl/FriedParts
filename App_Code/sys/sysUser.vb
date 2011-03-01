@@ -22,7 +22,11 @@ Imports apiDropbox 'For Dropbox States
 
 Public Module sysUser
     Public Const SYSTEM_USERNAME As String = "System Context"
-    Public Const SYSTEM_USERID As Int32 = 0
+    ''' <summary>
+    ''' The UserID of the system service. Must actually be entered in [user-Accounts].
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Const SYSTEM_USERID As Int32 = 35
     Public Const OpenIDEndPointGoogle As String = "https://www.google.com/accounts/o8/id"
 
     Public Enum LoginStates As Byte
@@ -291,9 +295,19 @@ Public Module sysUser
                 End If
             End If
         Catch ex As InvalidCastException
-            'Most likely cause is that there is no httpContext.Current because
-            'we are running as a server process
+            'Most likely cause is that user.UserID = "uninitialized" (String) because no user is logged in...
             Return sysErrors.USER_NOTLOGGEDIN
         End Try
     End Function
+
+
+    Public Class UserNotLoggedInException
+        Inherits Exception
+        Public Sub New()
+            MyBase.New()
+        End Sub
+        Public Sub New(ByRef Message As String)
+            MyBase.New(Message)
+        End Sub
+    End Class
 End Module

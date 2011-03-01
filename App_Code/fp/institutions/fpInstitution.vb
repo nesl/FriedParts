@@ -548,9 +548,9 @@ Namespace fpInstitution
                 '[STEP 4] GO BACK AND ADD THE CORRECT RELATIONSHIP TO THE NEW NAME
                 '
                 strcmd = _
-                    "UPDATE [FriedParts].[dbo].[mfr-Common]" & _
-                    "   SET [mfrNameID] = " & newInstNameID & _
-                    " WHERE [mfrID] = " & newInstID & ";"
+                    "UPDATE [FriedParts].[dbo].[" & i.Prefix & "-Common]" & _
+                    "   SET [" & i.Prefix & "NameID] = " & newInstNameID & _
+                    " WHERE [" & i.Prefix & "ID] = " & newInstID & ";"
                 dbAcc.SQLexe(strcmd)
                 '
                 '[STEP 5] LOG AND REPORT
@@ -561,7 +561,7 @@ Namespace fpInstitution
                 Return newInstID
             Else
                 'Already exists!
-                Throw New InstNotUniqueException("Cannot add Manufacturer! Already exists as: " & InstObject.DefaultName & " (ID: " & InstObject.fpID & ")")
+                Throw New InstNotUniqueException("Cannot add " & i.Name & "! Already exists as: " & InstObject.DefaultName & " (ID: " & InstObject.fpID & ")")
             End If
         End Function
 #End Region

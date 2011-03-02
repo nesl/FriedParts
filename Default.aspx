@@ -31,18 +31,28 @@
             <PanelCollection>
             <dx:PanelContent>
                 <dxnc:ASPxNewsControl ID="ASPxNewsControl" runat="server" 
-                    CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass" 
-                    ImageFolder="~/App_Themes/Glass/{0}/" PagerPanelSpacing="20px" 
+                    CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass" PagerPanelSpacing="20px" 
                     Width="100%" DataSourceID="fpSQLNews" DateField="newsDate" 
                     TextField="newsStory" HeaderTextField="newsTitle" ImageUrlField="newsImageURL" 
-                    RowPerPage="5">
+                    RowPerPage="5" ItemSpacing="0px" 
+                    SpriteCssFilePath="~/App_Themes/Glass/{0}/sprite.css">
                     <ItemDateStyle Spacing="2px">
                     </ItemDateStyle>
-                    <BackToTopImage Url="~/App_Themes/Glass/Web/ncBackToTop.png" />
+                    <BackToTopImage >
+                        <SpriteProperties CssClass="dxWeb_ncBackToTop_Glass" />
+                    </BackToTopImage>
+                    <LoadingPanelImage Url="~/App_Themes/Glass/Web/Loading.gif">
+                    </LoadingPanelImage>
+                    <ItemStyle>
+                    <Paddings Padding="0px" PaddingBottom="5px" />
+                    <BorderTop BorderColor="#969696" BorderStyle="Solid" BorderWidth="1px" />
+                    </ItemStyle>
                     <PagerStyle ItemSpacing="4px" Spacing="4px" />
                     <Border BorderColor="Silver" BorderStyle="Solid" BorderWidth="1px" />
                     <ItemSettings>
-                        <TailImage Url="~/App_Themes/Glass/Web/ncTail.gif" />
+                        <TailImage >
+                            <SpriteProperties CssClass="dxWeb_ncTail_Glass" />
+                        </TailImage>
                     </ItemSettings>
                     <PagerSettings ShowDefaultImages="True">
                         <FirstPageButton Text="">

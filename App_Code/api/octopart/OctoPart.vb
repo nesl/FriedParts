@@ -96,16 +96,16 @@ Namespace apiOctopart
                 Static Desc As String = Nothing
                 If Desc Is Nothing Then
                     'Long description = One distributors description + a table of properties
-                    Desc = Part.Item("descriptions[0]").Item("text").ToString & vbCrLf & vbCrLf
+                    Desc = Part.SelectToken("descriptions[0]").Value(Of String)("text") & vbCrLf & vbCrLf
                     For i As UInt16 = 0 To DirectCast(Part.Item("specs"), JArray).Count - 1
-                        Dim NumValues As UInt16 = DirectCast(Part.Item("specs[" & i & "]").Item("values"), JArray).Count
+                        Dim NumValues As UInt16 = DirectCast(Part.SelectToken("specs[" & i & "]").Item("values"), JArray).Count
                         Select Case NumValues
                             Case 0
                                 'Skip this one... no values known.
                             Case 1
                                 'Only one value so format it inline.
-                                Desc += Part.Item("specs[" & i & "]").Item("attribute").Item("displayname").ToString & ": " & _
-                                    Part.Item("specs[" & i & "]").Item("values[0]").ToString & vbCrLf
+                                Desc += Part.SelectToken("specs[" & i & "]").Item("attribute").Value(Of String)("displayname") & ": " & _
+                                    Part.SelectToken("specs[" & i & "]").SelectToken("values[0]").ToString & vbCrLf
                             Case Else
                                 'Multiple part values so format it with indentation.
                                 'This gets really complex because the data structure here depends on the metadata in the "attribute" property so for now we ignore it!
@@ -144,9 +144,10 @@ Namespace apiOctopart
                 Static iDatasheets As DataTable = Nothing
                 If iDatasheets Is Nothing Then
                     Dim dr As DataRow
+                    iDatasheets = apiOctopart.CreateTableUrlList
                     For i As UInt16 = 0 To DirectCast(Part.Item("datasheets"), JArray).Count - 1
                         dr = iDatasheets.NewRow
-                        dr.Item(0) = Part.Item("datasheets[" & i & "]").Item("url").ToString
+                        dr.Item("URL") = Part.SelectToken("datasheets[" & i & "]").Value(Of String)("url")
                         iDatasheets.Rows.Add(dr)
                     Next
                 End If
@@ -165,9 +166,10 @@ Namespace apiOctopart
                 Static iImages As DataTable = Nothing
                 If iImages Is Nothing Then
                     Dim dr As DataRow
+                    iImages = apiOctopart.CreateTableUrlList
                     For i As UInt16 = 0 To DirectCast(Part.Item("images"), JArray).Count - 1
                         dr = iImages.NewRow
-                        dr.Item(0) = Part.Item("images[" & i & "]").Item("url").ToString
+                        dr.Item("URL") = Part.SelectToken("images[" & i & "]").Value(Of String)("url")
                         iImages.Rows.Add(dr)
                     Next
                 End If
@@ -216,13 +218,14 @@ Namespace apiOctopart
             '   some elects to manually add a part, the list of existing Mfr's is bigger and
             '   aligned with Octopart's representation of them.
             Dim opMfrName As String = Part.Item("manufacturer").Item("displayname")
-            If fpMfrStatic.mfrExists(opMfrName, , , iMfr) Then
+            If fpMfr.Exists(opMfrName) Then
                 'We have this Manufacturer in FriedParts already -- and we just populated iMfr with it
                 'Nothing left to do.
+                iMfr = New fpMfr(opMfrName)
             Else
                 'This guy is missing! Let's add it!
                 iMfr = New fpMfr( _
-                            fpMfrStatic.mfrAdd(Part.Item("manufacturer").Item("displayname"), _
+                            fpMfr.Add(Part.Item("manufacturer").Item("displayname"), _
                                                 Part.Item("manufacturer").Item("homepage_url"), _
                                                 Part.Item("manufacturer").Item("id") _
                                               ) _

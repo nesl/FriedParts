@@ -47,10 +47,14 @@
 
     <!-- HEADER -->
     <div id="Header" class="fpClass">
-      <a href="http://friedparts.nesl.ucla.edu/friedparts/Default.aspx"><img src="http://friedparts.nesl.ucla.edu/friedparts/Images/Banner/Banner9.gif" alt="FriedParts! -- Powered By: Octopart, UCLA, NESL, Atla Labs" height="50px" /></a><br />
-      <div style="color:black">Created by: Jonathan Friedman and Newton Truong
-      &nbsp &nbsp &nbsp &nbsp &nbsp License: TBD (GNU Lesser GPL may apply, contact creaters for details)
-      </div>
+        <div style="position:relative;height:55px;">
+            <div style="position:absolute;top:0px;left:0px;width:200px;border-right: 1px solid rgb(150,150,150);"><a href="http://friedparts.nesl.ucla.edu/friedparts/Default.aspx"><img src="http://friedparts.nesl.ucla.edu/friedparts/Images/Banner/Banner9.gif" alt="FriedParts! -- Powered By: Octopart, UCLA, NESL, Atla Labs" height="50px" /></a></div>
+            <div style="position:absolute;top:10px;left:210px;">
+                <span style="font-family:Arial; font-weight:bolder; font-size:8pt;">Powered By</span><br />
+                <a style="margin-top:5px; margin-left:10px;" href="http://octopart.com"><img src="http://cdn.static.octopart.com/global/logo_small.bc0a5b2bd4cf7c92acebc9884d07bdd5.gif" alt="Powered by Octopart API" height="20px" /></a>
+            </div>
+        </div>
+        <div style="color:black">Created by: Jonathan Friedman and Newton Truong &nbsp &nbsp &nbsp &nbsp &nbsp License: TBD (GNU Lesser GPL may apply, contact creaters for details)</div>
     </div>
     
     <!-- LOGIN/USER STATUS -->

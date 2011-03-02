@@ -180,11 +180,11 @@ Public Module fpParts
         'Look up MfrName (to find ID)
         Try
             Dim fM As New fpMfr(MfrName, Exact)
-            Return partExistsID(fM.MfrID, MfrPartNum, Exact)
+            Return partExistsID(fM.fpID, MfrPartNum, Exact)
         Catch ex As Exception
-            If TypeOf ex Is ManufacturerNotFoundException Then
+            If TypeOf ex Is fpInstitution.fpInst.InstNotFoundException Then
                 Return sysErrors.ERR_NOTFOUND
-            ElseIf TypeOf ex Is ManufacturerNotUniqueException Then
+            ElseIf TypeOf ex Is fpInstitution.fpInst.InstNotUniqueException Then
                 Return sysErrors.ERR_NOTUNIQUE
             Else
                 Throw New Exception("from partExistsID", ex)

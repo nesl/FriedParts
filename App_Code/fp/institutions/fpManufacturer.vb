@@ -16,6 +16,9 @@ Namespace fpManufacturer
         '----------------------------------------------------------------
         '-- fpInstitution Plumbing (No need to touch it in this class)
         '----------------------------------------------------------------
+#Region "Conversion Operators"
+#End Region
+
 #Region "Shared Methods"
         ''' <summary>
         ''' Finds the manufacturer name and adds the OctopartID to it. Throws an exception if
@@ -65,11 +68,10 @@ Namespace fpManufacturer
         ''' <param name="Exact">Perform an exact search or a fuzzy one.</param>
         ''' <param name="AllowMultiple">If multiple manufacturer records match and AllowMultiple is set to True,
         ''' The function will return true (Result will still be Nothing however).</param>
-        ''' <param name="Result">[Output value] If only one MfrID was found, we return the object. Otherwise this is set to Nothing. [Usage] dim m as New fpMfr.</param>
         ''' <returns>The boolean value reporting the existence of this manufacturer name. Follows the rules specified by the other parameters. To retrieve the actual object see the Result parameter.</returns>
         ''' <remarks></remarks>
-        Public Overloads Shared Function Exists(ByRef Name As String, Optional ByRef Exact As Boolean = True, Optional ByRef AllowMultiple As Boolean = False, Optional ByRef Result As fpInst = Nothing) As Boolean
-            Return Exists(New InstDetails(Prefix, TypeName), Name, Exact, AllowMultiple, Result)
+        Public Overloads Shared Function Exists(ByRef Name As String, Optional ByRef Exact As Boolean = True, Optional ByRef AllowMultiple As Boolean = False) As Boolean
+            Return Exists(New InstDetails(Prefix, TypeName), Name, Exact, AllowMultiple)
         End Function
 
         ''' <summary>

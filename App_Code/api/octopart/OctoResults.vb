@@ -148,21 +148,27 @@ Namespace apiOctopart
 
             jT = rJson.SelectToken("results")
             iDtMpns = apiOctopart.CreateTableMpnList
-            For i As UInt32 = 0 To DirectCast(jT, JArray).Count - 1
-                'Extract this result record
-                Result = rJson.SelectToken("results[" & i & "]")
+            Dim NumPartsFound = DirectCast(jT, JArray).Count
+            If NumPartsFound > 0 Then
+                For i As UInt32 = 0 To NumPartsFound - 1
+                    'Extract this result record
+                    Result = rJson.SelectToken("results[" & i & "]")
 
-                'Create the results table (summary)
-                dr = iDtMpns.NewRow
-                dr.Item("OctopartID") = Result.Item("item").Item("uid")
-                dr.Item("MfrPartNum") = Result.Item("item").Item("mpn")
-                dr.Item("Highlight") = Result.Item("highlight")
-                dr.Item("Description") = Result.Item("item").Item("descriptions[0]") 'We use the first description, since there might be many.
+                    'Create the results table (summary)
+                    dr = iDtMpns.NewRow
+                    dr.Item("OctopartID") = Result.Item("item").Value(Of String)("uid")
+                    dr.Item("MfrPartNum") = Result.Item("item").Value(Of String)("mpn")
+                    dr.Item("Highlight") = Result.Value(Of String)("highlight")
+                    dr.Item("Description") = GetDigikeyDescription(Result.Item("item")) 'Returns the Digikey description if available, otherwise the first description returned...
+                    iDtMpns.Rows.Add(dr) 'Add to table!
 
-                '...and the Part Object (detailed)
-                Part = New OctoPart(Result)
-                iParts.Add(Part, Part.OctopartID)
-            Next
+                    '...and the Part Object (detailed)
+                    Part = New OctoPart(Result)
+                    iParts.Add(Part, Part.OctopartID)
+                Next
+            Else
+                'Nothing found... ergo, do nothing
+            End If
 
         End Sub
 

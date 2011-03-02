@@ -18,7 +18,7 @@ Partial Class pParts_partAddMfr
         End If
 
         'Manufacturer does not already exist
-        If Not fpMfrStatic.mfrExists(txtMfrName.Text, True) = sysErrors.ERR_NOTFOUND Then
+        If Not fpMfr.Exists(txtMfrName.Text, True) = sysErrors.ERR_NOTFOUND Then
             submitError("This manufacturer already exists in the database.")
             Exit Sub
         End If
@@ -35,7 +35,7 @@ Partial Class pParts_partAddMfr
         End If
 
         'ALL CHECKS PASSED! LET'S ADD!
-        mfrAdd(txtMfrName.Text, txtMfrWebsite.Text.ToLower(), , Me) 'Files log entry
+        fpMfr.Add(txtMfrName.Text, txtMfrWebsite.Text.ToLower(), , Me) 'Files log entry
 
         'Return
         MsgBox(Me, sysErrors.MFRADD_SUCCESS, txtMfrName.Text)

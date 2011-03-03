@@ -5,7 +5,7 @@ Imports System.Data
 Namespace System.Web.UI.FriedParts
 
     Public Class PartTypeDatasourceControl
-
+#Region "Variables"
         ''' <summary>
         ''' Collection of DataTables
         ''' </summary>
@@ -18,30 +18,20 @@ Namespace System.Web.UI.FriedParts
         ''' <remarks></remarks>
         Protected LevelTitle(MAX_DEPTH) As String
 
-        Public ReadOnly Property GetTitles As String()
-            Get
-                Return LevelTitle
-            End Get
-        End Property
-
-        ''' <summary>
-        ''' Initializes the internal DataTable collection
-        ''' </summary>
-        ''' <remarks></remarks>
-        Protected Sub Init_Datasource()
-            LevelTitle(1) = "All Parts"
-            For i As Byte = 2 To MAX_DEPTH
-                Datasource.Add(ptCreateTable(), i)
-                LevelTitle(i) = ""
-            Next
-        End Sub
-
         ''' <summary>
         ''' The ParentID of the current state reflected in the loaded
         ''' tables of the Datasource (DataTable collection)
         ''' </summary>
         ''' <remarks></remarks>
         Protected iParentID As Int32
+#End Region
+
+#Region "Properties"
+        Public ReadOnly Property GetTitles As String()
+            Get
+                Return LevelTitle
+            End Get
+        End Property
 
         Public ReadOnly Property GetParentID As Int32
             Get
@@ -54,16 +44,18 @@ Namespace System.Web.UI.FriedParts
                 Return Datasource(CStr(Level)) 'String conversion to ensure it's treated as a Key
             End Get
         End Property
+#End Region
 
         ''' <summary>
-        ''' Builds a new Horizontal Part Type Accordion psuedo-control
+        ''' Initializes the internal DataTable collection
         ''' </summary>
-        ''' <param name="TypeID">The TypeID to start with -- typically 0</param>
-        ''' <remarks>psuedo-controls are a Jonathan invention... when he's too lazy to reinvent the wheel and build true Server controls.</remarks>
-        Public Sub New(Optional ByRef TypeID As Int32 = 0)
-            Init_Datasource()
-            iParentID = TypeID
-            updateDatasource(iParentID)
+        ''' <remarks></remarks>
+        Protected Sub Init_Datasource()
+            LevelTitle(1) = "All Parts"
+            For i As Byte = 2 To MAX_DEPTH
+                Datasource.Add(ptCreateTable(), i)
+                LevelTitle(i) = ""
+            Next
         End Sub
 
         ''' <summary>
@@ -145,6 +137,7 @@ Namespace System.Web.UI.FriedParts
             End If
         End Sub
 
+#Region "Shared Functions"
         ''' <summary>
         ''' Table schema
         ''' </summary>
@@ -171,5 +164,20 @@ Namespace System.Web.UI.FriedParts
 
             Return Table1
         End Function
+#End Region
+
+#Region "Construction"
+        ''' <summary>
+        ''' Builds a new Horizontal Part Type Accordion psuedo-control
+        ''' </summary>
+        ''' <param name="TypeID">The TypeID to start with -- typically 0</param>
+        ''' <remarks>psuedo-controls are a Jonathan invention... when he's too lazy to reinvent the wheel and build true Server controls.</remarks>
+        Public Sub New(Optional ByRef TypeID As Int32 = 0)
+            Init_Datasource()
+            iParentID = TypeID
+            updateDatasource(iParentID)
+        End Sub
+#End Region
+
     End Class
 End Namespace

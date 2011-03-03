@@ -56,11 +56,15 @@ Namespace System.Web.UI.FriedParts
         ''' Call this function everytime the page reloads (e.g. on Callbacks, Postbacks, etc...)
         ''' </summary>
         ''' <param name="SessionControlName">The control's variable name in the user's session state</param>
+        ''' <param name="MePage">Pass in the "Me" argument from the calling webpage</param>
         ''' <returns></returns>
         ''' <remarks></remarks>
-        Public Shared Function Reload(ByRef SessionControlName As String) As PartTypeAccordionControl
-            If HttpContext.Current.Session(SessionControlName) Is Nothing Then
-                Throw New NullReferenceException("The PartTypeAccordionControl must be initialized before you reload it! Use New(SessionName)")
+        Public Shared Function Reload(ByRef MePage As System.Web.UI.Page, ByRef SessionControlName As String) As PartTypeAccordionControl
+            Dim scName As String = HttpContext.Current.Session(SessionControlName)
+            If scName Is Nothing AndAlso scName.Length > 0 AndAlso IsNumeric(scName) Then
+                'Throw New NullReferenceException("The PartTypeAccordionControl must be initialized before you reload it! Use New(SessionName)")
+                'Recover!
+                Return New FriedParts.PartTypeAccordionControl(MePage, SessionControlName)
             Else
                 Dim hPTa As PartTypeAccordionControl = HttpContext.Current.Session(SessionControlName)
                 hPTa.Update(hPTa.GetSelectedTypeID)
@@ -76,11 +80,18 @@ Namespace System.Web.UI.FriedParts
             Dim gv As ASPxGridView
             For i As Byte = 2 To MAX_DEPTH
                 gv = DirectCast(allControls.FindControl("L" & i & "g"), ASPxGridView)
-                AddHandler gv.FocusedRowChanged, AddressOf HandleRowChanged
+                'AddHandler gv.FocusedRowChanged, AddressOf HandleRowChanged
+                AddHandler gv.CustomCallback, AddressOf HandleRowChanged
             Next
 
             'Set Initial Values
-            ptData = New PartTypeDatasourceControl()
+            Dim hf As HiddenField = DirectCast(allControls.FindControl("SelectedPartTypeID"), HiddenField)
+            If hf.Value IsNot Nothing Then
+                'Recover if server user session was lost while page was still open and user had a selection (align with view state's hidden control)
+                ptData = New PartTypeDatasourceControl(hf.Value)
+            Else
+                ptData = New PartTypeDatasourceControl()
+            End If
         End Sub
 
         Protected Sub Update(Optional ByVal TypeID As Integer = 0)
@@ -116,10 +127,13 @@ Namespace System.Web.UI.FriedParts
         ' TAB HANDLERS
         '======================================
         Protected Sub HandleRowChanged(ByVal WhichGrid As Object, ByVal e As System.EventArgs)
+            Dim blah As DataTable
+            blah.Rows.Add(blah.NewRow)
+            HttpContext.Current.Server.Transfer("http://www.google.com") 'xxx
             'Get data from the grid -- what did user click on?
             Dim gv As ASPxGridView = DirectCast(WhichGrid, ASPxGridView)
             Dim hf As System.Web.UI.WebControls.HiddenField
-            Dim drow As DataRow = gv.GetDataRow(gv.FocusedRowIndex)
+            Dim drow As DataRow = gv.GetRowValues(DirectCast(e, DevExpress.Web.ASPxGridView.ASPxGridViewCustomCallbackEventArgs).Parameters)
             'Get the new TypeID the user has just selected
             If drow IsNot Nothing Then
                 hf = DirectCast(allControls.FindControl("SelectedPartTypeID"), System.Web.UI.WebControls.HiddenField)

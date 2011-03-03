@@ -5,7 +5,7 @@ Imports System.Text.RegularExpressions
 
 Public Class sysControlWalker
     Protected m_controls As Collection
-    Protected theRegEx As Regex
+    Protected theStartsWith As String
 
     Protected Sub Worker(ByRef c As Control)
         'CHECK FOR LEAF
@@ -15,7 +15,13 @@ Public Class sysControlWalker
             If temp.Length > 0 Then
                 'Valid control ADD!
                 Try
-                    m_controls.Add(c, GetID(c.UniqueID))
+                    Dim name As String = GetID(c.UniqueID)
+                    If (theStartsWith.Length > 0 And name.StartsWith(theStartsWith)) Or (theStartsWith.Length = 0) Then
+                        'ADD
+                        If name.CompareTo("LD") <> 0 Then
+                            m_controls.Add(c, GetID(c.UniqueID))
+                        End If
+                    End If
                 Catch ex As ArgumentException
                     'Control key already exists (obviously, not one of the developer's manually added or named controls so just ignore)
                 End Try
@@ -53,9 +59,9 @@ Public Class sysControlWalker
         End If
     End Function
 
-    Public Sub New(ByRef myForm As Page, Optional ByRef TheRegularExpression As String = "")
+    Public Sub New(ByRef myForm As Page, Optional ByRef ControlNameStartsWith As String = "")
         m_controls = New Collection
-        theRegEx = New Regex(TheRegularExpression)
+        theStartsWith = ControlNameStartsWith
         'create a control walker to get 
         'all controls on the form
         For Each c As Control In myForm.Controls

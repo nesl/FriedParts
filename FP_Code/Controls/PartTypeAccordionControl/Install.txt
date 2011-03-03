@@ -2,20 +2,25 @@
     [a.] Only ONE of these is allowed per web page (including all tabs/frames)
     [b.] The host page must use the FriedParts master page (because it includes jQuery! duh)
 
-[1.] Include the ASP code in your web page (.aspx file)
 
-<!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.aspx"-->
-
-[2.] Add the assembly references (if you don't already have them for other reasons) to the TOP of your web page (.aspx file)
+----------------
+[1.] Add the assembly reference (if you don't already have them for other reasons) to the TOP of your web page (.aspx file)
 
 <%@ Register Assembly="DevExpress.Web.ASPxGridView.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
     Namespace="DevExpress.Web.ASPxGridView" TagPrefix="dxwgv" %>
 
+----------------
+[2.] Include the ASP code in your web page (.aspx file)
+
+<!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.body"-->
+
+----------------
 [3.] Add the include to the <head>
 
 <!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.head"-->
 
-----------
-[1.] Instantiate and keep track of (in session state) the PartTypeAccordionControl
-[2.] Call PartTypeAccordionControl.Init(Me) in the Page.load() event on initialization (Not IsCallback AND Not IsPostback then...)
-[3.] User Action is available as SelectedPartTypeID.Value
+
+----------------
+[USAGE]
+
+here is the execution template

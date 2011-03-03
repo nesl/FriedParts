@@ -1,0 +1,68 @@
+﻿<asp:HiddenField ID="SelectedPartTypeID" runat="server" />
+<div id="accordion-1">
+    <dl>
+        <dt id="L2a" runat="server">One more</dt>
+            <dd id="L2b" runat="server">
+                <dxwgv:ASPxGridView ID="L2g" runat="server" EnableCallBacks="False" 
+                    KeyFieldName="TypeID" Font-Names="Tahoma" Font-Size="8pt">
+                    <Columns>
+                        <dxwgv:GridViewDataTextColumn FieldName="TypeID" ShowInCustomizationForm="True" 
+                            VisibleIndex="0" Visible="false">
+                        </dxwgv:GridViewDataTextColumn>
+                        <dxwgv:GridViewDataTextColumn FieldName="Type" ShowInCustomizationForm="True" 
+                            VisibleIndex="1" CellStyle-Font-Bold="true">
+                        </dxwgv:GridViewDataTextColumn>
+                        <dxwgv:GridViewDataTextColumn FieldName="TypeNotes" ShowInCustomizationForm="True" 
+                            VisibleIndex="2">
+                        </dxwgv:GridViewDataTextColumn>
+                    </Columns>
+                    <SettingsBehavior AllowDragDrop="False" AllowFocusedRow="True" ProcessFocusedRowChangedOnServer="True"></SettingsBehavior>
+                    <SettingsPager PageSize="8">
+                    </SettingsPager>
+                    <Settings ShowFilterRow="True" />
+                </dxwgv:ASPxGridView>
+            </dd>
+        <dt id="L3a" runat="server">Title slide</dt>
+            <dd id="L3b" runat="server">
+                <dxwgv:ASPxGridView ID="L3g" runat="server" EnableCallBacks="False" 
+                    KeyFieldName="TypeID" Font-Names="Tahoma" Font-Size="8pt">
+                    <Columns>
+                        <dxwgv:GridViewDataTextColumn FieldName="TypeID" ShowInCustomizationForm="True" 
+                            VisibleIndex="0" Visible="false">
+                        </dxwgv:GridViewDataTextColumn>
+                        <dxwgv:GridViewDataTextColumn FieldName="Type" ShowInCustomizationForm="True" 
+                            VisibleIndex="1" CellStyle-Font-Bold="true">
+                        </dxwgv:GridViewDataTextColumn>
+                        <dxwgv:GridViewDataTextColumn FieldName="TypeNotes" ShowInCustomizationForm="True" 
+                            VisibleIndex="2">
+                        </dxwgv:GridViewDataTextColumn>
+                    </Columns>
+                    <SettingsBehavior AllowDragDrop="False" AllowFocusedRow="True" ProcessFocusedRowChangedOnServer="True"></SettingsBehavior>
+                    <SettingsPager PageSize="8">
+                    </SettingsPager>
+                    <Settings ShowFilterRow="True" />
+                </dxwgv:ASPxGridView>
+            </dd>        
+         <dt id="L4a" runat="server">Title slide</dt>
+            <dd id="L4b" runat="server">
+                <dxwgv:ASPxGridView ID="L4g" runat="server" EnableCallBacks="False" 
+                    KeyFieldName="TypeID" Font-Names="Tahoma" Font-Size="8pt">
+                    <Columns>
+                        <dxwgv:GridViewDataTextColumn FieldName="TypeID" ShowInCustomizationForm="True" 
+                            VisibleIndex="0" Visible="false">
+                        </dxwgv:GridViewDataTextColumn>
+                        <dxwgv:GridViewDataTextColumn FieldName="Type" ShowInCustomizationForm="True" 
+                            VisibleIndex="1" CellStyle-Font-Bold="true">
+                        </dxwgv:GridViewDataTextColumn>
+                        <dxwgv:GridViewDataTextColumn FieldName="TypeNotes" ShowInCustomizationForm="True" 
+                            VisibleIndex="2">
+                        </dxwgv:GridViewDataTextColumn>
+                    </Columns>
+                    <SettingsBehavior AllowDragDrop="False" AllowFocusedRow="True" ProcessFocusedRowChangedOnServer="True"></SettingsBehavior>
+                    <SettingsPager PageSize="8">
+                    </SettingsPager>
+                    <Settings ShowFilterRow="True" />
+                </dxwgv:ASPxGridView>
+            </dd>        
+        </dl>
+    </div>

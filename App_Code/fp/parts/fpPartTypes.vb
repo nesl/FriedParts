@@ -165,6 +165,17 @@ Public Module fpPartTypes
         Return tArr(i, 0)
     End Function
 
+    ''' <summary>
+    ''' Returns the level of the specified TypeID. For example, "All Parts"(1)-->"Electronic Parts"(2)-->"Resistors"(3)-->"SMT"-->(4)
+    ''' </summary>
+    ''' <param name="TypeID"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Function ptGetLevel(ByRef TypeID As Int32) As Byte
+        Dim LevelArray As Integer() = ptPathSplit(ptGetPath(TypeID))
+        Return LevelArray.Length
+    End Function
+
     'Returns this category's tree lineage from current node back up to the root of the tree.
     Public Function ptTraceLineage(ByVal TypeID As Int32) As String
         Dim dt As New DataTable
@@ -250,8 +261,16 @@ Public Module fpPartTypes
         End If
     End Function
 
-    'Returns the PartType's Value Label and Description via passed in parameters
-    'Returns True if found / False otherwise
+    ''' <summary>
+    ''' Returns the PartType's Value Label and Description via passed in parameters
+    ''' </summary>
+    ''' <param name="PartTypeID"></param>
+    ''' <param name="TypeValue"></param>
+    ''' <param name="TypeValueNotes"></param>
+    ''' <param name="TypeValueNumeric"></param>
+    ''' <param name="TypeUnits"></param>
+    ''' <returns>Returns True if found / False otherwise</returns>
+    ''' <remarks></remarks>
     Public Function ptGetTypeValue(ByVal PartTypeID As String, ByRef TypeValue As String, ByRef TypeValueNotes As String, ByRef TypeValueNumeric As Boolean, ByRef TypeUnits As String) As Boolean
         Dim thePath As String
         If (ptGetTheTypeValue(PartTypeID, TypeValue, thePath)) Then
@@ -318,7 +337,12 @@ Public Module fpPartTypes
         End If
     End Function
 
-    'Returns the TypeID which has the specified Part Type Path -- e.g. "0,206,114"
+    ''' <summary>
+    ''' Returns the TypeID which has the specified Part Type Path -- e.g. "0,206,114"
+    ''' </summary>
+    ''' <param name="PartTypePath"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Function ptGetTypeIDFromPath(ByVal PartTypePath As String) As Int32
         Dim dt As New DataTable
         Dim SQLcmd As String

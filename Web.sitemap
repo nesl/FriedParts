@@ -43,6 +43,7 @@
             <siteMapNode title="SQL Format"  description="Converts SQLServer Scripts to VB Strings" url="~/pDevel/dbSQL.aspx" />
             <siteMapNode url="~/pDevel/devCrawler.aspx" title="Webcrawler Testing"  description="Crawls Digikey and Octopart. Mostly useful for diagnostics in the field." />
             <siteMapNode url="~/pDevel/devClick.aspx" title="General Purpose Testing"  description="Essentially a temp form for debugging/development/testing." />
+            <siteMapNode url="~/pParts/Test2.aspx" title="Testing Part Types"  description="Essentially a temp form for debugging/development/testing." />
             </siteMapNode>        
     </siteMapNode>
 </siteMap>

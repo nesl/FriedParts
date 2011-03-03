@@ -1,0 +1,9 @@
+﻿<script type="text/javascript" src="/FriedParts/FP_Code/Controls/PartTypeAccordionControl/easyAccordion.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#accordion-1').easyAccordion({
+            autoStart: false,
+        });
+    });
+</script>
+<link rel="stylesheet" type="text/css" href="/FriedParts/FP_Code/Controls/PartTypeAccordionControl/easyAccordion.css" />

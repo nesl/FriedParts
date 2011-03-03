@@ -9,6 +9,7 @@ Public Module sysError
         DROPBOX_LINK_SUCCESS = 60
         PROJECTADD_SUCCESS = 50
         PARTADD_SUCCESS = 10
+        PARTTYPEADD_SUCCESS = 11
         MFRADD_SUCCESS = 18
         MISC_INFO = 20
         USERADD_SUCCESS = 30
@@ -43,6 +44,8 @@ Public Module sysError
 
     Public Function errDecodeMsg(ByVal errCode As sysErrors, Optional ByVal Param1 As String = "", Optional ByVal Param2 As String = "") As String
         Select Case errCode
+            Case sysErrors.PARTTYPEADD_SUCCESS
+                Return "Part Type " & Param1 & ": " & Param2 & ", added successfully!"
             Case sysErrors.DROPBOX_LINK_SUCCESS
                 Return Param1 & ", you have successfully linked your Dropbox account (" & Param2 & ") to FriedParts. All kinds of awesomeness will now ensue!"
             Case sysErrors.PROJECTADD_SUCCESS

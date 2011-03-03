@@ -115,11 +115,8 @@ Public Module sysEnv
     '>user.RoleID     -- Our DB's Permission level for this user (number)
     '>user.RoleDesc   -- Our DB's Permission level for this user (description)
 
-    '>pt.ArmPartType -- The PartType Tree Iterator Activation 
-    '>pt.SetPartType -- The PartType Tree Path To Node to Select
-    '>pt.Numeric -- The PartType Value must be a number (capacitance value, resistance, etc)
-
     '>padd.OPRs -- OctoResults Web data structure (Digikey/Octopart)
+    '>padd.PartTypeControl -- The PartType pseudo-control
 
     '>inv.ConflictBin -- fpInv.fpInvBinError data structure containing the bin location information for a conflict (marking a bin as empty, but it already has a part in it)
     '>inv.SearchResults -- The datasource of the returned search results (so we don't requery/reprocess)

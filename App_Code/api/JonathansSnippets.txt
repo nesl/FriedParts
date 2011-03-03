@@ -1,0 +1,128 @@
+﻿This file is for the little code sections that I always have to look up...
+
+'===========================================================================================
+' Creates the table schema
+'===========================================================================================
+    Public Function CreateTable() As Data.DataTable
+        Dim Table1 As DataTable
+        Table1 = New DataTable("TextTable")
+        'Init
+        Dim col1 As DataColumn
+        '[UID]
+        col1 = New DataColumn("UID")
+        col1.DataType = System.Type.GetType("System.Int16")
+        col1.AutoIncrement = True
+        col1.AutoIncrementSeed = 1
+        col1.AutoIncrementStep = 1
+        Table1.Columns.Add(Col1)
+        '[Something]
+        col1 = New DataColumn("Col1")
+        col1.DataType = System.Type.GetType("System.String")
+        Table1.Columns.Add(col1)
+        Return Table1
+    End Function
+
+
+
+'===========================================================================================
+' Round Panel
+'===========================================================================================
+
+<%@ Register Assembly="DevExpress.Web.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxRoundPanel" TagPrefix="dxrp" %>
+<%@ Register Assembly="DevExpress.Web.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.Web.ASPxPanel" TagPrefix="dx" %>
+
+    <dxrp:ASPxRoundPanel ID="ASPxRoundPanel1" runat="server" Width="200px" HeaderText="Hello World!">
+        <PanelCollection>
+            <dx:PanelContent ID="PanelContent1" runat="server">
+            
+            </dx:PanelContent>    
+        </PanelCollection>
+    </dxrp:ASPxRoundPanel>
+
+
+
+'===========================================================================================
+' Add Meta-Refresh to Page Header dynamically (server-side)
+'===========================================================================================
+
+    Response.AppendHeader("refresh", "1") 'Not yet authenticated so try again!
+
+
+'===========================================================================================
+' Query Strings
+'===========================================================================================
+
+    'Define
+    Dim passedIN As System.Collections.Specialized.NameValueCollection = HttpContext.Current.Request.QueryString()
+    
+    'Use -- http://webpage.com?q=blah&p=muah
+    passedIN("q") '="blah"
+    passedIN("p") '="muah"
+    passedIN("asdf") = Nothing
+
+'===========================================================================================
+' Tab Pages
+'===========================================================================================
+
+<%@ Register Assembly="DevExpress.Web.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxTabControl" TagPrefix="dxtc" %>
+<%@ Register Assembly="DevExpress.Web.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxClasses" tagprefix="dxw" %>
+
+        <!-- TAB PAGES -->        
+        <dxtc:ASPxPageControl ID="xTabPages" ClientInstanceName="xTabPages" 
+            runat="server" ActiveTabIndex="3" 
+            Height="200px" Width="700px" 
+            CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass" 
+            TabSpacing="0px" EnableCallBacks="True">
+            <LoadingPanelImage Url="~/App_Themes/Glass/Web/Loading.gif">
+            </LoadingPanelImage>
+            <ContentStyle>
+                <Border BorderColor="#4986A2" />
+            </ContentStyle>
+
+            <TabPages>
+                
+                <dxtc:TabPage Text="Search"><ContentCollection><dxw:ContentControl ID="ContentControl1" runat="server">                    
+                    <asp:Panel ID="Panel5" runat="server" style="color:black;">
+                        <!-- Page Content Goes HERE -->
+                    </asp:Panel>
+                </dxw:ContentControl></ContentCollection></dxtc:TabPage>
+            
+            </TabPages>
+        </dxtc:ASPxPageControl>
+    
+'===========================================================================================
+' xGridView (with manual column spec)
+'===========================================================================================
+
+    <%@ Register Assembly="DevExpress.Web.ASPxGridView.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+        Namespace="DevExpress.Web.ASPxGridView" TagPrefix="dxwgv" %>
+
+     <dxwgv:ASPxGridView ID="xGridUserLog" runat="server" Font-Names="Tahoma" 
+        Font-Size="X-Small"
+        AutoGenerateColumns="False">
+        <Columns>
+            <dxwgv:GridViewDataDateColumn FieldName="TimestampDate" 
+                ShowInCustomizationForm="True" VisibleIndex="0">
+            </dxwgv:GridViewDataDateColumn>
+            <dxwgv:GridViewDataTextColumn FieldName="OpDesc" ShowInCustomizationForm="True" 
+                VisibleIndex="1">
+            </dxwgv:GridViewDataTextColumn>
+        </Columns>
+    </dxwgv:ASPxGridView>
+
+    '
+    '-------- HANDLING ROW FOCUS EVENTS ---------------
+    '
+    Protected Sub xGridProjects_FocusedRowChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles xGridProjects.FocusedRowChanged
+        Dim drow As DataRow = xGridProjects.GetDataRow(xGridProjects.FocusedRowIndex)
+        If drow IsNot Nothing Then
+            'ReportWindow.Visible = True
+            HttpContext.Current.Session("bom.ProjectID") = drow.Field(Of Integer)("ProjectID")
+        Else
+            'Do nothing... keep current report displayed (this really only happens on initial page load)
+            'ReportWindow.Visible = False
+        End If
+    End Sub

@@ -3,7 +3,7 @@
     <dl>
         <dt id="L2a" runat="server">One more</dt>
             <dd id="L2b" runat="server">
-                <dxwgv:ASPxGridView ID="L2g" runat="server" EnableCallBacks="True" 
+                <dxwgv:ASPxGridView ID="L2g" runat="server" EnableCallBacks="False" 
                     KeyFieldName="TypeID" Font-Names="Tahoma" Font-Size="8pt"
                     ClientIDMode="AutoID">
                     <ClientSideEvents RowClick="function(s, e) {s.PerformCallback(''+e.visibleIndex);}"></ClientSideEvents>
@@ -18,7 +18,7 @@
                             VisibleIndex="2">
                         </dxwgv:GridViewDataTextColumn>
                     </Columns>
-                    <SettingsBehavior AllowDragDrop="False" AllowFocusedRow="True"></SettingsBehavior>
+                    <SettingsBehavior AllowDragDrop="False"></SettingsBehavior>
                     <SettingsPager PageSize="8">
                     </SettingsPager>
                     <Settings ShowFilterRow="True" />
@@ -41,7 +41,7 @@
                             VisibleIndex="2">
                         </dxwgv:GridViewDataTextColumn>
                     </Columns>
-                    <SettingsBehavior AllowDragDrop="False" AllowFocusedRow="True" ProcessFocusedRowChangedOnServer="True"></SettingsBehavior>
+                    <SettingsBehavior AllowDragDrop="False"></SettingsBehavior>
                     <SettingsPager PageSize="8">
                     </SettingsPager>
                     <Settings ShowFilterRow="True" />
@@ -64,7 +64,7 @@
                             VisibleIndex="2">
                         </dxwgv:GridViewDataTextColumn>
                     </Columns>
-                    <SettingsBehavior AllowDragDrop="False" AllowFocusedRow="True" ProcessFocusedRowChangedOnServer="True"></SettingsBehavior>
+                    <SettingsBehavior AllowDragDrop="False"></SettingsBehavior>
                     <SettingsPager PageSize="8">
                     </SettingsPager>
                     <Settings ShowFilterRow="True" />

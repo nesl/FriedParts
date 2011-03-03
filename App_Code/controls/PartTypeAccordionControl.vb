@@ -60,41 +60,29 @@ Namespace System.Web.UI.FriedParts
         ''' <returns></returns>
         ''' <remarks></remarks>
         Public Shared Function Reload(ByRef MePage As System.Web.UI.Page, ByRef SessionControlName As String) As PartTypeAccordionControl
-            Dim scName As String = HttpContext.Current.Session(SessionControlName)
-            If scName Is Nothing AndAlso scName.Length > 0 AndAlso IsNumeric(scName) Then
+            If HttpContext.Current.Session(SessionControlName) Is Nothing Then
                 'Throw New NullReferenceException("The PartTypeAccordionControl must be initialized before you reload it! Use New(SessionName)")
                 'Recover!
                 Return New FriedParts.PartTypeAccordionControl(MePage, SessionControlName)
             Else
                 Dim hPTa As PartTypeAccordionControl = HttpContext.Current.Session(SessionControlName)
-                hPTa.Update(hPTa.GetSelectedTypeID)
+                'hPTa.Update(hPTa.GetSelectedTypeID)
                 Return hPTa
             End If
         End Function
 
-        Public Sub Init(ByRef TheHostPage As System.Web.UI.Page)
+        Public Sub UpdateControls(ByRef MePage As System.Web.UI.Page)
             'Collect the applicable controls
-            allControls = New sysControlWalker(TheHostPage)
-
-            'Add event handlers
-            Dim gv As ASPxGridView
-            For i As Byte = 2 To MAX_DEPTH
-                gv = DirectCast(allControls.FindControl("L" & i & "g"), ASPxGridView)
-                'AddHandler gv.FocusedRowChanged, AddressOf HandleRowChanged
-                AddHandler gv.CustomCallback, AddressOf HandleRowChanged
-            Next
-
-            'Set Initial Values
-            Dim hf As HiddenField = DirectCast(allControls.FindControl("SelectedPartTypeID"), HiddenField)
-            If hf.Value IsNot Nothing Then
-                'Recover if server user session was lost while page was still open and user had a selection (align with view state's hidden control)
-                ptData = New PartTypeDatasourceControl(hf.Value)
-            Else
-                ptData = New PartTypeDatasourceControl()
-            End If
+            allControls = New sysControlWalker(MePage)
+            'Update the UI
+            Update(ptData.GetParentID)
         End Sub
 
         Protected Sub Update(Optional ByVal TypeID As Integer = 0)
+
+            DirectCast(allControls.FindControl("lbl"), Label).Text = DirectCast(allControls.FindControl("SelectedPartTypeID"), HiddenField).Value 'xxx
+
+            'Update the user interface
             Dim ParentLevel As Byte = ptGetLevel(TypeID)
             Dim gv As ASPxGridView
             ptData.updateDatasource(TypeID)
@@ -121,25 +109,53 @@ Namespace System.Web.UI.FriedParts
                     DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).InnerText = ptData.GetTitles(i)
                 End If
             Next
+            'Save in view state
+            Dim hf As HiddenField = DirectCast(allControls.FindControl("SelectedPartTypeID"), HiddenField)
+            hf.Value = ptData.GetParentID
         End Sub
 
 
         ' TAB HANDLERS
         '======================================
-        Protected Sub HandleRowChanged(ByVal WhichGrid As Object, ByVal e As System.EventArgs)
-            Dim blah As DataTable
-            blah.Rows.Add(blah.NewRow)
-            HttpContext.Current.Server.Transfer("http://www.google.com") 'xxx
+        Public Sub HandleRowChanged(ByVal WhichGrid As Object, ByVal e As System.EventArgs)
             'Get data from the grid -- what did user click on?
             Dim gv As ASPxGridView = DirectCast(WhichGrid, ASPxGridView)
             Dim hf As System.Web.UI.WebControls.HiddenField
-            Dim drow As DataRow = gv.GetRowValues(DirectCast(e, DevExpress.Web.ASPxGridView.ASPxGridViewCustomCallbackEventArgs).Parameters)
+            Dim drow As DataRow = gv.GetDataRow(DirectCast(e, DevExpress.Web.ASPxGridView.ASPxGridViewCustomCallbackEventArgs).Parameters)
             'Get the new TypeID the user has just selected
             If drow IsNot Nothing Then
                 hf = DirectCast(allControls.FindControl("SelectedPartTypeID"), System.Web.UI.WebControls.HiddenField)
                 hf.Value = (drow.Field(Of Int16)("TypeID"))
                 'Reflect that change in the backend
                 Update(hf.Value)
+            End If
+        End Sub
+
+        ''' <summary>
+        ''' Returns the ASPxGridViews that make up the content controls of the accordion. This plumbing is necessary to work around some 
+        ''' limitations in the psuedo-control approach.  Namely, you can't ask a protected function in ...
+        ''' </summary>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public Function GetGrids() As Collection
+            Dim retVal As New Collection
+            For i As Byte = 2 To MAX_DEPTH
+                retVal.Add(DirectCast(allControls.FindControl("L" & i & "g"), ASPxGridView), "L" & i & "g")
+            Next
+            Return retVal
+        End Function
+
+        Public Sub Init(ByRef TheHostPage As System.Web.UI.Page)
+            'Collect the applicable controls
+            allControls = New sysControlWalker(TheHostPage)
+
+            'Set Initial Values
+            Dim hf As HiddenField = DirectCast(allControls.FindControl("SelectedPartTypeID"), HiddenField)
+            If hf.Value IsNot Nothing AndAlso IsNumeric(hf.Value) Then
+                'Recover if server user session was lost while page was still open and user had a selection (align with view state's hidden control)
+                ptData = New PartTypeDatasourceControl(hf.Value)
+            Else
+                ptData = New PartTypeDatasourceControl()
             End If
         End Sub
 

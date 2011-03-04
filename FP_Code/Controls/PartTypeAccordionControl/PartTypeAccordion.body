@@ -1,4 +1,5 @@
 ﻿<asp:HiddenField ID="SelectedPartTypeID" runat="server" />
+<asp:Literal ID="SelectedPath" runat="server"></asp:Literal>
 <div id="accordion-1">
     <dl>
         <dt id="L2a" runat="server">One more</dt>

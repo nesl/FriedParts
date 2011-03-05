@@ -1,7 +1,7 @@
 [OutputDatabaseLinkFile]
 Version=1.1
 [DatabaseLinks]
-ConnectionString=Provider=SQLOLEDB.1;Password=42;Persist Security Info=True;User ID=fp_user;Initial Catalog=FriedParts;Data Source=friedparts.nesl.ucla.edu,1433
+ConnectionString=Provider=SQLOLEDB.1;Password=42;Persist Security Info=True;User ID=fp_user;Initial Catalog=FriedParts;Data Source=friedparts.nesl.ucla.edu,8133
 AddMode=3
 RemoveMode=1
 UpdateMode=2
@@ -27,7 +27,7 @@ UserWhere=1
 UserWhereText=[PartID] = {PartID}
 BrowserOrder_Sorting=
 BrowserOrder_Grouping=
-BrowserOrder_Visible=PartID0=53|Library Ref0=245|Library Path0=217|PCB3D Ref0=78|PCB3D Path0=83|PCB3D Ref 20=162|PCB3D Path 20=168|PCB3D Ref 30=170|PCB3D Path 30=217|Footprint Ref0=285|Footprint Path0=162|Footprint Ref 20=214|Footprint Path 20=162|Footprint Ref 30=198|Footprint Path 30=162|Description0=1148|Symbol_Desc0=88|Symbol_Desc20=94|Symbol_Desc30=94|PCB3D_Desc0=89|PCB3D_Desc20=95|PCB3D_Desc30=95|Footprint_Desc0=95|Footprint_Desc20=101|Footprint_Desc30=101|Extra_Description0=106|Comment0=288|mfrName0=269|mfrPartNum0=186|mfrWebsite0=338|URL_Image0=1148|URL_Datasheet0=1060|Date_Created0=130|Date_LastModified0=130|Verified0=58|Obsolete0=65|RoHS0=52|Temp_Max0=76|Temp_Min0=73|Type0=348|TypeNotes0=75|PkgName0=70|PkgNotes0=70
+BrowserOrder_Visible=Library Ref0=245|Library Path0=217|PCB3D Ref0=78|PCB3D Path0=83|PCB3D Ref 20=162|PCB3D Path 20=168|PCB3D Ref 30=170|PCB3D Path 30=217|Footprint Ref0=285|Footprint Path0=162|Footprint Ref 20=214|Footprint Path 20=162|Footprint Ref 30=198|Footprint Path 30=162|Description0=1148|PartID0=53|Symbol_Desc0=88|Symbol_Desc20=94|Symbol_Desc30=94|PCB3D_Desc0=89|PCB3D_Desc20=95|PCB3D_Desc30=95|Footprint_Desc0=95|Footprint_Desc20=101|Footprint_Desc30=101|Extra_Description0=106|Comment0=464|mfrName0=269|mfrPartNum0=186|mfrWebsite0=338|URL_Image0=1148|URL_Datasheet0=1060|Date_Created0=130|Date_LastModified0=130|Verified0=58|Obsolete0=65|RoHS0=52|Temp_Max0=76|Temp_Min0=73|Type0=348|TypeNotes0=75|PkgName0=70|PkgNotes0=70
 [FieldMap1]
 Options=FieldName=view-cadAltium.Library Ref|TableNameOnly=view-cadAltium|FieldNameOnly=Library Ref|FieldType=1|ParameterName=[Library Ref]|VisibleOnAdd=False|AddMode=0|RemoveMode=0|UpdateMode=0
 [FieldMap2]

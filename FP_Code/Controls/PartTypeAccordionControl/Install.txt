@@ -4,23 +4,38 @@
 
 
 ----------------
-[1.] Add the assembly reference (if you don't already have them for other reasons) to the TOP of your web page (.aspx file)
+[YOUR_PAGE.aspx]
 
-<%@ Register Assembly="DevExpress.Web.ASPxGridView.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
-    Namespace="DevExpress.Web.ASPxGridView" TagPrefix="dxwgv" %>
+    [1.] Add the assembly reference (if you don't already have them for other reasons) to the TOP of your web page (.aspx file)
+
+        <%@ Register Assembly="DevExpress.Web.ASPxGridView.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+            Namespace="DevExpress.Web.ASPxGridView" TagPrefix="dxwgv" %>
+
+    [2.] Include the ASP code in your web page <body> (.aspx file)
+
+        <!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.body"-->
+
+    [3.] Add the include to the <head>
+
+        <!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.head"-->
 
 ----------------
-[2.] Include the ASP code in your web page (.aspx file)
+[YOUR_PAGE.aspx.vb]
 
-<!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.body"-->
+    [1.] ADD THIS ONE AT THE TOP OF THE PAGE'S VB (CODE-BEHIND) FILE!
 
-----------------
-[3.] Add the include to the <head>
+        '''<summary>The PartTypeHorizontalAccordion Psuedo-Control</summary>
+        Protected ptAccordion As System.Web.UI.FriedParts.PartTypeAccordionControl
 
-<!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.head"-->
+    [2.] ADD THIS ONE IN PAGE_LOAD(s,e)! (remember to uniquify the ptAccordianSessionName constant)
 
-
-----------------
-[USAGE]
-
-here is the execution template
+        '======================================================================
+        '== PartTypeAccordion (Psuedo-Control)
+        '======================================================================
+        Const ptAccordianSessionName As String = "padd.PartTypeControl"
+        ptAccordion = System.Web.UI.FriedParts.PartTypeAccordionControl.Reload(Me, ptAccordianSessionName)
+        ptAccordion.UpdateControls(Me)
+        For Each grid As DevExpress.Web.ASPxGridView.ASPxGridView In ptAccordion.GetGrids()
+            AddHandler grid.CustomCallback, AddressOf ptAccordion.HandleRowChanged
+        Next
+        '======================================================================

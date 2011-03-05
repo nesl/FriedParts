@@ -9,7 +9,7 @@ Imports System.Data.SqlClient
 Public Module dbAcc
 
     Public Const cnxStr As String = _
-        "Data Source = friedparts.nesl.ucla.edu;" & _
+        "Data Source = friedparts.nesl.ucla.edu,8133;" & _
         "Initial Catalog = FriedParts;" & _
         "Persist Security Info = True;" & _
         "User ID = fp_system;" & _

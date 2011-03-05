@@ -26,7 +26,7 @@ p{font-size:1.2em;line-height:170%;margin-bottom:20px}
 dd p{line-height:120%}
 		
 /* Blue-ish color used in images is approximately #b5c9e8 */
-#accordion-1{width:700px;height:245px;padding:2px;background:white;border:1px solid Gray}
+#accordion-1{width:700px;height:245px;padding:0px;background:white;border:none;}
 #accordion-1 dl{width:700px;height:245px}	
 #accordion-1 dt{height:30px;line-height:28px;text-align:right;padding:0 5px 0 0;font-size:1.1em;
                 font-weight:bold;font-family: Tahoma, Geneva, sans-serif;text-transform:uppercase;

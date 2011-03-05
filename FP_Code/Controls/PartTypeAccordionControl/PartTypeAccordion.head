@@ -7,3 +7,4 @@
     });
 </script>
 <link rel="stylesheet" type="text/css" href="/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Lib/easyAccordion.css" />
+<link rel="stylesheet" type="text/css" href="/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Lib/PartTypeAccordion.css" />

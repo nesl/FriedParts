@@ -9,62 +9,92 @@
 <%@ Register assembly="DevExpress.Web.ASPxEditors.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" namespace="DevExpress.Web.ASPxEditors" tagprefix="dxe" %>
 
 <asp:Content ID="ExtraHeadContent" ContentPlaceHolderID="HeadContentPlaceHolder" Runat="Server">
+    <script type="text/javascript" src="/FriedParts/pInv/invShowAll.js"></script>
+    <!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.head"-->
 </asp:Content>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     
-    <dxwgv:ASPxGridView ID="xGV" runat="server"
-        CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass" 
-        AutoGenerateColumns="false" Font-Names="Tahoma" Font-Size="X-Small" 
-        SettingsPager-PageSize="20">
+    <!-- Category Selector Pane -->
+    <div>
+        <div id="FilterHandle" 
+            style="
+                border:1px solid rgb(126,172,177);
+                border-bottom-style:none;
+                background-color:rgb(44,111,143); height:20px;
+                padding-top:8px; padding-left:10px;
+                ">
+                <span style=" font-weight:bold; color:Yellow;">Click here to browse parts by type...</span>
+        </div>
+        <div id="FilterPane" style="border: 1px solid rgb(126,172,177);padding:15px;">
+            <!--<!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.body"-->-->
+            <iframe src="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.aspx" width="100%" height="300px">
+                Not supported by your browser.
+            </iframe>
+        </div>
+        <div id="Div1" style="
+                border:1px solid rgb(126,172,177);
+                border-top-style:none;
+                background-color:rgb(44,111,143); height:5px;
+                ">
+        </div>
+    </div>
 
-        <Images ImageFolder="~/App_Themes/Glass/{0}/">
-        </Images>
+    <!-- Search/Browse Results Pane -->
+    <div>
+        <dxwgv:ASPxGridView ID="xGV" runat="server"
+            CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass" 
+            AutoGenerateColumns="false" Font-Names="Tahoma" Font-Size="X-Small" 
+            SettingsPager-PageSize="20">
 
-        <Settings ShowFilterRow="True" ShowGroupPanel="True" />
+            <Images ImageFolder="~/App_Themes/Glass/{0}/">
+            </Images>
 
-        <SettingsLoadingPanel Text="Searching&amp;hellip;" />
+            <Settings ShowFilterRow="True" ShowGroupPanel="True" />
 
-        <Styles CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass">
-            <Header ImageSpacing="5px" SortingImageSpacing="5px">
-            </Header>
-        </Styles>
+            <SettingsLoadingPanel Text="Searching&amp;hellip;" />
 
-        <Columns>
-            <dxwgv:GridViewDataTextColumn Caption="Type of Part" FieldName="Type" ReadOnly="True" VisibleIndex="1">
-            </dxwgv:GridViewDataTextColumn>
-            <dxwgv:GridViewDataTextColumn Caption="Manufacturer" FieldName="mfrName" VisibleIndex="2">
-            </dxwgv:GridViewDataTextColumn>
-            <dxwgv:GridViewDataTextColumn Caption="Part Number" FieldName="mfrPartNum" VisibleIndex="3">
-            </dxwgv:GridViewDataTextColumn>
-            <dxwgv:GridViewDataTextColumn Caption="Description" FieldName="Description" VisibleIndex="4"
-                Width="200px">
-            </dxwgv:GridViewDataTextColumn>
-            <dxwgv:GridViewDataTextColumn Caption="Value" FieldName="Value" VisibleIndex="5">
-            </dxwgv:GridViewDataTextColumn>
-            <dxwgv:GridViewDataTextColumn Caption="Units" FieldName="Units" VisibleIndex="6">
-            </dxwgv:GridViewDataTextColumn>
-            <dxwgv:GridViewDataTextColumn Caption="Tolerance" FieldName="Tol" VisibleIndex="7">
-            </dxwgv:GridViewDataTextColumn>
-            <dxwgv:GridViewDataCheckColumn Caption="Verified" FieldName="Verified" VisibleIndex="8"
-                Width="25px">
-            </dxwgv:GridViewDataCheckColumn>
-            <dxwgv:GridViewDataCheckColumn Caption="Obsolete" FieldName="Obsolete" VisibleIndex="9"
-                Width="25px">
-            </dxwgv:GridViewDataCheckColumn>
-            <dxwgv:GridViewDataCheckColumn Caption="RoHS" FieldName="RoHS" VisibleIndex="10"
-                Width="25px">
-            </dxwgv:GridViewDataCheckColumn>
-            <dxwgv:GridViewDataTextColumn Caption="PartID" FieldName="PartID" VisibleIndex="11"
-                Width="25px">
-            </dxwgv:GridViewDataTextColumn>
-        </Columns>
+            <Styles CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass">
+                <Header ImageSpacing="5px" SortingImageSpacing="5px">
+                </Header>
+            </Styles>
 
-        <SettingsBehavior AllowFocusedRow="True" />
+            <Columns>
+                <dxwgv:GridViewDataTextColumn Caption="Type of Part" FieldName="Type" ReadOnly="True" VisibleIndex="1">
+                </dxwgv:GridViewDataTextColumn>
+                <dxwgv:GridViewDataTextColumn Caption="Manufacturer" FieldName="mfrName" VisibleIndex="2">
+                </dxwgv:GridViewDataTextColumn>
+                <dxwgv:GridViewDataTextColumn Caption="Part Number" FieldName="mfrPartNum" VisibleIndex="3">
+                </dxwgv:GridViewDataTextColumn>
+                <dxwgv:GridViewDataTextColumn Caption="Description" FieldName="Description" VisibleIndex="4"
+                    Width="200px">
+                </dxwgv:GridViewDataTextColumn>
+                <dxwgv:GridViewDataTextColumn Caption="Value" FieldName="Value" VisibleIndex="5">
+                </dxwgv:GridViewDataTextColumn>
+                <dxwgv:GridViewDataTextColumn Caption="Units" FieldName="Units" VisibleIndex="6">
+                </dxwgv:GridViewDataTextColumn>
+                <dxwgv:GridViewDataTextColumn Caption="Tolerance" FieldName="Tol" VisibleIndex="7">
+                </dxwgv:GridViewDataTextColumn>
+                <dxwgv:GridViewDataCheckColumn Caption="Verified" FieldName="Verified" VisibleIndex="8"
+                    Width="25px">
+                </dxwgv:GridViewDataCheckColumn>
+                <dxwgv:GridViewDataCheckColumn Caption="Obsolete" FieldName="Obsolete" VisibleIndex="9"
+                    Width="25px">
+                </dxwgv:GridViewDataCheckColumn>
+                <dxwgv:GridViewDataCheckColumn Caption="RoHS" FieldName="RoHS" VisibleIndex="10"
+                    Width="25px">
+                </dxwgv:GridViewDataCheckColumn>
+                <dxwgv:GridViewDataTextColumn Caption="PartID" FieldName="PartID" VisibleIndex="11"
+                    Width="25px">
+                </dxwgv:GridViewDataTextColumn>
+            </Columns>
 
-        <ClientSideEvents RowClick="function(s, e) { OnGridRowClicked(e.visibleIndex); }"/>
-    </dxwgv:ASPxGridView>
-  
+            <SettingsBehavior AllowFocusedRow="True" />
+
+            <ClientSideEvents RowClick="function(s, e) { OnGridRowClicked(e.visibleIndex); }"/>
+        </dxwgv:ASPxGridView>
+    </div>
+
     <dxpc:ASPxPopupControl ID="xPopup" runat="server" ContentUrl="~/pInv/invShowDetail.aspx" 
     AllowDragging="True" EnableAnimation="true" 
         ShowShadow="true" HeaderText="Part Details" 

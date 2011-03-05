@@ -31,6 +31,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContentPlaceHolder" Runat="Server">
     <script type="text/javascript" src="partAddNew.js"></script>
+    <!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.head"-->
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     
@@ -43,7 +44,6 @@
     <!-- OVERALL CONTENT CONTAINER -->    
     <div style="position:relative">
         <asp:HiddenField ID="hiddenMfrPartNumber" runat="server" />
-        <asp:HiddenField ID="hPartTypePath" runat="server" />
 
     <!-- TAB PAGES -->        
         <dxtc:ASPxPageControl ID="xTabPages" ClientInstanceName="xTabPages" 
@@ -154,32 +154,7 @@
                             Width="700px" BackColor="White">
                             <PanelCollection>
                                 <dx:PanelContent ID="PanelContent13" runat="server">
-                                    <asp:Label ID="lblCurrentPartType" runat="server" Text="No Part Type Selected..."></asp:Label><hr />
-                                    <dx:ASPxTreeList ID="xPartTypesTree" ClientInstanceName="ASPxTreeList1" runat="server" AutoGenerateColumns="False" 
-                                        CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass" 
-                                        DataSourceID="xTreeSqlDataSource" KeyFieldName="TypeID" ParentFieldName="Parent" EnableCallbacks="False" SettingsBehavior-ProcessFocusedNodeChangedOnServer="True" SettingsBehavior-AllowFocusedNode="True" 
-                                        ClientSideEvents-FocusedNodeChanged="function(s, e) { }">
-                                        <Columns>
-                                            <dx:TreeListTextColumn FieldName="Type" VisibleIndex="0">
-                                            </dx:TreeListTextColumn>
-                                            <dx:TreeListTextColumn FieldName="TypeNotes" VisibleIndex="1">
-                                            </dx:TreeListTextColumn>
-                                            <dx:TreeListTextColumn FieldName="Path" VisibleIndex="2" Visible="False">
-                                            </dx:TreeListTextColumn>
-                                        </Columns>
-                                        <SettingsBehavior AllowFocusedNode="True" />
-                                        <SettingsPager Mode="ShowPager">
-                                        </SettingsPager>
-                                        <Images SpriteCssFilePath="~/App_Themes/Glass/{0}/sprite.css">
-                                            <LoadingPanel Url="~/App_Themes/Glass/TreeList/Loading.gif">
-                                            </LoadingPanel>
-                                        </Images>
-                                        <Styles CssFilePath="~/App_Themes/Glass/{0}/styles.css" CssPostfix="Glass">
-                                        </Styles>
-                                    </dx:ASPxTreeList>
-                                    <asp:SqlDataSource ID="xTreeSqlDataSource" runat="server" 
-                                        ConnectionString="<%$ ConnectionStrings:FriedPartsConnectionString %>" 
-                                        SelectCommand="SELECT * FROM [part-PartTypes] ORDER BY [Type]"></asp:SqlDataSource>
+                                    <!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.body"-->
                                 </dx:PanelContent>
                             </PanelCollection>
                         </dxrp:ASPxRoundPanel>

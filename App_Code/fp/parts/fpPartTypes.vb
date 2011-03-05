@@ -365,7 +365,12 @@ Public Module fpPartTypes
         End If
     End Function
 
-    'Returns the Path of the specified TypeID
+    ''' <summary>
+    ''' Returns the Path, in TypeID's, of the specified PartTypeID (ex. "0, 22, 24")
+    ''' </summary>
+    ''' <param name="PartTypeID">FriedParts Part Type ID</param>
+    ''' <returns>The Path as stored in the database</returns>
+    ''' <remarks>Use ptGetCompleteName(TypeID) for the human readable version.</remarks>
     Public Function ptGetPath(ByVal PartTypeID As Int32) As String
         Dim dt As New DataTable
         Dim SQLcmd As String
@@ -384,15 +389,23 @@ Public Module fpPartTypes
         End If
     End Function
 
-    'effectively the toString function for this typeId.
-    'Converts the type to a string sequence of names following its full path
-    Public Function ptGetCompleteName(ByVal PartTypeID As Int32) As String
+    ''' <summary>
+    ''' Converts the type to a string sequence of names following its full path 
+    ''' using the format: TypeName Delimiter TypeName Delimiter TypeName ...
+    ''' </summary>
+    ''' <param name="PartTypeID"></param>
+    ''' <param name="Delimiter">The text that separates successive Part Types in the Path. 
+    ''' Automatically padded by spaces, so don't include them (e.g. "->"), but if you do 
+    ''' they will be respected (we don't Trim() inside here)</param>
+    ''' <returns></returns>
+    ''' <remarks>Effectively the toString function for this TypeID.</remarks>
+    Public Function ptGetCompleteName(ByRef PartTypeID As Int32, Optional ByRef Delimiter As String = "->") As String
         Dim path As String = ptGetPath(PartTypeID)
         Dim ia As Int32() = ptPathSplit(path)
         Dim outStr As String = ptGetTypeName(sysEnv.sysPARTTYPEROOT)
         If UBound(ia) > 0 Then
             For i As Byte = 1 To UBound(ia)
-                outStr = outStr & " -> " & ptGetTypeName(ia(i))
+                outStr = outStr & " " & Delimiter & " " & ptGetTypeName(ia(i))
             Next
         End If
         Return outStr

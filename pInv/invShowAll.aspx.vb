@@ -2,6 +2,9 @@
 Partial Class pInv_invShowAll
     Inherits System.Web.UI.Page
 
+    '''<summary>The PartTypeHorizontalAccordion Psuedo-Control</summary>
+    Protected ptAccordion As System.Web.UI.FriedParts.PartTypeAccordionControl
+
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If (Not (IsCallback Or IsPostBack)) Then
             'Do any page load work in here!
@@ -15,6 +18,17 @@ Partial Class pInv_invShowAll
                 Page_Load()
             End If
         End If
+
+        '======================================================================
+        '== PartTypeAccordion (Psuedo-Control)
+        '======================================================================
+        Const ptAccordianSessionName As String = "padd.PartTypeControl0"
+        ptAccordion = System.Web.UI.FriedParts.PartTypeAccordionControl.Reload(Me, ptAccordianSessionName)
+        ptAccordion.UpdateControls(Me)
+        For Each grid As DevExpress.Web.ASPxGridView.ASPxGridView In ptAccordion.GetGrids()
+            AddHandler grid.CustomCallback, AddressOf ptAccordion.HandleRowChanged
+        Next
+        '======================================================================
     End Sub
 
     Private Sub Page_Load()

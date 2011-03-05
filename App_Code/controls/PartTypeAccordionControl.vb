@@ -50,7 +50,7 @@ Namespace System.Web.UI.FriedParts
         ''' additional categories (PartTypes) at level 1.
         ''' </summary>
         ''' <remarks></remarks>
-        Public Const MAX_DEPTH As Byte = 4
+        Public Const MAX_DEPTH As Byte = 9
 
         ''' <summary>
         ''' Call this function everytime the page reloads (e.g. on Callbacks, Postbacks, etc...)
@@ -78,10 +78,24 @@ Namespace System.Web.UI.FriedParts
             Update(ptData.GetParentID)
         End Sub
 
+        ''' <summary>
+        ''' returns the HTML to render the Breadcrumbs Type Selection
+        ''' </summary>
+        ''' <param name="TypeID">FriedParts Part Type ID</param>
+        ''' <returns>HTML code</returns>
+        ''' <remarks></remarks>
+        Protected Function EmitBreadcrumbHTML(ByRef TypeID As Integer) As String
+            'Dim HTMLDelim As String = "&nbsp;&nbsp;&nbsp;"
+            Dim HTMLDelim As String = "<img src=""/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Resx/delim.gif"" alt=""->"" />"
+            Return ptGetCompleteName(TypeID, HTMLDelim)
+        End Function
+
+        ''' <summary>
+        ''' Worker. Implements the Update operation to select a new PartTypeID
+        ''' </summary>
+        ''' <param name="TypeID"></param>
+        ''' <remarks></remarks>
         Protected Sub Update(Optional ByVal TypeID As Integer = 0)
-
-            DirectCast(allControls.FindControl("lbl"), Label).Text = DirectCast(allControls.FindControl("SelectedPartTypeID"), HiddenField).Value 'xxx
-
             'Update the user interface
             Dim ParentLevel As Byte = ptGetLevel(TypeID)
             Dim gv As ASPxGridView
@@ -106,9 +120,12 @@ Namespace System.Web.UI.FriedParts
                     gv = DirectCast(allControls.FindControl("L" & i & "g"), ASPxGridView)
                     gv.DataSource = ptData.GetDatasource(i)
                     gv.DataBind()
+                    gv.SettingsText.EmptyDataRow = ptData.GetTitles(i).ToUpper & vbCrLf & "has no sub-Types"
                     DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).InnerText = ptData.GetTitles(i)
                 End If
             Next
+            'Breadcrumbs
+            DirectCast(allControls.FindControl("pthaBreadcrumbs"), HtmlGenericControl).InnerHtml = EmitBreadcrumbHTML(TypeID)
             'Save in view state
             Dim hf As HiddenField = DirectCast(allControls.FindControl("SelectedPartTypeID"), HiddenField)
             hf.Value = ptData.GetParentID
@@ -145,18 +162,20 @@ Namespace System.Web.UI.FriedParts
             Return retVal
         End Function
 
+        ''' <summary>
+        ''' Initializes the psuedo-control. Call once on initial page load (not callback/postback).
+        ''' Warning: If the server's user session is lost, the page will go stale... be careful.
+        ''' </summary>
+        ''' <param name="TheHostPage"></param>
+        ''' <remarks></remarks>
         Public Sub Init(ByRef TheHostPage As System.Web.UI.Page)
             'Collect the applicable controls
             allControls = New sysControlWalker(TheHostPage)
 
             'Set Initial Values
             Dim hf As HiddenField = DirectCast(allControls.FindControl("SelectedPartTypeID"), HiddenField)
-            If hf.Value IsNot Nothing AndAlso IsNumeric(hf.Value) Then
-                'Recover if server user session was lost while page was still open and user had a selection (align with view state's hidden control)
-                ptData = New PartTypeDatasourceControl(hf.Value)
-            Else
-                ptData = New PartTypeDatasourceControl()
-            End If
+            hf.Value = Nothing
+            ptData = New PartTypeDatasourceControl()
         End Sub
 
         ''' <summary>

@@ -23,6 +23,9 @@ Partial Class pParts_partAddNew
     Private OP As OctoPart
     Private OPR As OctoResults
 
+    '''<summary>The PartTypeHorizontalAccordion Psuedo-Control</summary>
+    Protected ptAccordion As System.Web.UI.FriedParts.PartTypeAccordionControl
+
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         sysUser.suLoginRequired(Me) 'Access control
 
@@ -42,6 +45,17 @@ Partial Class pParts_partAddNew
                 End If
             End If
         End If
+
+        '======================================================================
+        '== PartTypeAccordion (Psuedo-Control)
+        '======================================================================
+        Const ptAccordianSessionName As String = "padd.PartTypeControl"
+        ptAccordion = System.Web.UI.FriedParts.PartTypeAccordionControl.Reload(Me, ptAccordianSessionName)
+        ptAccordion.UpdateControls(Me)
+        For Each grid As DevExpress.Web.ASPxGridView.ASPxGridView In ptAccordion.GetGrids()
+            AddHandler grid.CustomCallback, AddressOf ptAccordion.HandleRowChanged
+        Next
+        '======================================================================
     End Sub
 
     'Reset the page to its default condition -- for example, after we just added a part
@@ -161,13 +175,17 @@ Partial Class pParts_partAddNew
         '[STEP 2: Part Type]
         'PartType
         Dim oPartTypeID As Int32
-        If Not hPartTypePath.Value Is Nothing AndAlso hPartTypePath.Value.Length > 0 Then
-            If fpPartTypes.ptGetTypeIDFromPath(hPartTypePath.Value) = sysPARTTYPEUNKNOWN Then
-                pg.AddError(2, -666, "A part's type must be specified. UNKNOWN is not a valid entry. Part typing is the basis for a lot of secondary automation. Trust me. It is in your best interest to get this right!")
-            Else
-                'PartType is defined!
-                oPartTypeID = fpPartTypes.ptGetTypeIDFromPath(hPartTypePath.Value)
-            End If
+        If Not SelectedPartTypeID.Value Is Nothing AndAlso SelectedPartTypeID.Value.Length > 0 Then
+
+            'xxx FINISH!!!
+            'Check if the specified PartTypeID is valid...
+
+            'If pt Then
+            '    pg.AddError(2, -666, "A part's type must be specified. UNKNOWN is not a valid entry. Part typing is the basis for a lot of secondary automation. Trust me. It is in your best interest to get this right!")
+            'Else
+            '    PartType is defined!
+            '    oPartTypeID = fpPartTypes.ptGetTypeIDFromPath(hPartTypePath.Value)
+            'End If
         Else
             'oPartTypeID = sysEnv.sysPARTTYPEUNKNOWN
             pg.AddError(2, -666, "You forgot to categorize this part. Assign a Part Type by exploring the Part Type tree.")
@@ -281,43 +299,7 @@ Partial Class pParts_partAddNew
         End If
     End Sub
 
-    Protected Sub xPartTypesTree_DataBound(ByVal sender As Object, ByVal e As System.EventArgs) Handles xPartTypesTree.DataBound
-        'If (Not IsPostBack) Then
-        If HttpContext.Current.Session("pt.ArmPartType") = True Then
-            Dim iterator As TreeListNodeIterator = xPartTypesTree.CreateNodeIterator()
-            Do While True
-                Dim node As TreeListNode = iterator.GetNext()
-                If (node Is Nothing) Then Exit Do
-                'add logic here
-                If node.Item("Path") = HttpContext.Current.Session("pt.SetPartType") Then
-                    node.Focus()
-                    Exit Do
-                End If
-            Loop
-            HttpContext.Current.Session("pt.ArmPartType") = False
-            HttpContext.Current.Session("pt.SetPartType") = Nothing
-        Else
-            Dim iterator As TreeListNodeIterator = xPartTypesTree.CreateNodeIterator()
-            Do While True
-                Dim node As TreeListNode = iterator.GetNext()
-                If (node Is Nothing) Then Exit Do
-                'add logic here
-                If node.Item("Path") = hPartTypePath.Value Then
-                    'node.Focus()
-                    Exit Do
-                End If
-            Loop
-            HttpContext.Current.Session("pt.ArmPartType") = False
-            HttpContext.Current.Session("pt.SetPartType") = Nothing
-        End If
-    End Sub
 
-    Protected Sub xPartTypesTree_FocusedNodeChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles xPartTypesTree.FocusedNodeChanged
-        'Get the new node the user just clicked on!
-        Dim NewNode As TreeListNode
-        NewNode = xPartTypesTree.FocusedNode()
-        'partTypeChanged(ptGetTypeIDFromPath(NewNode.Item("Path")))
-    End Sub
 
     '========================================
     '========================================
@@ -372,9 +354,6 @@ Partial Class pParts_partAddNew
         Dim newPath As String = ptGetPath(newPartTypeID)
         HttpContext.Current.Session("pt.ArmPartType") = True
         HttpContext.Current.Session("pt.SetPartType") = newPath
-        hPartTypePath.Value = newPath
-        xPartTypesTree.DataBind() 'Start the iterator to make this effective
-        lblCurrentPartType.Text = "The currently selected type is: " & ptGetCompleteName(newPartTypeID)
 
         'VALUE
         Dim tval As String

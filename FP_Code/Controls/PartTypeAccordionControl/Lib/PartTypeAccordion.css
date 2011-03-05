@@ -1,0 +1,7 @@
+﻿/* Blue-ish color used in images is approximately #b5c9e8 */
+
+/* The Breadcrumbs Content Area (where the actual breadcrumbs are)*/
+div.pthaBreadcrumbsContent {
+    font-size:medium;
+    margin: 5px;
+}

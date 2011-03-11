@@ -59,6 +59,20 @@ Namespace System.Web.UI.FriedParts
         End Sub
 
         ''' <summary>
+        ''' Truncates the Titles to a maximum of Max_Length characters
+        ''' Adds an ellipsis if too long.
+        ''' </summary>
+        ''' <param name="Max_Length"></param>
+        ''' <remarks></remarks>
+        Public Sub TrimTitles(ByRef Max_Length As Byte)
+            For i As Byte = 2 To MAX_DEPTH
+                If LevelTitle(i).Length > Max_Length Then
+                    LevelTitle(i) = Left(LevelTitle(i), Max_Length) & "..."
+                End If
+            Next
+        End Sub
+
+        ''' <summary>
         ''' Clears out all the first child level and lower tables. The first child 
         ''' level will get new data repopulated. The second child level and lower
         ''' will be left blank since they should rightfully be blank.

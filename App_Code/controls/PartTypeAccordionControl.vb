@@ -63,7 +63,7 @@ Namespace System.Web.UI.FriedParts
         ''' Clipped titles are automatically appended with an ellipsis
         ''' </summary>
         ''' <remarks></remarks>
-        Public Const MAX_TITLE_LENGTH As Byte = 25
+        Public Const MAX_TITLE_LENGTH As Byte = 23
 
         ''' <summary>
         ''' Call this function everytime the page reloads (e.g. on Callbacks, Postbacks, etc...)
@@ -135,6 +135,7 @@ Namespace System.Web.UI.FriedParts
             Dim ParentLevel As Byte = ptGetLevel(TypeID)
             Dim gv As ASPxGridView
             ptData.updateDatasource(TypeID)
+            ptData.TrimTitles(MAX_TITLE_LENGTH)
             For i As Byte = 2 To MAX_DEPTH
                 If i > ParentLevel + 1 Then
                     'Hide these!

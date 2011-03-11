@@ -149,6 +149,10 @@
                     
                         <asp:ScriptManager ID="ScriptManager1" runat="server" />
                         <asp:UpdatePanel ID="UpdatePanel1" runat="server"><ContentTemplate>
+                        <script type="text/javascript">
+                            var prm = Sys.WebForms.PageRequestManager.getInstance();
+                            prm.add_endRequest(UpdatePanelReady);
+                        </script>
                         
                         <dxrp:ASPxRoundPanel ID="ASPxRoundPanel12" runat="server" HeaderText="Part Type" 
                             Width="700px" BackColor="White">

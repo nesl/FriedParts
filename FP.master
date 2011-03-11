@@ -16,7 +16,7 @@
 <head>
     <title runat="server">FriedParts! 3.2.8 Alpha</title>
     <link rel="StyleSheet" href="http://friedparts.nesl.ucla.edu/FriedParts/FP_Code/fpStyle.css" type="text/css" media="screen" />
-    <script type="text/javascript" src="http://friedparts.nesl.ucla.edu/FriedParts/FP_Code/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     <script type="text/javascript" src="http://friedparts.nesl.ucla.edu/FriedParts/FP.master.js"></script>
     <asp:ContentPlaceHolder ID="HeadContentPlaceHolder" runat="server"></asp:ContentPlaceHolder>
 </head>

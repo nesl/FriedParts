@@ -1,10 +1,15 @@
 ﻿<script type="text/javascript" src="/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Lib/easyAccordion.js"></script>
 <script type="text/javascript">
-    $(document).ready(function () {
+    function loadEasyAccordion() {
         $('#accordion-1').easyAccordion({
             autoStart: false,
+            slideNum: false
         });
-    });
+    };
+    function UpdatePanelReady() {
+    loadEasyAccordion();
+    }
+    $(document).ready(loadEasyAccordion);
 </script>
 <link rel="stylesheet" type="text/css" href="/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Lib/easyAccordion.css" />
 <link rel="stylesheet" type="text/css" href="/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Lib/PartTypeAccordion.css" />

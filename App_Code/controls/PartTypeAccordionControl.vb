@@ -13,6 +13,12 @@ Namespace System.Web.UI.FriedParts
     Public Class PartTypeAccordionControl
 
         ''' <summary>
+        ''' List of control names to optimize object model searching
+        ''' </summary>
+        ''' <remarks></remarks>
+        Public TheControlNames As New ArrayList
+
+        ''' <summary>
         ''' Internal datasource.
         ''' </summary>
         ''' <remarks></remarks>
@@ -53,6 +59,13 @@ Namespace System.Web.UI.FriedParts
         Public Const MAX_DEPTH As Byte = 9
 
         ''' <summary>
+        ''' The maximum number of characters a part type sub-title is allowed to be before we clip it server-side!
+        ''' Clipped titles are automatically appended with an ellipsis
+        ''' </summary>
+        ''' <remarks></remarks>
+        Public Const MAX_TITLE_LENGTH As Byte = 25
+
+        ''' <summary>
         ''' Call this function everytime the page reloads (e.g. on Callbacks, Postbacks, etc...)
         ''' </summary>
         ''' <param name="SessionControlName">The control's variable name in the user's session state</param>
@@ -71,9 +84,31 @@ Namespace System.Web.UI.FriedParts
             End If
         End Function
 
+        ''' <summary>
+        ''' List all of the controls you want to store references to here.
+        ''' This saves memory by not storing references to controls we'll never dereference.
+        ''' This all results in less exceptions -- ergo faster performance.
+        ''' </summary>
+        ''' <remarks></remarks>
+        Public Sub InitControlNames()
+            TheControlNames.Add("pthaBreadcrumbs")
+            TheControlNames.Add("SelectedPartTypeID")
+            TheControlNames.Add("pthaActiveTab")
+            For i As Byte = 2 To MAX_DEPTH
+                TheControlNames.Add("L" & i & "a")
+                TheControlNames.Add("L" & i & "b")
+                TheControlNames.Add("L" & i & "g")
+            Next
+        End Sub
+
+        ''' <summary>
+        ''' Update the UI and backend to match the current internal state
+        ''' </summary>
+        ''' <param name="MePage"></param>
+        ''' <remarks></remarks>
         Public Sub UpdateControls(ByRef MePage As System.Web.UI.Page)
             'Collect the applicable controls
-            allControls = New sysControlWalker(MePage)
+            allControls = New sysControlWalker(MePage, TheControlNames)
             'Update the UI
             Update(ptData.GetParentID)
         End Sub
@@ -95,7 +130,7 @@ Namespace System.Web.UI.FriedParts
         ''' </summary>
         ''' <param name="TypeID"></param>
         ''' <remarks></remarks>
-        Protected Sub Update(Optional ByVal TypeID As Integer = 0)
+        Protected Sub Update(Optional ByVal TypeID As Integer = 0, Optional ByRef UserChangedSlides As Boolean = False)
             'Update the user interface
             Dim ParentLevel As Byte = ptGetLevel(TypeID)
             Dim gv As ASPxGridView
@@ -110,11 +145,24 @@ Namespace System.Web.UI.FriedParts
                     DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).Visible = True
                     DirectCast(allControls.FindControl("L" & i & "b"), HtmlGenericControl).Visible = True
                     'Default tab...
-                    If i = ParentLevel + 1 Then
-                        'This one is the one we open to...
-                        DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).Attributes.Add("class", "active")
+                    If UserChangedSlides Then
+                        'User has selected a new part type
+                        If i = ParentLevel + 1 Then
+                            'This one is the one we open to...
+                            DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).Attributes.Add("class", "active")
+                        Else
+                            '...not these!
+                            DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).Attributes.Remove("class")
+                        End If
                     Else
-                        '...not these!
+                        'User is just filtering or searching on a parent type
+                        If (i - 1) = CInt(DirectCast(allControls.FindControl("pthaActiveTab"), HiddenField).Value) Then
+                            'This is the one we open up to...
+                            DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).Attributes.Add("class", "active")
+                        Else
+                            '...not these!
+                            DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).Attributes.Remove("class")
+                        End If
                     End If
                     'Load 'em up!
                     gv = DirectCast(allControls.FindControl("L" & i & "g"), ASPxGridView)
@@ -122,7 +170,7 @@ Namespace System.Web.UI.FriedParts
                     gv.DataBind()
                     gv.SettingsText.EmptyDataRow = ptData.GetTitles(i).ToUpper & vbCrLf & "has no sub-Types"
                     DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).InnerText = ptData.GetTitles(i)
-                End If
+                    End If
             Next
             'Breadcrumbs
             DirectCast(allControls.FindControl("pthaBreadcrumbs"), HtmlGenericControl).InnerHtml = EmitBreadcrumbHTML(TypeID)
@@ -134,6 +182,12 @@ Namespace System.Web.UI.FriedParts
 
         ' TAB HANDLERS
         '======================================
+        ''' <summary>
+        ''' Event Handler for the user clicking on a new sub-type
+        ''' </summary>
+        ''' <param name="WhichGrid"></param>
+        ''' <param name="e"></param>
+        ''' <remarks></remarks>
         Public Sub HandleRowChanged(ByVal WhichGrid As Object, ByVal e As System.EventArgs)
             'Get data from the grid -- what did user click on?
             Dim gv As ASPxGridView = DirectCast(WhichGrid, ASPxGridView)
@@ -144,7 +198,7 @@ Namespace System.Web.UI.FriedParts
                 hf = DirectCast(allControls.FindControl("SelectedPartTypeID"), System.Web.UI.WebControls.HiddenField)
                 hf.Value = (drow.Field(Of Int16)("TypeID"))
                 'Reflect that change in the backend
-                Update(hf.Value)
+                Update(hf.Value, True)
             End If
         End Sub
 
@@ -170,8 +224,8 @@ Namespace System.Web.UI.FriedParts
         ''' <remarks></remarks>
         Public Sub Init(ByRef TheHostPage As System.Web.UI.Page)
             'Collect the applicable controls
-            allControls = New sysControlWalker(TheHostPage)
-
+            InitControlNames()
+            allControls = New sysControlWalker(TheHostPage, TheControlNames)
             'Set Initial Values
             Dim hf As HiddenField = DirectCast(allControls.FindControl("SelectedPartTypeID"), HiddenField)
             hf.Value = Nothing

@@ -1,8 +1,10 @@
 ﻿<asp:HiddenField ID="SelectedPartTypeID" runat="server" />
+<asp:HiddenField ID="pthaActiveTab" runat="server" value="1" />
 
 <div id="pthaBreadcrumbs" runat="server" class="pthaBreadcrumbsContent"></div>
 
-<div id="resetCSSinheritance" style="padding:0px;margin:0px;">
+<div class="isoCSS">
+    <div id="outline">
     <div id="accordion-1">
         <dl>
             <dt id="L2a" runat="server">One more</dt>
@@ -197,5 +199,6 @@
             </dd>
 
         </dl>
+    </div>
     </div>
 </div>

@@ -6,9 +6,9 @@ var FilterIsShowing = true;
 //Startup function
 $(document).ready(function () {
 
-    $("#FilterPane").slideUp(0); //Start with the Shade up...
+    $('div[id*="FilterPane"]').slideUp(0); //Start with the Shade up...
 
-    $("#FilterHandle").click(function () {
+    $('div[id*="FilterHandle"]').click(function () {
         ToggleFilterShade();
     });
 });
@@ -16,10 +16,10 @@ $(document).ready(function () {
 //Worker. Implements the Shade toggle.
 function ToggleFilterShade() {
     if (FilterIsShowing == true) {
-        $("#FilterPane").slideDown(400);
+        $('div[id*="FilterPane"]').slideDown(400);
     }
     else {
-        $("#FilterPane").slideUp(400);
+        $('div[id*="FilterPane"]').slideUp(400);
     }
     FilterIsShowing = !FilterIsShowing;
 }

@@ -11,13 +11,24 @@
         <%@ Register Assembly="DevExpress.Web.ASPxGridView.v10.2, Version=10.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
             Namespace="DevExpress.Web.ASPxGridView" TagPrefix="dxwgv" %>
 
-    [2.] Include the ASP code in your web page <body> (.aspx file)
+    [2.] Add the include to the <head>
+
+        <!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.head"-->
+
+    [3.] Include the ASP code in your web page <body> (.aspx file)
 
         <!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.body"-->
 
-    [3.] Add the include to the <head>
+    [*.] If you place the control in an UpdatePanel, add the following script to the Content Template:
 
-        <!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.head"-->
+        <!-- This is what the ContentTemplate tag namespace looks like: -->
+            <asp:UpdatePanel ID="UpdatePanel1" runat="server"><ContentTemplate>
+        
+        <!-- This script goes in the ContentTemplate -->
+                        <script type="text/javascript">
+                            var prm = Sys.WebForms.PageRequestManager.getInstance();
+                            prm.add_endRequest(UpdatePanelReady);
+                        </script>
 
 ----------------
 [YOUR_PAGE.aspx.vb]

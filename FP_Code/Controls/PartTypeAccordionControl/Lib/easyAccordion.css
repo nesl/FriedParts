@@ -28,11 +28,12 @@ dd p{line-height:120%}
 /* Blue-ish color used in images is approximately #b5c9e8 */
 #accordion-1{width:700px;height:245px;padding:0px;background:white;border:none;}
 #accordion-1 dl{width:700px;height:245px}	
-#accordion-1 dt{height:30px;line-height:28px;text-align:right;padding:0 5px 0 0;font-size:1.1em;
+#accordion-1 dt{height:30px;line-height:28px;text-align:right;padding:0 0px 0 0;font-size:1.1em;
                 font-weight:bold;font-family: Tahoma, Geneva, sans-serif;text-transform:uppercase;
                 letter-spacing:1px;
                 background:#fff url(/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Resx/slide-title-inactive-1.jpg) 0 0 no-repeat;
-                color:#26526c}
+                color:#26526c;
+                }
 #accordion-1 dt.active{
                 cursor:pointer;color:#fff;
                 background:#fff url(/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Resx/slide-title-active-1.jpg) 0 0 no-repeat}
@@ -41,7 +42,8 @@ dd p{line-height:120%}
 #accordion-1 dd{
                 padding:0px;
                 background:url(/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Resx/slide.jpg) bottom left repeat-x;
-                border:1px solid #dbe9ea;border-left:0;margin-right:3px}
+                border:1px solid #dbe9ea;border-left:0;margin-right:3px;
+                }
 #accordion-1 .slide-number{color:#68889b;left:10px;font-weight:bold}
 #accordion-1 .active .slide-number{color:#fff;}
 #accordion-1 a{color:#68889b}

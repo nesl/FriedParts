@@ -23,7 +23,7 @@ jf@ee.ucla.edu
 
 Resources
 ---------
-* [The "live" site running this code](http://friedparts.nesl.ucla.edu)
+* [The "live" site running this code](http://friedparts.nesl.ucla.edu/FriedParts)
 * [The 2011 IPC APEX conference paper on the FriedParts architecture](http://nesl.ee.ucla.edu/document/show/355)
 * [The UCLA NES Laboratory project page for FriedParts](http://nesl.ee.ucla.edu/project/show/70)
 

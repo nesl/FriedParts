@@ -151,6 +151,7 @@ Namespace System.Web.UI.FriedParts
                         If i = ParentLevel + 1 Then
                             'This one is the one we open to...
                             DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).Attributes.Add("class", "active")
+                            DirectCast(allControls.FindControl("pthaActiveTab"), HiddenField).Value = i - 1 'Tabs are numbered from 1, but Levels start at 2 (e.g. Tab 1 contains Level 2)
                         Else
                             '...not these!
                             DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).Attributes.Remove("class")

@@ -170,7 +170,7 @@ Namespace System.Web.UI.FriedParts
                     gv.DataSource = ptData.GetDatasource(i)
                     gv.DataBind()
                     gv.SettingsText.EmptyDataRow = ptData.GetTitles(i).ToUpper & vbCrLf & "has no sub-Types"
-                    DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).InnerText = ptData.GetTitles(i)
+                    DirectCast(allControls.FindControl("L" & i & "a"), HtmlGenericControl).InnerHtml = HttpUtility.HtmlEncode(ptData.GetTitles(i)) & "&nbsp;&nbsp;"
                     End If
             Next
             'Breadcrumbs

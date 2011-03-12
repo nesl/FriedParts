@@ -10,7 +10,7 @@
             <dt id="L2a" runat="server">One more</dt>
                 <dd id="L2b" runat="server">
                     <dxwgv:ASPxGridView ID="L2g" runat="server" EnableCallBacks="False" 
-                        KeyFieldName="TypeID" Font-Names="Tahoma" Font-Size="7pt"
+                        KeyFieldName="TypeID" Font-Names="Tahoma" Font-Size="8pt"
                         ClientIDMode="AutoID">
                         <ClientSideEvents RowClick="function(s, e) {s.PerformCallback(''+e.visibleIndex);}"></ClientSideEvents>
                         <Columns>

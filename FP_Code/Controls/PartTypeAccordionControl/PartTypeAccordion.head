@@ -5,10 +5,27 @@
             autoStart: false,
             slideNum: false
         });
-    };
-    function UpdatePanelReady() {
-    loadEasyAccordion();
+
+        //Fix an IE bug when using in an UpdatePanel (Rotation of dt happens in a weird order so width/height are swapped when calculating size/position of dd)
+        if (jQuery.browser.msie) {
+            if (jQuery.browser.version == 6.0 || jQuery.browser.version == 7.0) {
+                //Untested (unknown if effected)
+            }
+            if (jQuery.browser.version == 8.0) {
+                if ($('dd[id$="L3a"]').length == 0) {
+                    var dtWidth = Math.min($('dt[id$="L2a"]').height(), $('dt[id$="L2a"]').width());
+                    var ddWidth = $('#accordion-1').width() - dtWidth;
+                    $('dd[id$="L2b"]').width(ddWidth);
+                    $('dd[id$="L2b"]').css('left', dtWidth);
+                }
+            }
+        }
     }
+
+    function UpdatePanelReady() {
+        loadEasyAccordion();
+    }
+
     $(document).ready(loadEasyAccordion);
 </script>
 <link rel="stylesheet" type="text/css" href="/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Lib/easyAccordion.css" />

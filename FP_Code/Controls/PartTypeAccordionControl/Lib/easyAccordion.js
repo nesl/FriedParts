@@ -49,8 +49,10 @@
 
             var f = 1;
             jQuery(this).find('dt').each(function () {
+                //position of title block
                 jQuery(this).css({ 'width': dtHeight, 'top': dtTop, 'margin-left': dtOffset });
-                //jQuery(this).css({ 'width': '240px', 'top': dtTop, 'margin-left': dtOffset }); //Fix rendering bug -- hard coded for now
+
+                //slide numbers
                 if (settings.slideNum == true) {
                     jQuery('<span class="slide-number">' + 0 + f + '</span>').appendTo(this);
                     if (jQuery.browser.msie) {
@@ -69,9 +71,10 @@
                         var slideNumTopVal = parseInt(slideNumTop) + parseInt(jQuery(this).css('padding-top'));
                         jQuery(this).find('.slide-number').css({ 'bottom': slideNumTopVal });
                     }
-                }
+                } //done dealing with slide numbers
+
                 f = f + 1;
-            });
+            }); //for each <dt> -- slide title block
 
             if (jQuery(this).find('.active').size()) {
                 jQuery(this).find('.active').next('dd').addClass('active');

@@ -7,11 +7,17 @@ Imports System.Data
 '========================================================================
 
 Public Module fpPartTypes
-
-    'Determines if a given TypeName with a parent ParentID (or ParentName) currently exists
-    '   Useful in determining whether to add it or not (use ptAddNewPartType to do that)
-    '   The optional parameter "foundTypeID" is the TypeID of this PartType if it exists, -1 if it does not or otherwise
-    'Parent must exist or error results!
+    ''' <summary>
+    ''' Determines if a given TypeName with a parent ParentID (or ParentName) currently exists
+    '''   Useful in determining whether to add it or not (use ptAddNewPartType to do that)
+    '''  The optional parameter "foundTypeID" is the TypeID of this PartType if it exists, -1 if it does not or otherwise
+    ''' Parent must exist or error results!
+    ''' </summary>
+    ''' <param name="TypeName"></param>
+    ''' <param name="ParentID"></param>
+    ''' <param name="foundTypeID"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Function ptExistsPartType(ByVal TypeName As String, ByVal ParentID As Int32, Optional ByVal foundTypeID As Int32 = -2) As Boolean
         Dim DT As New DataTable
         Dim SQLcmd As String
@@ -71,8 +77,15 @@ Public Module fpPartTypes
         End If
     End Function
 
-    'Add a new category; Does not check for duplicates!!! Do this yourself prior to calling me!
-    'Returns the new TypeID
+    ''' <summary>
+    ''' Add a new category; Does not check for duplicates!!! Do this yourself prior to calling me!
+    ''' </summary>
+    ''' <param name="newName"></param>
+    ''' <param name="parentID"></param>
+    ''' <param name="newNotes"></param>
+    ''' <param name="Me_Page"></param>
+    ''' <returns>Returns the new TypeID</returns>
+    ''' <remarks></remarks>
     Public Function ptAddNewPartType(ByVal newName As String, ByVal parentID As Int32, Optional ByVal newNotes As String = "", Optional ByRef Me_Page As Page = Nothing) As Int32
         Dim dt As New DataTable
 
@@ -152,10 +165,16 @@ Public Module fpPartTypes
         End If
     End Function
 
-    'Returns TypeID of the PartType described by its name and parentID
-    'CAUTION: Will crash (Array out of bounds exception) if no match is found! Assumes you tested for existence earlier
-    '           Use ptExistsPartType first!
-    'Returns the FIRST matching PartType if multiple matches
+    ''' <summary>
+    ''' Returns TypeID of the PartType described by its name and parentID
+    ''' CAUTION: Will crash (Array out of bounds exception) if no match is found! Assumes you tested for existence earlier
+    '''           Use ptExistsPartType first!
+    ''' Returns the FIRST matching PartType if multiple matches
+    ''' </summary>
+    ''' <param name="TypeName"></param>
+    ''' <param name="ParentID"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Function ptFindPartType(ByVal TypeName As String, ByVal ParentID As Int32) As Int32
         Dim tArr(,) As Int32 = ptFindPartType(TypeName)
         Dim i As Byte = 0
@@ -176,7 +195,13 @@ Public Module fpPartTypes
         Return LevelArray.Length
     End Function
 
-    'Returns this category's tree lineage from current node back up to the root of the tree.
+    ''' <summary>
+    ''' Returns this category's tree lineage from current node back up to the root of the tree.
+    ''' </summary>
+    ''' <param name="TypeID"></param>
+    ''' <returns>ex. "0, 12, 34"</returns>
+    ''' <remarks>This function is used to generate the Path values for a new Part Type. 
+    ''' Requires two pieces of information: this part type's id and its parent's id.</remarks>
     Public Function ptTraceLineage(ByVal TypeID As Int32) As String
         Dim dt As New DataTable
         Dim SQLcmd As String
@@ -184,7 +209,7 @@ Public Module fpPartTypes
         'Check for terminating condition
         If TypeID = 0 Then
             'Found the root node! Yay!
-            Return "0"
+            Return "/0/"
         Else
             'Lookup the current node
             '[STEP 2] Find the TypeID that we just created
@@ -204,14 +229,20 @@ Public Module fpPartTypes
                 dbLog.logDebug("[ptTraceLineage] Could not find the parent of the last node!!!")
                 Return -1
             Else
-                Return "" & ptTraceLineage(dt.Rows(0).Field(Of Int32)("Parent")) & ", " & TypeID
+                Return "" & ptTraceLineage(dt.Rows(0).Field(Of Int32)("Parent")) & TypeID & "/"
             End If
         End If
     End Function
 
-    'Converts the Path descriptor to an array of TypeID's
+
+    ''' <summary>
+    ''' Converts the Path descriptor to an array of TypeID's
+    ''' </summary>
+    ''' <param name="PartTypePath"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Function ptPathSplit(ByVal PartTypePath As String) As Int32()
-        Dim str() As String = PartTypePath.Split(",")
+        Dim str() As String = PartTypePath.Split("/", 20, System.StringSplitOptions.RemoveEmptyEntries)
         Dim ia() As Int32
         If str.Length > 0 Then
             ReDim ia(str.Length - 1)
@@ -226,7 +257,44 @@ Public Module fpPartTypes
         Return ia
     End Function
 
-    'Returns the PartType Name given its ID
+    ''' <summary>
+    ''' Find the complete set of TypeID's in this TypeID's path (Including it)
+    ''' </summary>
+    ''' <param name="PartTypeID"></param>
+    ''' <returns>Ex. "0, 12, 34"</returns>
+    ''' <remarks>Caution! This splits the path DOWN TO this type (e.g. it's parents).
+    ''' To see its *children* types use ptGetChildrenTypes</remarks>
+    Public Function ptGetParentTypes(ByVal PartTypeID As Int32) As Int32()
+        Return ptPathSplit(ptGetPath(PartTypeID))
+    End Function
+
+    ''' <summary>
+    ''' Find the complete set of TypeID's in this TypeID's path (Including it)
+    ''' </summary>
+    ''' <param name="PartTypeID"></param>
+    ''' <returns>Ex. "0, 12, 34"</returns>
+    ''' <remarks>Caution! This splits the path UP TO this type (e.g. it's children).
+    ''' To see its *parent* types use ptGetParentTypes</remarks>
+    Public Function ptGetChildrenTypes(ByVal PartTypeID As Int32) As Int32()
+        Dim dt As New DataTable
+        Dim sqltxt As String = _
+            "SELECT [TypeID],[Parent],[Path] " & _
+            "FROM [FriedParts].[dbo].[part-PartTypes] " & _
+            "WHERE [Path] LIKE %/" & PartTypeID & "/%"
+        SelectRows(dt, sqltxt)
+        Dim ia As New ArrayList
+        For Each dr As DataRow In dt.Rows
+            ia.Add(dr.Field(Of Int32)("TypeID"))
+        Next
+        Return ia.ToArray(GetType(Int32))
+    End Function
+
+    ''' <summary>
+    ''' Returns the PartType Name given its ID
+    ''' </summary>
+    ''' <param name="TypeID"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Function ptGetTypeName(ByVal TypeID As Int16) As String
         Dim dt As New DataTable
         dt = SelectRows(dt, "SELECT [Type] FROM [FriedParts].[dbo].[part-PartTypes] WHERE [TypeID] = " & TypeID)
@@ -238,7 +306,12 @@ Public Module fpPartTypes
         End If
     End Function
 
-    'Returns the ParentPartTypeID given it the Child Part Type ID
+    ''' <summary>
+    ''' Returns the ParentPartTypeID given it the Child Part Type ID
+    ''' </summary>
+    ''' <param name="TypeID"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Function ptGetParentTypeID(ByVal TypeID As Int32) As Int32
         Dim dt As New DataTable
         dt = SelectRows(dt, "SELECT [Parent] FROM [FriedParts].[dbo].[part-PartTypes] WHERE [TypeID] = " & TypeID)
@@ -249,7 +322,12 @@ Public Module fpPartTypes
         End If
     End Function
 
-    'Returns the ParentPartType Name given it the Child Part Type ID
+    ''' <summary>
+    ''' Returns the ParentPartType Name given it the Child Part Type ID
+    ''' </summary>
+    ''' <param name="TypeID"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Function ptGetParentTypeName(ByVal TypeID As Int32) As String
         Dim dt As New DataTable
         dt = SelectRows(dt, "SELECT [Parent] FROM [FriedParts].[dbo].[part-PartTypes] WHERE [TypeID] = " & TypeID)
@@ -338,7 +416,7 @@ Public Module fpPartTypes
     End Function
 
     ''' <summary>
-    ''' Returns the TypeID which has the specified Part Type Path -- e.g. "0,206,114"
+    ''' Returns the TypeID which has the specified Part Type Path -- e.g. "/0/206/114/"
     ''' </summary>
     ''' <param name="PartTypePath"></param>
     ''' <returns></returns>
@@ -366,7 +444,7 @@ Public Module fpPartTypes
     End Function
 
     ''' <summary>
-    ''' Returns the Path, in TypeID's, of the specified PartTypeID (ex. "0, 22, 24")
+    ''' Returns the Path, in TypeID's, of the specified PartTypeID (ex. "/0/22/24/")
     ''' </summary>
     ''' <param name="PartTypeID">FriedParts Part Type ID</param>
     ''' <returns>The Path as stored in the database</returns>
@@ -411,7 +489,13 @@ Public Module fpPartTypes
         Return outStr
     End Function
 
-    'Logging function for UNDO and recovery, also writes to user activity log
+    ''' <summary>
+    ''' Logging function for UNDO and recovery, also writes to user activity log
+    ''' </summary>
+    ''' <param name="Me_Page"></param>
+    ''' <param name="UserID"></param>
+    ''' <param name="PartTypeID"></param>
+    ''' <remarks></remarks>
     Public Sub logPartType(ByRef Me_Page As Page, ByVal UserID As Int16, ByVal PartTypeID As Int16)
         Dim sqlDo As String = _
             "INSERT INTO [FriedParts].[dbo].[part-PartTypes]" & _
@@ -430,4 +514,38 @@ Public Module fpPartTypes
             " WHERE [TypeID] = " & PartTypeID
         logServiceActivity(Me_Page, UserID, suGetUserFirstName(UserID) & " added a new part type, " & ptGetTypeName(ptGetParentTypeID(PartTypeID)) & "/" & ptGetTypeName(PartTypeID), sqlDo, sqlUndo, "TypeID", PartTypeID, "TypeName", ptGetTypeName(PartTypeID))
     End Sub
+
+    ''' <summary>
+    ''' Finds all of the parts that are of the same type as the TypeID specified.
+    ''' This is a bit more complex than it might first appear, since this includes
+    ''' not just the parts of this exact type, BUT THE CHILDREN TYPES as well.
+    ''' 
+    ''' Ex. The "Capacitors" type includes all the parts of type "Ceramic" too!
+    ''' </summary>
+    ''' <param name="PartTypeID"></param>
+    ''' <param name="SearchResultsTable">If you already have a sub-set of records you 
+    ''' want to use as the basis (e.g. search results), pass it in here. If omitted,
+    ''' we assume the set of all parts and work with that.</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Function ptGetPartsOfThisType(ByVal PartTypeID As Int32, Optional ByRef SearchResultsTable As DataTable = Nothing) As DataTable
+        'Define our source of records to work from
+        Dim source As DataTable
+        If SearchResultsTable Is Nothing Then
+            source = New DataTable
+            SelectRows(source, "SELECT * FROM [FriedParts].[dbo].[view-part] WHERE [TypePath]")
+        Else
+            source = SearchResultsTable
+        End If
+        'Init
+        Dim retSrc As DataTable
+        retSrc = source.Clone 'Copy the schema from source to retsrc
+        'Find the records
+        For Each dr As DataRow In source.Select("[TypePath] Like '%/" & PartTypeID & "/%'")
+            retSrc.Rows.Add(dr.ItemArray())
+        Next
+        'Return
+        Return retSrc
+    End Function
+
 End Module

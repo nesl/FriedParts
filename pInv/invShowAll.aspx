@@ -15,6 +15,16 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     
+    <!-- Search Terms Box -->
+    <div id="SearchWarning" visible="false" runat="server" style="
+                        border:1px solid rgb(126,172,177);
+                        background-color: #fff9a8;
+                        margin-bottom: 10px;
+                        padding:4px; padding-left:10px;
+                        font-size: 12pt;
+                        ">
+    </div>
+
     <!-- Bounding Update Frame -->
     <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
@@ -43,7 +53,7 @@
                         ">
                         <span style=" font-weight:bold; color:Yellow;">Click here to browse parts by type...</span>
                 </div>
-                <div id="FilterPane" style="border: 1px solid rgb(126,172,177);padding:15px;">
+                <div id="FilterPane" style="border: 1px solid rgb(126,172,177);padding:10px;background-color:White;">
                     <!--#include file="/friedparts/fp_code/controls/parttypeaccordioncontrol/PartTypeAccordion.body"-->
                 </div>
                 <div id="Div1" style="
@@ -85,9 +95,9 @@
                         </dxwgv:GridViewDataTextColumn>
                         <dxwgv:GridViewDataTextColumn Caption="Value" FieldName="Value" VisibleIndex="5">
                         </dxwgv:GridViewDataTextColumn>
-                        <dxwgv:GridViewDataTextColumn Caption="Units" FieldName="Units" VisibleIndex="6">
+                        <dxwgv:GridViewDataTextColumn Caption="Units" FieldName="Value_Units" VisibleIndex="6">
                         </dxwgv:GridViewDataTextColumn>
-                        <dxwgv:GridViewDataTextColumn Caption="Tolerance" FieldName="Tol" VisibleIndex="7">
+                        <dxwgv:GridViewDataTextColumn Caption="Tolerance" FieldName="Value_Tolerance" VisibleIndex="7">
                         </dxwgv:GridViewDataTextColumn>
                         <dxwgv:GridViewDataCheckColumn Caption="Verified" FieldName="Verified" VisibleIndex="8"
                             Width="25px">

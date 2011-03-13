@@ -102,13 +102,33 @@ Namespace System.Web.UI.FriedParts
         End Sub
 
         ''' <summary>
+        ''' Event Handler prototype for the OnChange event. 
+        ''' Fires when the PartTypeID is changed by the user.
+        ''' </summary>
+        ''' <param name="NewPartTypeID"></param>
+        ''' <remarks></remarks>
+        Public Delegate Sub OnChange(ByVal NewPartTypeID As Int32)
+
+        ''' <summary>
+        ''' Internal Variable. Stores the function pointer for the host page's
+        ''' event handler for the OnChange event. Allows the page to do UI stuff
+        ''' when the user selects a new part type.
+        ''' </summary>
+        ''' <remarks></remarks>
+        Protected iOnChangeHandler As OnChange
+
+        ''' <summary>
         ''' Update the UI and backend to match the current internal state
         ''' </summary>
         ''' <param name="MePage"></param>
         ''' <remarks></remarks>
-        Public Sub UpdateControls(ByRef MePage As System.Web.UI.Page)
+        Public Sub UpdateControls(ByRef MePage As System.Web.UI.Page, Optional ByRef EventHandler As OnChange = Nothing)
             'Collect the applicable controls
             allControls = New sysControlWalker(MePage, TheControlNames)
+            'Bind the Event Handler
+            If EventHandler IsNot Nothing Then
+                iOnChangeHandler = EventHandler
+            End If
             'Update the UI
             Update(ptData.GetParentID)
         End Sub
@@ -124,6 +144,15 @@ Namespace System.Web.UI.FriedParts
             Dim HTMLDelim As String = "<img src=""/FriedParts/FP_Code/Controls/PartTypeAccordionControl/Resx/delim.gif"" alt=""->"" />"
             Return ptGetCompleteName(TypeID, HTMLDelim)
         End Function
+
+        ''' <summary>
+        ''' Reset the internal state and UI components to the ALL PARTS category.
+        ''' </summary>
+        ''' <remarks>Purpose of this is to (1) be public and (2) encapsulate the ALL PARTS 
+        ''' PartTypeID in case it changes in the future (WHY?!)</remarks>
+        Public Sub ResetToAllParts()
+            Update(0, True)
+        End Sub
 
         ''' <summary>
         ''' Worker. Implements the Update operation to select a new PartTypeID
@@ -202,6 +231,8 @@ Namespace System.Web.UI.FriedParts
                 'Reflect that change in the backend
                 Update(hf.Value, True)
             End If
+            'Allow the hosting page to do any post-processing / UI updates (if it desires)
+            If iOnChangeHandler IsNot Nothing Then iOnChangeHandler.Invoke(ptData.GetParentID)
         End Sub
 
         ''' <summary>

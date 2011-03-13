@@ -6,6 +6,8 @@ Partial Class pDevel_devClick
     Inherits System.Web.UI.Page
 
     Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
+
+        'devPartTypePath()
         devInstitution()
         'devJSON()
         'devTestSemaphore()
@@ -19,6 +21,21 @@ Partial Class pDevel_devClick
         'OLD TEST CODE
         '=============
         'devTestsysTextModule()
+    End Sub
+
+    Private Sub devPartTypePath()
+        Dim dt As New DataTable
+        Dim s As String
+        Dim orig As String
+        SelectRows(dt, "SELECT * FROM [part-PartTypes]")
+        For Each dr As DataRow In dt.Rows
+            orig = dr.Field(Of String)("Path")
+            s = ptTraceLineage(dr.Field(Of Int32)("TypeID"))
+            SQLexe( _
+                "UPDATE [part-PartTypes] SET [Path]='" & s & "' WHERE [TypeID]=" & dr.Field(Of Int32)("TypeID") _
+                )
+        Next
+
     End Sub
 
     Private Sub devTestSemaphore()

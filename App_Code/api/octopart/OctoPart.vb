@@ -208,6 +208,36 @@ Namespace apiOctopart
         End Property
 
         ''' <summary>
+        ''' Internal Variable.
+        ''' </summary>
+        ''' <remarks></remarks>
+        Protected iPartTypeID As Int32
+
+        ''' <summary>
+        ''' The ID of this part's type (category)
+        ''' </summary>
+        ''' <value></value>
+        ''' <returns>FriedParts PartTypeID</returns>
+        ''' <remarks></remarks>
+        Public ReadOnly Property getPartTypeID As Int32
+            Get
+                Return iPartTypeID
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' The name of this part's type (category)
+        ''' </summary>
+        ''' <value></value>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public ReadOnly Property getPartTypeName As String
+            Get
+                Return ptGetTypeName(iPartTypeID)
+            End Get
+        End Property
+
+        ''' <summary>
         ''' Worker function. Does the processing of construction.
         ''' </summary>
         ''' <remarks>Assumes the JTokens are all valid at this point.</remarks>
@@ -230,6 +260,18 @@ Namespace apiOctopart
                                                 Part.Item("manufacturer").Item("id") _
                                               ) _
                                 )
+            End If
+
+            '[PartType]/[Category]
+            'Add all of the encountered Part Types to FriedParts (heck, we'll need 'em eventually)
+            Dim opCategories As JArray = DirectCast(Part.SelectToken("category_ids"), JArray)
+            For Each opCategory As JValue In opCategories
+                'Does this category exist?
+                apiOctopart.OctoPartType.opProcessPartTypes(DirectCast(opCategory.Value, Int64))
+            Next
+            'If this part has multiple categories, use the first one...
+            If Not ptExistsPartType(DirectCast(opCategories(0), JValue).Value, iPartTypeID) Then
+                Throw New Exception("Cannot find this part type, but I just added it, so something when horribly wrong!")
             End If
         End Sub
 

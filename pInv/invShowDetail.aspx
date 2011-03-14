@@ -19,7 +19,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Part Details Page</title>
-    
+    <!--#include file="/FriedParts/FP.master.head"-->
 </head>
 <body>
     <form id="form1" runat="server" style="font-family: Tahoma, Arial, Helvetica, sans-serif; 

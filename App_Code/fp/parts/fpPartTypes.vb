@@ -64,7 +64,14 @@ Public Module fpPartTypes
         Return ptExistsPartType(TypeName, pArr(0, 0))
     End Function
 
-    'Overload. Allows you to add a new part with a parent, when you only know the parent's name (not id)
+    ''' <summary>
+    ''' Overload. Allows you to add a new part with a parent, when you only know the parent's name (not id)
+    ''' </summary>
+    ''' <param name="newName"></param>
+    ''' <param name="parentName"></param>
+    ''' <param name="newNotes"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Function ptAddNewPartType(ByVal newName As String, ByVal parentName As String, Optional ByVal newNotes As String = "") As Int32
         Dim Parents As Int32(,)
         Parents = ptFindPartType(parentName)

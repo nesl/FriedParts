@@ -28,6 +28,16 @@ Namespace apiOctopart
         ''' </summary>
         ''' <remarks></remarks>
         Public Const PartSearch As String = "parts/search?q="
+
+        ''' <summary>
+        ''' Gets the description and tree data for the specified part category.
+        ''' </summary>
+        ''' <param name="OctopartTypeID"></param>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Public Function GetCategory(ByRef OctopartTypeID As String) As String
+            Return API & "categories/get?id=" & HttpUtility.HtmlEncode(OctopartTypeID) & "&attach_ancestors=1"
+        End Function
     End Module
 
     ''' <summary>

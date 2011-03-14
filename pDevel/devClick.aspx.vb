@@ -6,9 +6,9 @@ Partial Class pDevel_devClick
     Inherits System.Web.UI.Page
 
     Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
-
+        devOctopartPartTypes()
         'devPartTypePath()
-        devInstitution()
+        'devInstitution()
         'devJSON()
         'devTestSemaphore()
         'devTestThreadManagement()
@@ -21,6 +21,13 @@ Partial Class pDevel_devClick
         'OLD TEST CODE
         '=============
         'devTestsysTextModule()
+    End Sub
+
+    Private Sub devOctopartPartTypes()
+        apiOctopart.OctoPartType.opProcessPartTypes(4910)
+
+        'WRITE A RECURSIVE version which could be used in the future to import the Octopart category tree...
+
     End Sub
 
     Private Sub devPartTypePath()
@@ -150,5 +157,12 @@ Partial Class pDevel_devClick
         suLoginRequired(Me) 'Necessary for testing functions that write to the DB (e.g. log changes)
         Dim dt As DataTable = New fpProj.fpBOM(8).GetDataSource
         xGrid.DataSource = dt
+    End Sub
+
+   
+    Protected Sub Button_Del_User_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button_Del_User.Click
+        'WARNING VERY DANGEROUS!!!
+        SQLexe("DELETE FROM [FriedParts].[dbo].[user-Accounts] WHERE [UserEmail] ='" & _
+               "john.bakedman@gmail.com" & "'")
     End Sub
 End Class

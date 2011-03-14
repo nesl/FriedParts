@@ -6,7 +6,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContentPlaceHolder" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
-    <br />
+    <asp:Button ID="Button_Del_User" runat="server" Text="Delete User John Bakedman" />    
     <hr />
     <table>
         <tr>
@@ -52,7 +52,7 @@
         <tr>
             <td></td>
             <td>
-                <asp:Button ID="Button1" runat="server" Text="Test PartType Tree" />    
+                <asp:Button ID="Button1" runat="server" Text="Execute Test Routine" />    
             </td>
         </tr>
     </table>    

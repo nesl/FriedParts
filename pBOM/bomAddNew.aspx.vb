@@ -110,12 +110,13 @@ Partial Class pBOM_bomAddNew
                     displayErrors()
                     Exit Sub
                 End If
-                Exit Sub
+
                 '[FINALIZE] -- Write to DB
                 Project.MyProjectID = NewProject_Save() 'Create the new project
                 Project.MyProjectTitle = txtTitle.Text
                 Project.MyProjectRevision = txtRevision.Text
                 Project.Save() 'Write the BOM Parts to DB
+
                 'Deal with File Uploads
 
                 '[DONE] -- Report Success

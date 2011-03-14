@@ -1,0 +1,4 @@
+﻿<!-- This is the alternate head content for any page that does not use the Master Page directly -->
+<link rel="StyleSheet" href="/FriedParts/FP_Code/fpStyle.css" type="text/css" media="screen" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="/FriedParts/FP.master.google.js"></script>

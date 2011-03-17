@@ -4,6 +4,7 @@
 
     Sub Application_Start(ByVal sender As Object, ByVal e As EventArgs)
         ' Code that runs on application startup
+        apiInit(System.Web.Routing.RouteTable.Routes)
     End Sub
     
     Sub Application_End(ByVal sender As Object, ByVal e As EventArgs)
@@ -36,5 +37,6 @@
             'xxx -- implement better handling in the future?
         End Try
     End Sub
+    
        
 </script>

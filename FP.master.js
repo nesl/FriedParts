@@ -11,3 +11,9 @@ $(document).ready(function () {
     )
 });
 
+//Prevent session expiration when the user still has the browser window open
+function keepMeAlive(imgName) {
+    myImg = document.getElementById(imgName);
+    if (myImg) myImg.src = myImg.src.replace(/\?.*$/, '?' + Math.random());
+}
+window.setInterval("keepMeAlive('keepAliveIMG')", 500000);

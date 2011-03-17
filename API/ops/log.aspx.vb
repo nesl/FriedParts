@@ -11,10 +11,10 @@ Partial Class API_PartTypes
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         '[Define Commands]
         Dim xC() As String = {"get", "ack", "set", "reset"}
-        Dim Cmds As New apiCommands(xC)
+        Dim Cmds As New apiFriedParts.fpCommands(xC)
 
         '[Validate API Parameters]
-        Dim TheCmd As String = apiValidateParameters(Me, Cmds)
+        Dim TheCmd As String = apiFriedParts.fpStatic.apiValidateParameters(Me, Cmds)
 
         '[Capture Query String Parameters]
         Dim Queries As System.Collections.Specialized.NameValueCollection = Me.Request.QueryString()

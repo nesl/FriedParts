@@ -4,7 +4,7 @@
 
     Sub Application_Start(ByVal sender As Object, ByVal e As EventArgs)
         ' Code that runs on application startup
-        apiInit(System.Web.Routing.RouteTable.Routes)
+        apiFriedParts.apiInit(System.Web.Routing.RouteTable.Routes)
     End Sub
     
     Sub Application_End(ByVal sender As Object, ByVal e As EventArgs)
@@ -14,7 +14,7 @@
     Sub Application_Error(ByVal sender As Object, ByVal e As EventArgs)
         ' Code that runs when an unhandled error occurs
     End Sub
-
+    
     Sub Application_PostReleaseRequestState(ByVal sender As Object, ByVal e As EventArgs)
         If Response.ContentType = "text/html" Then
             Response.Filter = New sysReplaceHTML(Response.Filter)
@@ -39,4 +39,34 @@
     End Sub
     
        
+    ''' <summary>
+    ''' Fires on each request serviced by the app
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Protected Sub Application_BeginRequest(ByVal sender As Object, ByVal e As System.EventArgs)
+        sysLog.logRequest(Me, New sysLog.logMessageTypes(logMessageTypes.MsgTypes.InternetInformationServer), , "BegReq")
+    End Sub
+
+    ''' <summary>
+    ''' One BeginRequest can spawn multiple EndRequests as the webserver tries to meet the original
+    ''' user request. As in the user asks for a page, but we need to go get all the images and resources.    
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks>Disabled for now to reduce log footprint. We're really only interested in the attackers submissions anyway.</remarks>
+    Protected Sub Application_EndRequest(ByVal sender As Object, ByVal e As System.EventArgs)
+        'sysLog.logRequest(Me, "EndReq")
+    End Sub
+
+    ''' <summary>
+    ''' Only fires in IIS7 (requires Integrated Pipeline Mode) -- but then you can 
+    ''' probably access the response object earlier in EndRequest
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks>Does not work in IIS6</remarks>
+    Protected Sub Application_PreSendRequestHeaders(ByVal sender As Object, ByVal e As System.EventArgs)
+    End Sub
 </script>

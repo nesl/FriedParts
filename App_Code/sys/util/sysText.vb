@@ -118,6 +118,23 @@ Public Module sysText
         Return "convert(datetime, '" & FormatDateTime(microsoftDate, DateFormat.GeneralDate) & "')"
     End Function
 
+    ''' <summary>
+    ''' Converts a .Net Null Reference (Nothing) to a SQL NULL expression.
+    ''' If the object is not null, then it is returned as a string.
+    ''' </summary>
+    ''' <param name="TheValue"></param>
+    ''' <returns></returns>
+    ''' <remarks>For use in performing sql query string operations. Do NOT INCLUDE 
+    ''' the apostrophe delimiters in the enclosing string! We'll add them here if
+    ''' needed.</remarks>
+    Public Function txtSqlNothingToNull(ByRef TheValue As Object) As String
+        If TheValue IsNot Nothing Then
+            Return "'" & TheValue.ToString & "'"
+        Else
+            Return "NULL"
+        End If
+    End Function
+
     'Converts a Microsoft Date expression into a Date-Only text string in the 
     'format: 1/14/2010
     Public Function txtDateOnly(ByVal microsoftDateTime As Date) As String

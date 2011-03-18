@@ -6,7 +6,8 @@ Partial Class pDevel_devClick
     Inherits System.Web.UI.Page
 
     Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
-        devOctopartPartTypes()
+        devLogSerializer()
+        'devOctopartPartTypes()
         'devPartTypePath()
         'devInstitution()
         'devJSON()
@@ -21,6 +22,18 @@ Partial Class pDevel_devClick
         'OLD TEST CODE
         '=============
         'devTestsysTextModule()
+    End Sub
+
+    Private Sub devLogSerializer()
+        Dim logS As New sysLog.logSerializer()
+        Dim l As Int16 = logS.Count
+        Try
+            Do While True
+                Console.WriteLine(logS.GetRow)
+            Loop
+        Catch ex As DataException
+        End Try
+
     End Sub
 
     Private Sub devOctopartPartTypes()

@@ -286,6 +286,9 @@ Public Module sysUser
                 'Running as a server process -- no user involved.
                 Return SYSTEM_USERID
             Else
+                If (HttpContext.Current.Session Is Nothing) OrElse (HttpContext.Current.Session("user.UserID") Is Nothing) Then
+                    Return sysErrors.USER_NOTLOGGEDIN
+                End If
                 If CInt(HttpContext.Current.Session("user.UserID")) Then
                     'Valid user login
                     Return HttpContext.Current.Session("user.UserID")
